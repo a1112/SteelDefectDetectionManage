@@ -16,6 +16,7 @@ if "%REPO_URL%"=="" set REPO_URL=https://github.com/a1112/SteelDefectDetectionMa
 
 set REPO_DIR=%PROJECT_ROOT%/SteelDefectDetectionManage
 
-ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=120 %SSH_USER%@%SSH_HOST% "set -e; sudo apt update; sudo apt install -y git; sudo mkdir -p %PROJECT_ROOT%; cd %PROJECT_ROOT%; if [ -d %REPO_DIR%/.git ]; then echo '[info] Repo already exists: %REPO_DIR%'; else git clone --recurse-submodules %REPO_URL% %REPO_DIR%; fi; cd %REPO_DIR%; git submodule update --init --recursive; chmod +x work/ops/*.sh work/ops/steps/*.sh work/ops/maintenance/*.sh; bash work/ops/deploy_all.sh"
+ssh -o ServerAliveInterval=30 -o ServerAliveCountMax=120 %SSH_USER%@%SSH_HOST% "set -e; sudo apt update; sudo apt install -y git; sudo mkdir -p %PROJECT_ROOT%; cd %PROJECT_ROOT%; if [ -d %REPO_DIR%/.git ]; then echo '[info] Repo already exists: %REPO_DIR%'; cd %REPO_DIR%; git stash -u; git pull --rebase; git stash pop || true; git submodule update --init --recursive; else git clone --recurse-submodules %REPO_URL% %REPO_DIR%; cd %REPO_DIR%; fi; chmod +x work/ops/*.sh work/ops/steps/*.sh work/ops/maintenance/*.sh; bash work/ops/deploy_all.sh"
 
+pause
 endlocal
