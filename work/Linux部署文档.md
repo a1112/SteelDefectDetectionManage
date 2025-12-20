@@ -42,7 +42,12 @@ nginx配置：
     work/ops/
     统一脚本：work/ops/deploy_all.sh
     分步骤脚本：work/ops/steps/01_check_env.sh ... 06_pm2_startup.sh
+    拉取项目脚本：work/ops/steps/00_bootstrap_repo.sh
     nginx 模板：work/ops/nginx/bkvision.online.conf
+    日常维护：work/ops/maintenance/
+    Windows 远程克隆：work/ops/bootstrap_repo.bat
+    Windows 远程部署：work/ops/deploy_all_remote.bat
+    Windows 远程克隆+部署：work/ops/bootstrap_and_deploy_remote.bat
 
 常用指令（示例）：
     pm2 list
