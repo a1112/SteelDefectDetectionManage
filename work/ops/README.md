@@ -1,8 +1,8 @@
-# Ops Scripts
+# 运维脚本
 
-This folder contains deployment helpers for Ubuntu Server 24.04.
+本目录包含 Ubuntu Server 24.04 的部署与运维脚本。
 
-Default paths (override with env vars if needed):
+默认路径（如需可用环境变量覆盖）：
 - PROJECT_ROOT=/opt/project
 - REPO_ROOT=$PROJECT_ROOT/SteelDefectDetectionManage
 - WEB_DIR=$REPO_ROOT/Web-Defect-Detection-System
@@ -10,34 +10,28 @@ Default paths (override with env vars if needed):
 - CERT_DIR=$REPO_ROOT/certs/bkvision.online
 - DOMAIN=www.bkvision.online
 
-Quick deploy:
+快速部署：
 ```bash
 chmod +x work/ops/*.sh work/ops/steps/*.sh
 bash work/ops/deploy_all.sh
 ```
 
-Bootstrap from Windows (0 -> 1):
+Windows 远程克隆（0 -> 1）：
 ```bat
-set SSH_HOST=111.230.72.96
-set SSH_USER=root
 call work\ops\bootstrap_repo.bat
 ```
 
-Deploy from Windows (remote):
+Windows 远程部署：
 ```bat
-set SSH_HOST=111.230.72.96
-set SSH_USER=root
 call work\ops\deploy_all_remote.bat
 ```
 
-Bootstrap + Deploy from Windows (remote):
+Windows 远程克隆+部署：
 ```bat
-set SSH_HOST=111.230.72.96
-set SSH_USER=root
 call work\ops\bootstrap_and_deploy_remote.bat
 ```
 
-Step-by-step scripts:
+分步骤脚本：
 - work/ops/steps/00_bootstrap_repo.sh
 - work/ops/steps/01_check_env.sh
 - work/ops/steps/02_setup_backend.sh
@@ -46,12 +40,12 @@ Step-by-step scripts:
 - work/ops/steps/05_nginx_setup.sh
 - work/ops/steps/06_pm2_startup.sh
 
-Daily maintenance:
+日常维护：
 - work/ops/maintenance/01_status.sh
 - work/ops/maintenance/02_logs.sh
 - work/ops/maintenance/03_restart.sh
 
-Common operations:
+常用指令：
 - pm2 list
 - pm2 logs defect-api
 - pm2 logs defect-ui
@@ -60,15 +54,15 @@ Common operations:
 - sudo nginx -t
 - sudo systemctl reload nginx
 
-Ports:
-- 80 -> 3000 (frontend)
-- 443 -> 3000 (frontend, SSL)
-- 8120 -> 8120 (backend, HTTP)
-- 8130 -> 8130 (backend, HTTP)
-- 8220 -> 8120 (backend, SSL)
-- 8230 -> 8130 (backend, SSL)
+端口映射：
+- 80 -> 3000（前端）
+- 443 -> 3000（前端，SSL）
+- 8120 -> 8120（后端，HTTP）
+- 8130 -> 8130（后端，HTTP）
+- 8220 -> 8120（后端，SSL）
+- 8230 -> 8130（后端，SSL）
 
-Notes:
-- Backend uses run_debug_server_dev.py (8120/8130).
-- Nginx terminates SSL with certs in CERT_DIR and proxies to backend/front.
-- Frontend proxy rules live in Figmaaidefectdetectionsystem/vite.config.ts.
+说明：
+- 后端使用 run_debug_server_dev.py（8120/8130）。
+- Nginx 负责 SSL 终止并转发到前后端。
+- 前端代理规则在 Figmaaidefectdetectionsystem/vite.config.ts。

@@ -6,11 +6,13 @@ REPO_ROOT="${REPO_ROOT:-$PROJECT_ROOT/SteelDefectDetectionManage}"
 WEB_DIR="${WEB_DIR:-$REPO_ROOT/Web-Defect-Detection-System}"
 UI_DIR="${UI_DIR:-$REPO_ROOT/Figmaaidefectdetectionsystem}"
 
-require_cmd() {
+ensure_cmd() {
   local cmd="$1"
+  local pkg="$2"
   if ! command -v "$cmd" >/dev/null 2>&1; then
-    echo "[error] Missing command: $cmd"
-    exit 1
+    echo "[info] Installing missing command: $cmd"
+    sudo apt update
+    sudo apt install -y "$pkg"
   fi
 }
 
@@ -22,19 +24,26 @@ require_dir() {
   fi
 }
 
-require_cmd git
-require_cmd nginx
-require_cmd node
-require_cmd npm
-require_cmd pm2
+ensure_cmd git git
+ensure_cmd nginx nginx
+ensure_cmd node nodejs
+ensure_cmd npm npm
 
 if command -v python3.10 >/dev/null 2>&1; then
   PY_BIN="python3.10"
-elif command -v python3 >/dev/null 2>&1; then
-  PY_BIN="python3"
 else
-  echo "[error] Missing python3.10 or python3"
-  exit 1
+  ensure_cmd python3 python3
+  PY_BIN="python3"
+fi
+
+if ! command -v pm2 >/dev/null 2>&1; then
+  echo "[info] Installing pm2"
+  sudo npm install -g pm2
+fi
+
+if ! "$PY_BIN" -m venv -h >/dev/null 2>&1; then
+  echo "[info] Installing python venv support"
+  sudo apt install -y python3-venv
 fi
 
 require_dir "$WEB_DIR"
