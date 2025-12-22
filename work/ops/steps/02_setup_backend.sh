@@ -16,12 +16,11 @@ else
   PY_BIN="python3"
 fi
 
-VENV_DIR="$WEB_DIR/.venv"
-if [[ ! -d "$VENV_DIR" ]]; then
-  echo "[info] Creating venv: $VENV_DIR"
-  "$PY_BIN" -m venv "$VENV_DIR"
+PIP_FLAGS=()
+if [[ $EUID -ne 0 ]]; then
+  PIP_FLAGS+=(--user)
 fi
 
-echo "[info] Installing backend dependencies"
-"$VENV_DIR/bin/pip" install --upgrade pip
-"$VENV_DIR/bin/pip" install -r "$WEB_DIR/requirements.txt"
+echo "[info] Installing backend dependencies (system python)"
+"$PY_BIN" -m pip install --upgrade pip "${PIP_FLAGS[@]}"
+"$PY_BIN" -m pip install -r "$WEB_DIR/requirements.txt" "${PIP_FLAGS[@]}"

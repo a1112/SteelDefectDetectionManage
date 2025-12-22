@@ -41,9 +41,9 @@ if ! command -v pm2 >/dev/null 2>&1; then
   sudo npm install -g pm2
 fi
 
-if ! "$PY_BIN" -m venv -h >/dev/null 2>&1; then
-  echo "[info] Installing python venv support"
-  sudo apt install -y python3-venv
+if ! "$PY_BIN" -m pip -V >/dev/null 2>&1; then
+  echo "[info] Installing python pip support"
+  sudo apt install -y python3-pip
 fi
 
 require_dir "$WEB_DIR"

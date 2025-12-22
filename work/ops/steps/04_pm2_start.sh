@@ -6,14 +6,14 @@ REPO_ROOT="${REPO_ROOT:-$PROJECT_ROOT/SteelDefectDetectionManage}"
 WEB_DIR="${WEB_DIR:-$REPO_ROOT/Web-Defect-Detection-System}"
 UI_DIR="${UI_DIR:-$REPO_ROOT/Figmaaidefectdetectionsystem}"
 
-if [[ ! -d "$WEB_DIR/.venv" ]]; then
-  echo "[error] Missing backend venv. Run 02_setup_backend.sh first."
-  exit 1
+if command -v python3.10 >/dev/null 2>&1; then
+  PY_BIN="python3.10"
+else
+  PY_BIN="python3"
 fi
 
-PY_BIN="$WEB_DIR/.venv/bin/python"
-if [[ ! -x "$PY_BIN" ]]; then
-  echo "[error] Python venv interpreter not found: $PY_BIN"
+if ! command -v "$PY_BIN" >/dev/null 2>&1; then
+  echo "[error] Python interpreter not found: $PY_BIN"
   exit 1
 fi
 
