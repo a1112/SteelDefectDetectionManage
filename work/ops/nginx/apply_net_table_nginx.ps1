@@ -27,7 +27,7 @@ function Get-MapJsonPath($repoRoot) {
 }
 
 function Read-Lines($mapPath) {
-  $payload = Get-Content -Raw -Path $mapPath | ConvertFrom-Json
+  $payload = Get-Content -Raw -Encoding UTF8 -Path $mapPath | ConvertFrom-Json
   if ($payload -is [System.Collections.IEnumerable] -and -not ($payload -is [pscustomobject])) {
     return ,$payload
   }
