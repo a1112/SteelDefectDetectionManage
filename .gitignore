@@ -1,3 +1,16 @@
 /work/ops/git_token
 /.idea
 /.tmp
+# local nginx config
+plugins/platforms/windows/nginx/conf/nginx.conf
+
+
+# local logs
+*.log
+*.out
+*.err
+*.pid
+plugins/platforms/windows/nginx/logs/
+Web-Defect-Detection-System/error_log/
+Web-Defect-Detection-System/app/ui/DefectWebUi/build/
+
