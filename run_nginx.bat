@@ -1,0 +1,2 @@
+ powershell -ExecutionPolicy Bypass -File apply_nginx.ps1 -NginxExePath plugins\platforms\windows\nginx\nginx.exe
+plugins\platforms\windows\nginx\nginx.exe -p plugins\platforms\windows\nginx -c conf\nginx.conf -s reload

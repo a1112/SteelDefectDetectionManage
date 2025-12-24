@@ -1,0 +1,1 @@
+powershell -ExecutionPolicy Bypass -File work\ops\nginx\apply_net_table_nginx.ps1 -NginxExePath plugins\platforms\windows\nginx\nginx.exe
