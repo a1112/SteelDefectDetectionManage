@@ -1,0 +1,16 @@
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - when: never
+
+stages:
+  - deploy
+
+deploy:local:
+  stage: deploy
+  tags:
+    - local
+  script:
+    - echo "Local deploy on push (Windows runner)"
+    - powershell -NoProfile -ExecutionPolicy Bypass -File work\\ops\\deploy_all_remote.bat
