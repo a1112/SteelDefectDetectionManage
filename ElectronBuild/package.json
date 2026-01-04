@@ -1,0 +1,29 @@
+{
+  "name": "defect-electron",
+  "version": "0.1.0",
+  "private": true,
+  "main": "main.js",
+  "scripts": {
+    "copy-web": "node scripts/copy-web.js",
+    "start": "electron .",
+    "pack": "npm run copy-web && electron-builder --dir",
+    "dist": "npm run copy-web && electron-builder"
+  },
+  "devDependencies": {
+    "electron": "29.4.6",
+    "electron-builder": "24.13.3"
+  },
+  "build": {
+    "appId": "com.bkvision.defect",
+    "productName": "DefectDetection",
+    "files": [
+      "main.js",
+      "preload.js",
+      "web/**"
+    ],
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    }
+  }
+}
