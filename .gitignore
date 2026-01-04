@@ -13,4 +13,9 @@ plugins/platforms/windows/nginx/conf/nginx.conf
 plugins/platforms/windows/nginx/logs/
 Web-Defect-Detection-System/error_log/
 Web-Defect-Detection-System/app/ui/DefectWebUi/build/
-
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+build/
