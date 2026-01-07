@@ -1,0 +1,39 @@
+{
+  "build": {
+    "beforeBuildCommand": "",
+    "beforeDevCommand": "cmd /c npm --prefix J:\\\\SteelDefectDetectionManage\\\\Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 5173",
+    "devPath": "http://localhost:5173",
+    "distDir": "../../Figmaaidefectdetectionsystem/build"
+  },
+  "package": {
+    "productName": "DefectDetection",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "window": {
+        "all": true
+      }
+    },
+    "windows": [
+      {
+        "title": "DefectDetection",
+        "width": 1280,
+        "height": 800,
+        "decorations": false,
+        "resizable": true,
+        "fullscreen": false
+      }
+    ],
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "com.bkvision.defect",
+      "icon": [
+        "icons/icon.ico",
+        "icons/icon.png",
+        "icons/icon.icns"
+      ]
+    }
+  }
+}

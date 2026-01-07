@@ -22,6 +22,10 @@
       "web/**"
     ],
     "asar": true,
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
     "directories": {
       "output": "dist"
     }

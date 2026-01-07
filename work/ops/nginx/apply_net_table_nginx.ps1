@@ -77,12 +77,23 @@ function Build-NginxConfig($lines) {
 
   if (-not $firstPort) { $firstPort = 8120 }
 
-  $serverBlock = @'
+$serverBlock = @'
 server {
   listen 80;
   server_name __DOMAIN__;
 
   location /config/ {
+    if ($request_method = OPTIONS) {
+      add_header Access-Control-Allow-Origin "https://tauri.localhost" always;
+      add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+      add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With" always;
+      add_header Access-Control-Max-Age 86400 always;
+      return 204;
+    }
+    add_header Access-Control-Allow-Origin "https://tauri.localhost" always;
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
+    add_header Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With" always;
+    add_header Access-Control-Max-Age 86400 always;
     proxy_pass http://127.0.0.1:__CONFIG_PORT__;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
