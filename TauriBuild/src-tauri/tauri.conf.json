@@ -21,19 +21,29 @@
         "width": 1280,
         "height": 800,
         "decorations": false,
+        "center": true,
         "resizable": true,
         "fullscreen": false
       }
     ],
     "bundle": {
       "active": true,
-      "targets": "all",
+      "targets": ["msi", "nsis"],
       "identifier": "com.bkvision.defect",
       "icon": [
         "icons/icon.ico",
         "icons/icon.png",
         "icons/icon.icns"
-      ]
+      ],
+      "windows": {
+        "wix": {
+          "language": "zh-CN"
+        },
+        "nsis": {
+          "languages": ["SimpChinese"],
+          "displayLanguageSelector": false
+        }
+      }
     }
   }
 }
