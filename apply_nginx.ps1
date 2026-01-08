@@ -8,17 +8,10 @@ function Get-RepoRoot {
   return (Resolve-Path $PSScriptRoot).Path
 }
 
-function Get-HostName {
-  return [System.Net.Dns]::GetHostName()
-}
-
 function Get-MapJsonPath($repoRoot) {
-  $hostName = Get-HostName
-  $dataPath = Join-Path $repoRoot "Web-Defect-Detection-System\\configs\\net_tabel\\DATA\\$hostName\\map.json"
-  if (Test-Path $dataPath) { return $dataPath }
-  $defaultPath = Join-Path $repoRoot "Web-Defect-Detection-System\\configs\\net_tabel\\DEFAULT\\map.json"
-  if (Test-Path $defaultPath) { return $defaultPath }
-  throw "map.json not found in DATA/$hostName or DEFAULT."
+  $currentPath = Join-Path $repoRoot "Web-Defect-Detection-System\\configs\\current\\nginx.conf"
+  if (Test-Path $currentPath) { return $currentPath }
+  throw "nginx.conf not found in configs/current. Run update_nginx.cmd first."
 }
 
 function Write-TextNoBom($path, $content) {
@@ -27,12 +20,7 @@ function Write-TextNoBom($path, $content) {
 }
 
 $repoRoot = Get-RepoRoot
-$mapPath = Get-MapJsonPath -repoRoot $repoRoot
-$mapDir = Split-Path -Parent $mapPath
-$generated = Join-Path $mapDir "nginx.generated.conf"
-if (-not (Test-Path $generated)) {
-  throw "nginx.generated.conf not found at $generated"
-}
+$generated = Get-MapJsonPath -repoRoot $repoRoot
 
 $nginxRoot = Split-Path -Parent $NginxExePath
 if (-not (Test-Path $nginxRoot)) {
