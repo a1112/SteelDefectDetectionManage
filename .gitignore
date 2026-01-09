@@ -20,3 +20,4 @@ node_modules/
 dist/
 build/
 target
+/Web-Defect-Detection-System/configs/TEST_MODEL
