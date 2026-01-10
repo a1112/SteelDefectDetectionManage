@@ -1,1 +1,3 @@
- powershell -ExecutionPolicy Bypass -File apply_nginx.ps1 -NginxExePath plugins\platforms\windows\nginx\nginx.exe
+@echo off
+set "SCRIPT_DIR=%~dp0"
+powershell -ExecutionPolicy Bypass -File "%SCRIPT_DIR%apply_nginx.ps1" -NginxExePath "%SCRIPT_DIR%plugins\platforms\windows\nginx\nginx.exe"
