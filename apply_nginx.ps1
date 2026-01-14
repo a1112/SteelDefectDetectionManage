@@ -11,7 +11,15 @@ function Get-RepoRoot {
 function Get-MapJsonPath($repoRoot) {
   $currentPath = Join-Path $repoRoot "Web-Defect-Detection-System\\configs\\current\\nginx.conf"
   if (Test-Path $currentPath) { return $currentPath }
-  throw "nginx.conf not found in configs/current. Run update_nginx.cmd first."
+
+  $updateScript = Join-Path $repoRoot "update_nginx.cmd"
+  if (Test-Path $updateScript) {
+    Write-Host "nginx.conf not found. Running update_nginx.cmd..."
+    & $updateScript
+  }
+
+  if (Test-Path $currentPath) { return $currentPath }
+  throw "nginx.conf not found in configs/current after update_nginx.cmd."
 }
 
 function Write-TextNoBom($path, $content) {

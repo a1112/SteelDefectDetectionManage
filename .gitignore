@@ -20,3 +20,4 @@ target
 /Web-Defect-Detection-System/configs/TEST_MODEL
 package-lock.json
 /node_modules
+/logs
