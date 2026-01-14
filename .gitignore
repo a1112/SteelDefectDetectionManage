@@ -3,8 +3,6 @@
 /.tmp
 # local nginx config
 plugins/platforms/windows/nginx/conf/nginx.conf
-
-
 # local logs
 *.log
 *.out
@@ -18,6 +16,7 @@ __pycache__/
 .venv/
 node_modules/
 dist/
-build/
 target
 /Web-Defect-Detection-System/configs/TEST_MODEL
+package-lock.json
+/node_modules

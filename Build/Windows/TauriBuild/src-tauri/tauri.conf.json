@@ -1,9 +1,9 @@
 {
   "build": {
     "beforeBuildCommand": "",
-    "beforeDevCommand": "cmd /c npm --prefix J:\\\\SteelDefectDetectionManage\\\\Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 5173",
+    "beforeDevCommand": "npm --prefix ../../../../Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 5173",
     "devPath": "http://localhost:5173",
-    "distDir": "../../Figmaaidefectdetectionsystem/build"
+    "distDir": "../../../../Figmaaidefectdetectionsystem/build"
   },
   "package": {
     "productName": "DefectDetection",
