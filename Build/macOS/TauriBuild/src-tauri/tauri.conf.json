@@ -1,20 +1,15 @@
 {
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "DefectDetection",
+  "version": "0.1.0",
+  "identifier": "com.bkvision.defect",
   "build": {
     "beforeBuildCommand": "",
     "beforeDevCommand": "npm --prefix ../../../../Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 5173",
-    "devPath": "http://localhost:5173",
-    "distDir": "../../../../Figmaaidefectdetectionsystem/build"
+    "devUrl": "http://localhost:5173",
+    "frontendDist": "../../../../Figmaaidefectdetectionsystem/build"
   },
-  "package": {
-    "productName": "DefectDetection",
-    "version": "0.1.0"
-  },
-  "tauri": {
-    "allowlist": {
-      "window": {
-        "all": true
-      }
-    },
+  "app": {
     "windows": [
       {
         "title": "DefectDetection",
@@ -25,19 +20,15 @@
         "resizable": true,
         "fullscreen": false
       }
-    ],
-    "bundle": {
-      "active": true,
-      "targets": [
-        "app",
-        "dmg"
-      ],
-      "identifier": "com.bkvision.defect",
-      "icon": [
-        "icons/icon.ico",
-        "icons/icon.png",
-        "icons/icon.icns"
-      ]
-    }
+    ]
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app", "dmg"],
+    "icon": [
+      "../../../resource/icon/icon.ico",
+      "../../../resource/icon/icon.png",
+      "../../../resource/icon/icon.icns"
+    ]
   }
 }

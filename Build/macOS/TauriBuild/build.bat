@@ -5,7 +5,7 @@ set ROOT=%~dp0
 set ROOT=%ROOT:~0,-1%
 
 echo [1/2] Build frontend (Vite)...
-pushd "%ROOT%\\..\\Figmaaidefectdetectionsystem"
+pushd "%ROOT%\\..\\..\\..\\Figmaaidefectdetectionsystem"
 if not exist node_modules (
   call npm install
   if errorlevel 1 exit /b 1

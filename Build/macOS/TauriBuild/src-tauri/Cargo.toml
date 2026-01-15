@@ -5,11 +5,16 @@ description = "DefectDetection Tauri app"
 authors = ["BKVision"]
 edition = "2021"
 
+[lib]
+name = "defect_tauri"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
 [build-dependencies]
-tauri-build = { version = "1.5", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1.5", features = ["window-all", "devtools"] }
+tauri = { version = "2", features = ["devtools"] }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
