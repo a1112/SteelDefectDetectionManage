@@ -109,10 +109,14 @@ server {
 
   location /config/ {
     proxy_pass http://127.0.0.1:__CONFIG_PORT__;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 3600;
   }
 
   location = /api/health {
@@ -127,10 +131,14 @@ __LOCATIONS__
 
   location / {
     proxy_pass http://127.0.0.1:__FRONTEND_PORT__;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 3600;
   }
 }
 '@
@@ -153,6 +161,11 @@ http {
 
   sendfile        on;
   keepalive_timeout  65;
+
+  map $http_upgrade $connection_upgrade {
+    default upgrade;
+    '' close;
+  }
 
 __SERVER__
 }
