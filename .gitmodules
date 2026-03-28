@@ -1,7 +1,3 @@
-[submodule "Figmaaidefectdetectionsystem"]
-	path = Figmaaidefectdetectionsystem
-	url = https://github.com/a1112/Figmaaidefectdetectionsystem
-	branch = main
 [submodule "Web-Defect-Detection-System"]
 	path = Web-Defect-Detection-System
 	url = https://github.com/a1112/Web-Defect-Detection-System
