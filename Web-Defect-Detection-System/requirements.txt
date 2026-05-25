@@ -1,0 +1,14 @@
+sqlalchemy
+pymssql
+pymysql
+pypattyrn
+cryptography
+fastapi
+Pillow
+requests
+uvicorn
+casbin
+casbin_sqlalchemy_adapter
+psutil
+colorlog
+websocket-client

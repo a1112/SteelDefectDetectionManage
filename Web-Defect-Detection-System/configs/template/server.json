@@ -1,0 +1,55 @@
+{
+  "database": {
+    "drive": "mysql",
+    "host": "{ip}",
+    "port": 3306,
+    "user": "root",
+    "password": "nercar",
+    "charset": "utf8",
+    "database_type": "ncdplate",
+    "management_database": "DefectDetectionDatabBase"
+  },
+  "images": {
+    "top_root": "\\\\{ip}\\imgsrc1",
+    "bottom_root": "\\\\{ip}\\imgsrc2",
+    "disk_cache_top_root": "\\\\{ip}\\imgsrc1",
+    "disk_cache_bottom_root": "\\\\{ip}\\imgsrc2",
+    "default_view": "2D",
+    "file_extension": "jpg",
+    "auto_size": true,
+    "frame_width": 16384,
+    "frame_height": 1024,
+    "mode": "L"
+  },
+  "memory_cache": {
+    "max_frames": 64,
+    "max_tiles": 256,
+    "max_mosaics": 8,
+    "max_defect_crops": 256,
+    "ttl_seconds": 120
+  },
+  "disk_cache": {
+    "defect_cache_enabled": true,
+    "defect_cache_expand": 100,
+    "disk_cache_enabled": true,
+    "disk_cache_max_records": 20000,
+    "disk_cache_scan_interval_seconds": 5,
+    "disk_cache_cleanup_interval_seconds": 60,
+    "disk_precache_enabled": true,
+    "disk_precache_levels": 4,
+    "disk_precache_workers": 2
+  },
+  "log": {
+    "root_dir": "logs/api_log",
+    "path_template": "{root}/{line_key}/{view}/{server_name}",
+    "server_name": "api",
+    "level": "INFO",
+    "format": "%(asctime)s %(levelname)s %(processName)s %(name)s: %(message)s",
+    "rotation_when": "midnight",
+    "backup_count": 30,
+    "modules": {
+      "cache_generate": true
+    }
+  },
+  "config_center_url": "http://127.0.0.1:8119"
+}

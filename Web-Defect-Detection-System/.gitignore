@@ -1,0 +1,16 @@
+/logs/
+/.idea/
+/link_project/bkjc_database/bkjc_database.egg-info/
+/link_project/bkjc_database/build/
+/app/ui/DefectWebUi/build/
+/app/ui/DefectWebUi/.qtcreator/
+/link_project/Figmaaidefectdetectionsystem/build/
+/link_project/Figmaaidefectdetectionsystem/node_modules/
+/link_project/Figmaaidefectdetectionsystem/.idea/
+/.link_project/Figmaaidefectdetectionsystem/node_modules/
+/logs
+/node_modules/
+/configs/current/
+*.log
+/error_log
+/.venv

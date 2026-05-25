@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "connection_mode": "production",
+    "api_base_url": "http://127.0.0.1:8120/api",
+    "service_name": "Defect Detection"
+  },
+  "log": {
+    "root_dir": "logs/config_center_log",
+    "config_center_root_dir": "logs/config_center_log",
+    "path_template": "{root}/{line_key}/{view}/{server_name}",
+    "server_name": "api",
+    "config_center_name": "config_center",
+    "modules": {
+      "image_service": true,
+      "disk_image_cache": true,
+      "cache_generate": true
+    }
+  },
+  "views": {
+    "2D": {
+      "frame_width": 16384,
+      "frame_height": 1024,
+      "auto_size": true
+    }
+  },
+  "lines": [
+    { "name": "本地测试数据",
+      "key": "test","mode": "direct", "ip": "127.0.0.1", "port": 8120 }
+  ]
+}
