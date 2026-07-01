@@ -10,9 +10,52 @@ CONFIG_DIR = Path(__file__).resolve().parents[3] / "configs"
 TEMPLATE_DIR = CONFIG_DIR / "template"
 CURRENT_DIR = CONFIG_DIR / "current"
 DEFAULT_DEFECT_CLASS = CURRENT_DIR / "DefectClass.json"
+AUTO_DEFECT_CLASS_PATHS = (
+    Path(r"D:\OnlineDetect\DefectClass.json"),
+    Path(r"C:\OnlineDetect\DefectClass.json"),
+)
 
 
-def _resolve_defect_class_file() -> Path:
+def _candidate_from_env(name: str) -> Path | None:
+    value = os.getenv(name)
+    if not value:
+        return None
+    path = Path(value)
+    if path.name.lower() == "defectclass.json":
+        return path
+    return path / "DefectClass.json"
+
+
+def _iter_defect_class_candidates() -> list[Path]:
+    candidates: list[Path] = []
+    env_path = os.getenv("DEFECT_CLASS_PATH")
+    if env_path:
+        candidates.append(Path(env_path))
+
+    for env_name in ("ONLINE_DETECT_DIR", "ONLINEDETECT_ROOT", "DEFECT_CONFIG_DIR"):
+        env_candidate = _candidate_from_env(env_name)
+        if env_candidate:
+            candidates.append(env_candidate)
+
+    line_key = os.getenv("DEFECT_LINE_KEY") or os.getenv("DEFECT_LINE_NAME")
+    if line_key:
+        candidates.append(CURRENT_DIR / "generated" / line_key / "DefectClass.json")
+
+    candidates.extend(AUTO_DEFECT_CLASS_PATHS)
+
+    cwd = Path.cwd()
+    candidates.extend(
+        [
+            cwd / "DefectClass.json",
+            cwd / "OnlineDetect" / "DefectClass.json",
+            cwd.parent / "OnlineDetect" / "DefectClass.json",
+        ]
+    )
+    candidates.append(DEFAULT_DEFECT_CLASS)
+    return candidates
+
+
+def resolve_defect_class_file() -> Path:
     CURRENT_DIR.mkdir(parents=True, exist_ok=True)
     if not DEFAULT_DEFECT_CLASS.exists():
         template_defect = TEMPLATE_DIR / "DefectClass.json"
@@ -21,17 +64,19 @@ def _resolve_defect_class_file() -> Path:
                 template_defect.read_text(encoding="utf-8"),
                 encoding="utf-8",
             )
-    env_path = os.getenv("DEFECT_CLASS_PATH")
-    if env_path:
-        candidate = Path(env_path)
-        if candidate.exists():
-            return candidate
-    line_key = os.getenv("DEFECT_LINE_KEY") or os.getenv("DEFECT_LINE_NAME")
-    if line_key:
-        line_path = CURRENT_DIR / "generated" / line_key / "DefectClass.json"
-        if line_path.exists():
-            return line_path
+    seen: set[Path] = set()
+    for candidate in _iter_defect_class_candidates():
+        normalized = candidate.expanduser()
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        if normalized.exists() and normalized.is_file():
+            return normalized
     return DEFAULT_DEFECT_CLASS
+
+
+def _resolve_defect_class_file() -> Path:
+    return resolve_defect_class_file()
 
 
 def grade_to_level(grade: Optional[int] | None) -> str:

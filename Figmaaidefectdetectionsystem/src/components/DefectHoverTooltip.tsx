@@ -7,6 +7,8 @@ interface HoverDefectInfo {
   type: string;
   surface: Surface;
   imageIndex?: number;
+  field?: number | null;
+  fieldName?: string | null;
   x: number;
   y: number;
   width?: number;
@@ -41,8 +43,9 @@ export function DefectHoverTooltip({
       getDefectImageUrl({
         defectId: defect.id,
         surface: defect.surface,
+        field: defect.field === 0 ? "bright" : defect.field === 1 ? "dark" : "all",
       }),
-    [defect.id, defect.surface],
+    [defect.field, defect.id, defect.surface],
   );
 
   const tooltipStyle = useMemo(() => {
@@ -95,11 +98,11 @@ export function DefectHoverTooltip({
 
   return (
     <div
-      className="fixed z-[200] pointer-events-none"
+      className="fixed z-[1000] pointer-events-none"
       style={{ left: tooltipStyle.left, top: tooltipStyle.top }}
     >
       <div
-        className="bg-black/85 border border-[#30363d] rounded-sm shadow-[0_10px_30px_rgba(0,0,0,0.6)] backdrop-blur-sm overflow-hidden"
+        className="bg-[#05080d] border border-[#3f4b5a] rounded-sm shadow-[0_14px_42px_rgba(0,0,0,0.9)] overflow-hidden"
         style={{ width: cardWidth }}
       >
         <div
@@ -112,13 +115,19 @@ export function DefectHoverTooltip({
             className={`w-full h-full ${imageStretch ? "object-fill" : "object-cover"}`}
           />
         </div>
-        <div className="p-2 text-[10px] text-[#c9d1d9] space-y-1">
+        <div className="p-2 text-[10px] text-[#f0f6fc] space-y-1">
           <div className="text-[11px] font-bold text-[#58a6ff]">
             {defect.type}
           </div>
           <div className="flex items-center gap-2">
             <span className="text-[#8b949e]">表面</span>
             <span>{defect.surface === "top" ? "上表" : "下表"}</span>
+            {defect.fieldName && (
+              <>
+                <span className="text-[#8b949e]">视场</span>
+                <span>{defect.fieldName}</span>
+              </>
+            )}
             {typeof defect.imageIndex === "number" && (
               <>
                 <span className="text-[#8b949e]">图像</span>

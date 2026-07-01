@@ -90,6 +90,8 @@ export type DefectType = (typeof DEFECT_TYPES)[number];
  */
 export type Surface = "top" | "bottom";
 
+export type ImageField = "all" | "bright" | "dark";
+
 /**
  * 严重程度
  */
@@ -99,6 +101,7 @@ export type Severity = "low" | "medium" | "high";
  * 按表面统计的图像元信息
  */
 export interface SurfaceImageInfo {
+  max_level?: number;
   surface: Surface;
   frame_count: number; // 该表面可用帧数量
   image_width: number; // 单帧宽度（像素）
@@ -267,6 +270,20 @@ export interface HealthResponse {
 /**
  * 将后端钢板数据转换为前端格式
  */
+export interface SurfaceImageInfo {
+  field?: ImageField | string | null;
+}
+
+export interface DefectItemRaw {
+  field?: number | null;
+  field_name?: string | null;
+}
+
+export interface DefectItem {
+  field?: number | null;
+  fieldName?: string | null;
+}
+
 export function mapSteelItem(raw: SteelItemRaw): SteelItem {
   return {
     serialNumber: raw.seq_no.toString(),
@@ -298,6 +315,8 @@ export function mapDefectItem(raw: DefectItemRaw): DefectItem {
     confidence: raw.confidence,
     surface: raw.surface,
     imageIndex: raw.image_index,
+    field: raw.field,
+    fieldName: raw.field_name ?? undefined,
     xMm: raw.x_mm,
     yMm: raw.y_mm,
     widthMm: raw.width_mm,

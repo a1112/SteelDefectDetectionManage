@@ -5,11 +5,15 @@ import type {
   Defect,
   SteelPlate,
   ImageOrientation,
+  ImageField,
 } from "../types/app.types";
 import type { SurfaceImageInfo } from "../api/types";
 import { getTileImageUrl } from "../api/client";
 import { LargeImageViewer } from "./LargeImageViewer/LargeImageViewer";
-import type { Tile } from "./LargeImageViewer/utils";
+import {
+  computeCompressedTileMaxLevel,
+  type Tile,
+} from "./LargeImageViewer/utils";
 import {
   buildOrientationLayout,
   pickSurfaceForTile,
@@ -18,9 +22,11 @@ import {
   type SurfaceLayout,
 } from "../utils/imageOrientation";
 import { drawTileImage, tryDrawFallbackTile } from "../utils/tileFallback";
+import { cancelPendingTileImageLoads, queueTileImageLoad } from "../utils/tileImageLoader";
 
 const tileImageCache = new Map<string, HTMLImageElement>();
 const tileImageLoading = new Set<string>();
+const TILE_LOAD_SCOPE = "DefectImageView";
 const PAN_MARGIN = 200;
 const SURFACE_GAP = 32;
 
@@ -47,6 +53,7 @@ interface DefectImageViewProps {
   imageOrientation: ImageOrientation;
   defaultTileSize: number;
   maxTileLevel: number;
+  activeImageField?: ImageField;
 }
 
 interface WorldDefectRect {
@@ -71,6 +78,7 @@ export function DefectImageView({
   imageOrientation,
   defaultTileSize,
   maxTileLevel,
+  activeImageField = "all",
 }: DefectImageViewProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
@@ -87,6 +95,12 @@ export function DefectImageView({
     return Number.isNaN(parsed) ? null : parsed;
   }, [selectedPlate]);
 
+  useEffect(() => {
+    return () => {
+      cancelPendingTileImageLoads((task) => task.scope === TILE_LOAD_SCOPE);
+    };
+  }, [seqNo, viewerSurface, imageOrientation, activeImageField]);
+
   const topMeta = surfaceImageInfo?.find((info) => info.surface === "top");
   const bottomMeta = surfaceImageInfo?.find(
     (info) => info.surface === "bottom",
@@ -99,6 +113,16 @@ export function DefectImageView({
       512,
     );
   }, [topMeta, bottomMeta, defaultTileSize]);
+  const adaptiveMaxTileLevel = useMemo(
+    () =>
+      Math.max(
+        maxTileLevel,
+        computeCompressedTileMaxLevel(viewerTileSize),
+        topMeta?.max_level ?? 0,
+        bottomMeta?.max_level ?? 0,
+      ),
+    [bottomMeta, maxTileLevel, topMeta, viewerTileSize],
+  );
   const layout = useMemo(() => {
     const surfaceGap = SURFACE_GAP;
     return buildOrientationLayout({
@@ -246,12 +270,15 @@ export function DefectImageView({
       h: Math.ceil(selectedDefect.height + padding * 2).toString(),
       fmt: "JPEG",
     });
+    if (activeImageField !== "all") {
+      params.set("field", activeImageField);
+    }
     params.set("scale", env.getImageScale().toString());
     const url = `${baseUrl}/images/crop?${params.toString()}`;
     setIsLoadingImage(true);
     setImageError(null);
     setImageUrl(url);
-  }, [imageViewMode, selectedDefect, seqNo]);
+  }, [activeImageField, imageViewMode, selectedDefect, seqNo]);
 
   const renderTile = useCallback(
     (ctx: CanvasRenderingContext2D, tile: Tile, tileSizeArg: number, scale: number) => {
@@ -284,7 +311,7 @@ export function DefectImageView({
       }
 
       const imageScale = env.getImageScale();
-      const cacheKey = `${imageOrientation}-${surfaceLayout.surface}-${seqNo}-${tile.level}-${requestInfo.tileX}-${requestInfo.tileY}-${tileSizeArg}-s${imageScale}`;
+      const cacheKey = `${imageOrientation}-${activeImageField}-${surfaceLayout.surface}-${seqNo}-${tile.level}-${requestInfo.tileX}-${requestInfo.tileY}-${tileSizeArg}-s${imageScale}`;
       const cached = tileImageCache.get(cacheKey);
       const url = getTileImageUrl({
         surface: surfaceLayout.surface,
@@ -294,6 +321,8 @@ export function DefectImageView({
         tileY: requestInfo.tileY,
         tileSize: tileSizeArg,
         fmt: "JPEG",
+        field: activeImageField,
+        orientation: imageOrientation,
       });
 
       // 首先尝试用低层级的瓦片撑场面
@@ -302,13 +331,13 @@ export function DefectImageView({
         tile,
         orientation: imageOrientation,
         cache: tileImageCache,
-        cacheKeyPrefix: imageOrientation,
+        cacheKeyPrefix: `${imageOrientation}-${activeImageField}`,
         surface: surfaceLayout.surface,
         seqNo,
         tileX: requestInfo.tileX,
         tileY: requestInfo.tileY,
         tileSize: tileSizeArg,
-        maxLevel: maxTileLevel,
+        maxLevel: adaptiveMaxTileLevel,
         imageScale,
         useTransparentBackground: false,
       });
@@ -322,21 +351,55 @@ export function DefectImageView({
           orientation: imageOrientation,
         });
       } else {
+        /*
         // 当前层级瓦片未加载，开始加载
-        if (!tileImageLoading.has(cacheKey)) {
-          tileImageLoading.add(cacheKey);
-          const img = new Image();
-          img.src = url;
-          img.onload = () => {
-            tileImageCache.set(cacheKey, img);
-            tileImageLoading.delete(cacheKey);
-          };
-          img.onerror = () => {
-            tileImageLoading.delete(cacheKey);
-          };
-        }
+        queueTileImageLoad({
+        queueTileImageLoad({
+          cacheKey,
+          url,
+          cache: tileImageCache,
+          loading: tileImageLoading,
+          scope: TILE_LOAD_SCOPE,
+          priority: "high",
+        });
 
         // 如果没有 fallback 可用，显示占位符
+        */
+        queueTileImageLoad({
+          cacheKey,
+          url,
+          cache: tileImageCache,
+          loading: tileImageLoading,
+          scope: TILE_LOAD_SCOPE,
+          priority: "high",
+        });
+        if (tile.level < adaptiveMaxTileLevel) {
+          const delta = adaptiveMaxTileLevel - tile.level;
+          const factor = 2 ** delta;
+          const fallbackTileX = Math.floor(requestInfo.tileX / factor);
+          const fallbackTileY = Math.floor(requestInfo.tileY / factor);
+          const fallbackCacheKey = `${imageOrientation}-${activeImageField}-${surfaceLayout.surface}-${seqNo}-${adaptiveMaxTileLevel}-${fallbackTileX}-${fallbackTileY}-${tileSizeArg}-s${imageScale}`;
+          const fallbackUrl = getTileImageUrl({
+            surface: surfaceLayout.surface,
+            seqNo,
+            level: adaptiveMaxTileLevel,
+            tileX: fallbackTileX,
+            tileY: fallbackTileY,
+            tileSize: tileSizeArg,
+            fmt: "JPEG",
+            field: activeImageField,
+            orientation: imageOrientation,
+          });
+          queueTileImageLoad({
+            cacheKey: fallbackCacheKey,
+            url: fallbackUrl,
+            cache: tileImageCache,
+            loading: tileImageLoading,
+            scope: TILE_LOAD_SCOPE,
+            priority: "high",
+          });
+        }
+
         if (!drewFallback) {
           ctx.fillStyle = "#e2e8f0";
           ctx.fillRect(tile.x, tile.y, tile.width, tile.height);
@@ -390,7 +453,16 @@ export function DefectImageView({
         }
       });
     },
-    [layout, seqNo, imageOrientation, worldDefectRects, selectedDefectId, selectedDefectSurface],
+    [
+      activeImageField,
+      imageOrientation,
+      layout,
+      maxTileLevel,
+      selectedDefectId,
+      selectedDefectSurface,
+      seqNo,
+      worldDefectRects,
+    ],
   );
 
   const renderOverlay = useCallback(
@@ -550,9 +622,11 @@ export function DefectImageView({
       imageWidth={layout.worldWidth}
       imageHeight={layout.worldHeight}
       tileSize={viewerTileSize}
+      tileOrientation={imageOrientation}
+      preheatSurface={viewerSurface}
       className="bg-slate-900/80"
-      initialScale={1}
-      maxLevel={maxTileLevel}
+      initialScale="fit"
+      maxLevel={adaptiveMaxTileLevel}
       prefetchMargin={400}
       renderTile={renderTile}
       renderOverlay={renderOverlay}
@@ -566,7 +640,7 @@ export function DefectImageView({
       }}
       cursor={cursor}
       panMargin={PAN_MARGIN}
-      fitToHeight={imageOrientation === "vertical"}
+      fitToHeight={imageOrientation === "horizontal"}
     />
   );
 }

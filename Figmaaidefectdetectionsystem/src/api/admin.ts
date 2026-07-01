@@ -1061,7 +1061,8 @@ export async function getCacheConfig(): Promise<CacheConfig> {
         },
         disk_cache: {
           disk_cache_enabled: true,
-          disk_cache_max_records: 20000,
+          disk_cache_max_records: 200,
+          disk_precache_window_records: 200,
           defect_cache_enabled: true,
           defect_cache_expand: 100,
         },

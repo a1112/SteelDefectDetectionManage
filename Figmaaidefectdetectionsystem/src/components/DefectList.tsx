@@ -1,4 +1,4 @@
-import { AlertTriangle, Circle, Target } from "lucide-react";
+import { Target } from "lucide-react";
 import { useCallback, memo } from "react";
 import type { Defect } from "../types/app.types";
 import { useNewItemKeys } from "../hooks/useNewItems";
@@ -64,14 +64,13 @@ export function DefectList({
           <div className="flex flex-col items-center justify-center py-4 border-b border-border/30">
             <Target className="w-8 h-8 mb-2 opacity-20" />
             <p className="text-xs">NO DEFECTS DETECTED</p>
-            <p className="text-[10px] mt-1 opacity-50">
-              SHOWING SAMPLE DATA
+            <p className="hidden">
             </p>
           </div>
 
           {/* 模拟示例数据 */}
-          <div className="p-2 space-y-1">
-              {[
+          <div className="hidden">
+              {false && [
                 {
                 id: "sample-1",
                 type: "纵向裂纹",
@@ -152,7 +151,7 @@ export function DefectList({
               (selectedDefectSurface ? selectedDefectSurface === defect.surface : true);
             return (
             <div
-              key={`${defect.surface}-${defect.id}-${index}`}
+              key={`${defect.surface}-${defect.field ?? "all"}-${defect.id}-${index}`}
               onClick={() => {
                 onDefectSelectDetail?.(defect);
                 onDefectSelect?.(defect.id);
@@ -191,6 +190,11 @@ export function DefectList({
               >
                 {defect.surface === "top" ? "TOP" : "BOTTOM"}
               </span>
+              {defect.fieldName && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded border border-cyan-400/40 text-cyan-300 bg-cyan-500/10 whitespace-nowrap">
+                  {defect.fieldName}
+                </span>
+              )}
               <span
                 className={`px-1.5 py-0.5 text-[10px] uppercase border ${getSeverityColor(defect.severity)}`}
               >

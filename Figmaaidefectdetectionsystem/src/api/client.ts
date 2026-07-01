@@ -87,6 +87,7 @@ import type {
   HealthResponse,
   SteelItem,
   DefectItem,
+  ImageField,
   Surface,
   SteelMetaResponse,
   ApiListResponse,
@@ -263,8 +264,9 @@ export async function searchSteels(
  */
 export async function getDefects(
   seqNo: number,
+  field: ImageField = "all",
 ): Promise<DefectItem[]> {
-  const data = await getDefectsRaw(seqNo);
+  const data = await getDefectsRaw(seqNo, field);
   return data.defects.map(mapDefect);
 }
 
@@ -275,6 +277,7 @@ export async function getDefects(
  */
 export async function getDefectsRaw(
   seqNo: number,
+  field: ImageField = "all",
 ): Promise<DefectResponse> {
   // 开发模式：使用 Mock 数据
   if (env.isDevelopment()) {
@@ -283,7 +286,7 @@ export async function getDefectsRaw(
   }
 
   // 生成缓存键
-  const cacheKey = generateCacheKey("defects", { seqNo });
+  const cacheKey = generateCacheKey("defects", { seqNo, field });
 
   // 尝试从缓存获取
   const cached = getFromCache<DefectResponse>(cacheKey);
@@ -297,7 +300,12 @@ export async function getDefectsRaw(
     // 生产模式：调用真实 API
     try {
       const baseUrl = env.getApiBaseUrl();
-      const url = `${baseUrl}/defects/${seqNo}`;
+      const search = new URLSearchParams();
+      if (field !== "all") {
+        search.set("field", field);
+      }
+      const query = search.toString();
+      const url = `${baseUrl}/defects/${seqNo}${query ? `?${query}` : ""}`;
       console.log(`🌐 [生产模式] 请求缺陷数据: ${url}`);
 
       const response = await fetch(url);
@@ -362,6 +370,7 @@ export async function getFrameImage(
   surface: Surface,
   seqNo: number,
   imageIndex: number,
+  field: ImageField = "all",
 ): Promise<string> {
   // 开发模式：使用 Mock 图像
   if (env.isDevelopment()) {
@@ -380,6 +389,9 @@ export async function getFrameImage(
     image_index: imageIndex.toString(),
     scale: env.getImageScale().toString(),
   });
+  if (field !== "all") {
+    search.set("field", field);
+  }
   return `${baseUrl}/images/frame?${search.toString()}`;
 }
 
@@ -394,6 +406,7 @@ export function getDefectImageUrl(params: {
   expand?: number;
   width?: number;
   height?: number;
+  field?: ImageField;
   fmt?: string;
 }): string {
   const {
@@ -402,6 +415,7 @@ export function getDefectImageUrl(params: {
     expand,
     width,
     height,
+    field = "all",
     fmt = "JPEG",
   } = params;
 
@@ -428,6 +442,9 @@ export function getDefectImageUrl(params: {
   if (fmt) {
     search.set("fmt", fmt);
   }
+  if (field !== "all") {
+    search.set("field", field);
+  }
   search.set("scale", env.getImageScale().toString());
 
   search.set("defect_id", String(defectId));
@@ -440,6 +457,7 @@ export function getDefectImageUrl(params: {
  */
 export async function getSteelMeta(
   seqNo: number,
+  field: ImageField = "all",
 ): Promise<SteelMetaResponse> {
   // 开发模式：使用 mock 缺陷接口中的 surface_images 生成占位元信息
   if (env.isDevelopment()) {
@@ -451,7 +469,12 @@ export async function getSteelMeta(
   }
 
   const baseUrl = env.getApiBaseUrl();
-  const url = `${baseUrl}/steel-meta/${seqNo}`;
+  const search = new URLSearchParams();
+  if (field !== "all") {
+    search.set("field", field);
+  }
+  const query = search.toString();
+  const url = `${baseUrl}/steel-meta/${seqNo}${query ? `?${query}` : ""}`;
   console.log(`🌐 [生产模式] 请求钢板图像元信息: ${url}`);
 
   try {
@@ -493,6 +516,7 @@ export function getTileImageUrl(params: {
   tileSize?: number;
   fmt?: string;
   view?: string;
+  field?: ImageField;
   orientation?: "horizontal" | "vertical";
   prefetch?: {
     mode: "defect";
@@ -509,6 +533,7 @@ export function getTileImageUrl(params: {
     tileY,
     fmt = "JPEG",
     view,
+    field = "all",
     orientation,
     prefetch,
   } = params;
@@ -534,6 +559,9 @@ export function getTileImageUrl(params: {
   });
   if (view) {
     search.set("view", view);
+  }
+  if (field !== "all") {
+    search.set("field", field);
   }
   if (typeof tileSize === "number") {
     search.set("tile_size", tileSize.toString());
@@ -566,9 +594,23 @@ export async function preheatTiles(params: {
     tileSize?: number;
   }>;
   view?: string;
+  field?: ImageField;
+  orientation?: "horizontal" | "vertical";
   priority?: 'low' | 'normal' | 'high';
 }): Promise<{ success: boolean; preheated: number; message: string }> {
-  const { surface, seqNo, tiles, view, priority = 'normal' } = params;
+  const { surface, seqNo, tiles, view, field = "all", orientation, priority = 'normal' } = params;
+  const payloadTiles = tiles
+    .filter((tile) => tile.level >= 0 && tile.tileX >= 0 && tile.tileY >= 0)
+    .map((tile) => ({
+      level: tile.level,
+      tile_x: tile.tileX,
+      tile_y: tile.tileY,
+      tile_size: tile.tileSize,
+    }));
+
+  if (payloadTiles.length === 0) {
+    return { success: true, preheated: 0, message: "No valid tiles to preheat" };
+  }
   
   const baseUrl = env.getApiBaseUrl();
   const response = await fetch(`${baseUrl}/images/tile/preheat`, {
@@ -579,8 +621,10 @@ export async function preheatTiles(params: {
     body: JSON.stringify({
       surface,
       seq_no: seqNo,
-      tiles,
+      tiles: payloadTiles,
       view,
+      field: field === "all" ? undefined : field,
+      orientation,
       priority,
     }),
   });
@@ -605,6 +649,8 @@ export async function preheatAdjacentTiles(params: {
     tileSize?: number;
   }>;
   view?: string;
+  orientation?: "horizontal" | "vertical";
+  maxLevel?: number;
   radius?: number; // 预热半径（瓦片数量）
   includeCrossLevel?: boolean; // 是否包含跨级别预热
 }): Promise<{ success: boolean; preheated: number; message: string }> {
@@ -613,9 +659,12 @@ export async function preheatAdjacentTiles(params: {
     seqNo, 
     currentTiles, 
     view, 
+    orientation,
+    maxLevel,
     radius = 2, 
     includeCrossLevel = true 
   } = params;
+  const upperLevel = typeof maxLevel === "number" ? Math.max(0, Math.floor(maxLevel)) : undefined;
   
   const tilesToPreheat: Array<{
     level: number;
@@ -627,6 +676,7 @@ export async function preheatAdjacentTiles(params: {
   // 为每个当前瓦片添加相邻瓦片
   for (const tile of currentTiles) {
     const { level, tileX, tileY, tileSize } = tile;
+    if (upperLevel !== undefined && level > upperLevel) continue;
     
     // 添加同级别的相邻瓦片
     for (let dx = -radius; dx <= radius; dx++) {
@@ -634,6 +684,7 @@ export async function preheatAdjacentTiles(params: {
         // 跳过当前瓦片本身
         if (dx === 0 && dy === 0) continue;
         
+        if (tileX + dx < 0 || tileY + dy < 0) continue;
         tilesToPreheat.push({
           level,
           tileX: tileX + dx,
@@ -647,7 +698,7 @@ export async function preheatAdjacentTiles(params: {
     if (includeCrossLevel) {
       // 上级别和下级别的对应瓦片
       for (const adjLevel of [level - 1, level + 1]) {
-        if (adjLevel >= 0) {
+        if (adjLevel >= 0 && (upperLevel === undefined || adjLevel <= upperLevel)) {
           // 跨级别时的坐标调整
           const factor = Math.pow(2, adjLevel - level);
           tilesToPreheat.push({
@@ -676,6 +727,7 @@ export async function preheatAdjacentTiles(params: {
     seqNo,
     tiles: uniqueTiles,
     view,
+    orientation,
     priority: 'normal',
   });
 }
@@ -809,9 +861,6 @@ export function getApiStatus(): {
  * 获取可用产线/节点列表
  */
 export async function getApiList(): Promise<ApiNode[]> {
-  if (env.isDevelopment()) {
-    return mock.mockGetApiList();
-  }
   const configBase = env.getConfigBaseUrl();
   const url = configBase ? `${configBase}/config/api_list` : "/config/api_list";
   
@@ -832,6 +881,9 @@ export async function getApiList(): Promise<ApiNode[]> {
     return data.items ?? [];
   } catch (error) {
     console.warn("⚠️ getApiList failed:", error);
+    if (env.isDevelopment()) {
+      return mock.mockGetApiList();
+    }
     return []; // Return empty list instead of crashing
   }
 }

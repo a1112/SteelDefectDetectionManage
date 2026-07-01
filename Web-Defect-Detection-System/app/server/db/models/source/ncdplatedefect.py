@@ -35,6 +35,7 @@ class Camdefect1(Base):
     leftToEdge = Column(Integer, comment="缺陷到左边缘的距离（像素）")
     rightToEdge = Column(Integer, comment="缺陷到右边缘的距离（像素）")
     cycle = Column(Integer, server_default=text("'0'"), comment="机组周期/机架信息")
+    field = Column(Integer, comment="0=bright field, 1=dark field")
 
 
 class Camdefect2(Base):
@@ -65,6 +66,7 @@ class Camdefect2(Base):
     leftToEdge = Column(Integer, comment="缺陷到左边缘的距离（像素）")
     rightToEdge = Column(Integer, comment="缺陷到右边缘的距离（像素）")
     cycle = Column(Integer, server_default=text("'0'"), comment="机组周期/机架信息")
+    field = Column(Integer, comment="0=bright field, 1=dark field")
 
 
 class Camdefectsum1(Base):

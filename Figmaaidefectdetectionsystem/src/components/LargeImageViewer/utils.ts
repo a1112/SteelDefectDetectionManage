@@ -2,6 +2,9 @@ export type Point = { x: number; y: number };
 export type Size = { width: number; height: number };
 export type Rect = { x: number; y: number; width: number; height: number };
 
+export const MAX_TILE_LEVEL = 16;
+export const MIN_COMPRESSED_TILE_SIZE = 128;
+
 export interface Tile {
   level: number;
   row: number;
@@ -14,6 +17,33 @@ export interface Tile {
 
 export const clamp = (val: number, min: number, max: number) => Math.min(Math.max(val, min), max);
 
+export const computeCompressedTileMaxLevel = (
+  tileSize: number,
+  minCompressedSize = MIN_COMPRESSED_TILE_SIZE,
+): number => {
+  const safeTileSize = Math.max(1, tileSize || 0);
+  const safeMinSize = Math.max(1, minCompressedSize || MIN_COMPRESSED_TILE_SIZE);
+  if (safeTileSize <= safeMinSize) {
+    return 0;
+  }
+  return Math.min(
+    MAX_TILE_LEVEL,
+    Math.max(0, Math.floor(Math.log2(safeTileSize / safeMinSize))),
+  );
+};
+
+export const computeTileLevelForScale = (
+  scale: number,
+  maxLevel: number,
+): number => {
+  const safeScale = Math.max(scale || 0, 1e-6);
+  const rawLevel = Math.log2(1 / safeScale);
+  if (!Number.isFinite(rawLevel) || rawLevel <= 0) {
+    return 0;
+  }
+  return clamp(Math.floor(rawLevel), 0, Math.max(0, Math.floor(maxLevel)));
+};
+
 export const getVisibleTiles = (
   viewRect: Rect,
   tileSize: number,
@@ -22,10 +52,7 @@ export const getVisibleTiles = (
   forcedLevel?: number,
   maxLevelOverride?: number,
 ): Tile[] => {
-  const computedMaxLevel = Math.max(
-    0,
-    Math.ceil(Math.log2(Math.max(1, imageSize.width / tileSize))),
-  );
+  const computedMaxLevel = computeCompressedTileMaxLevel(tileSize);
   const maxLevel =
     typeof maxLevelOverride === 'number'
       ? Math.max(0, Math.floor(maxLevelOverride))
@@ -34,13 +61,7 @@ export const getVisibleTiles = (
   if (typeof forcedLevel === 'number') {
     level = Math.min(Math.max(forcedLevel, 0), maxLevel);
   } else {
-    level = Math.floor(Math.log2(1 / currentScale));
-    if (level < 0) {
-      level = 0;
-    }
-    if (level > maxLevel) {
-      level = maxLevel;
-    }
+    level = computeTileLevelForScale(currentScale, maxLevel);
   }
 
   const virtualTileSize = tileSize * Math.pow(2, level);

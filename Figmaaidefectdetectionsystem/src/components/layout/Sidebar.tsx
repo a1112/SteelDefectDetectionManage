@@ -1,8 +1,15 @@
+import { useEffect, useMemo, useState } from 'react';
 import { Search, Filter, RotateCcw } from 'lucide-react';
 import type { SteelPlate } from '../../types/app.types';
 import type { SearchCriteria, FilterCriteria } from '../SearchDialog';
 import { getLevelText } from '../../utils/steelPlates';
 import { useNewItemKeys } from '../../hooks/useNewItems';
+import {
+  getCacheStatus,
+  listCacheRecords,
+  type CacheRecordItem,
+  type CacheStatus,
+} from '../../api/cache';
 
 interface SidebarProps {
   isCollapsed: boolean;
@@ -26,6 +33,116 @@ interface SidebarProps {
   onPlateHoverEnd?: () => void;
 }
 
+type PlateCacheBadge = {
+  label: string;
+  className: string;
+  title: string;
+};
+
+const parseSeqNo = (value: string | number): number | null => {
+  const seqNo = Number(value);
+  return Number.isFinite(seqNo) ? seqNo : null;
+};
+
+const getRunningCacheSeqNo = (status: CacheStatus | null): number | null => {
+  const seqNo = Number(status?.seq_no ?? status?.task?.current_seq);
+  return Number.isFinite(seqNo) ? seqNo : null;
+};
+
+const resolveCacheBadge = (
+  plate: SteelPlate,
+  cacheRecord: CacheRecordItem | undefined,
+  cacheRangeMin: number | null,
+  cacheStatus: CacheStatus | null,
+  isLoading: boolean,
+): PlateCacheBadge => {
+  const seqNo = parseSeqNo(plate.serialNumber);
+  const runningSeqNo = getRunningCacheSeqNo(cacheStatus);
+  const surfaces = cacheRecord?.surfaces ?? [];
+  const missingCount = surfaces.filter((surface) => surface.image_missing).length;
+  const staleCount = surfaces.filter((surface) => surface.stale).length;
+  const cachedCount = surfaces.filter((surface) => surface.cached).length;
+  const cacheRecordIsReady =
+    Boolean(cacheRecord) &&
+    missingCount === 0 &&
+    staleCount === 0 &&
+    (cacheRecord?.status === "complete" || cachedCount >= 2);
+  if (
+    seqNo !== null &&
+    runningSeqNo === seqNo &&
+    cacheStatus?.state &&
+    cacheStatus.state !== "ready" &&
+    !cacheRecordIsReady
+  ) {
+    return {
+      label: "缓存中",
+      className: "border-blue-400/50 bg-blue-500/15 text-blue-300",
+      title: cacheStatus.message || "后台正在建立缓存",
+    };
+  }
+  if (seqNo !== null && cacheRangeMin !== null && seqNo < cacheRangeMin) {
+    return {
+      label: "范围外",
+      className: "border-slate-500/40 bg-slate-500/10 text-slate-300",
+      title: `超出当前磁盘缓存保留范围，最小流水号 ${cacheRangeMin}`,
+    };
+  }
+  if (!cacheRecord) {
+    return {
+      label: isLoading ? "查询中" : "未扫描",
+      className: isLoading
+        ? "border-blue-400/40 bg-blue-500/10 text-blue-300"
+        : "border-zinc-500/40 bg-zinc-500/10 text-zinc-300",
+      title: isLoading ? "正在读取缓存状态" : "暂未发现该钢卷的缓存记录",
+    };
+  }
+
+  const surfaceText = surfaces
+    .map((surface) => `${surface.surface === "top" ? "上" : "下"}:${surface.cached ? "已" : "无"}${surface.stale ? "/旧" : ""}${surface.image_missing ? "/缺图" : ""}`)
+    .join(" ");
+
+  if (missingCount > 0) {
+    return {
+      label: "缺图",
+      className: "border-red-500/50 bg-red-500/15 text-red-300",
+      title: `缓存状态：图像缺失 ${surfaceText}`,
+    };
+  }
+  if (staleCount > 0) {
+    return {
+      label: "过期",
+      className: "border-yellow-500/50 bg-yellow-500/15 text-yellow-300",
+      title: `缓存参数已变化，需要重建 ${surfaceText}`,
+    };
+  }
+  if (cacheRecord.status === "building" || surfaces.some((surface) => surface.building)) {
+    return {
+      label: "缓存中",
+      className: "border-blue-400/50 bg-blue-500/15 text-blue-300",
+      title: `后台正在建立缓存 ${surfaceText}`,
+    };
+  }
+  if (cacheRecord.status === "complete" || cachedCount >= 2) {
+    return {
+      label: "已缓存",
+      className: "border-emerald-500/50 bg-emerald-500/15 text-emerald-300",
+      title: `上下表缓存完整 ${surfaceText}`,
+    };
+  }
+  if (cacheRecord.status === "partial" || cachedCount === 1) {
+    return {
+      label: "半缓存",
+      className: "border-cyan-500/50 bg-cyan-500/15 text-cyan-300",
+      title: `部分表面已缓存 ${surfaceText}`,
+    };
+  }
+  return {
+    label: "未缓存",
+    className: "border-zinc-500/40 bg-zinc-500/10 text-zinc-300",
+    title: `尚未建立磁盘缓存 ${surfaceText}`,
+  };
+};
+
 export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed,
   filteredSteelPlates,
@@ -44,15 +161,104 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onPlateHover,
   onPlateHoverEnd,
 }) => {
-  if (isCollapsed) return null;
   const newPlateKeys = useNewItemKeys(
     filteredSteelPlates,
     (plate) => plate.serialNumber,
   );
+  const [cacheItems, setCacheItems] = useState<CacheRecordItem[]>([]);
+  const [cacheRangeMin, setCacheRangeMin] = useState<number | null>(null);
+  const [cacheStatus, setCacheStatus] = useState<CacheStatus | null>(null);
+  const [isLoadingCache, setIsLoadingCache] = useState(false);
+
+  const visibleSeqNos = useMemo(
+    () =>
+      filteredSteelPlates
+        .map((plate) => parseSeqNo(plate.serialNumber))
+        .filter((seqNo): seqNo is number => seqNo !== null)
+        .slice(0, 200),
+    [filteredSteelPlates],
+  );
+  const visibleSeqKey = visibleSeqNos.join(",");
+  const cacheRecordMap = useMemo(() => {
+    const map = new Map<number, CacheRecordItem>();
+    cacheItems.forEach((item) => {
+      map.set(item.seq_no, item);
+    });
+    return map;
+  }, [cacheItems]);
+
+  useEffect(() => {
+    if (isCollapsed || visibleSeqNos.length === 0) {
+      setCacheItems([]);
+      setCacheRangeMin(null);
+      setCacheStatus(null);
+      return;
+    }
+
+    let cancelled = false;
+    let loading = false;
+    const loadCacheState = async () => {
+      if (document.visibilityState === "hidden" || loading) {
+        return;
+      }
+      loading = true;
+      setIsLoadingCache(true);
+      try {
+        const pageSize = Math.max(1, Math.min(200, visibleSeqNos.length));
+        const [recordsResult, statusResult] = await Promise.allSettled([
+          listCacheRecords(1, pageSize, visibleSeqNos),
+          getCacheStatus().catch(() => null),
+        ]);
+        if (cancelled) return;
+        if (recordsResult.status === "fulfilled") {
+          setCacheItems(recordsResult.value.items ?? []);
+          setCacheRangeMin(recordsResult.value.cache_range_min ?? null);
+        } else {
+          console.warn("Load plate cache records failed", recordsResult.reason);
+        }
+        if (statusResult.status === "fulfilled") {
+          setCacheStatus(statusResult.value);
+        }
+      } catch (error) {
+        console.warn("Load plate cache state failed", error);
+      } finally {
+        loading = false;
+        if (!cancelled) {
+          setIsLoadingCache(false);
+        }
+      }
+    };
+
+    loadCacheState();
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void loadCacheState();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const timer = window.setInterval(loadCacheState, 10000);
+    return () => {
+      cancelled = true;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.clearInterval(timer);
+    };
+  }, [isCollapsed, visibleSeqKey]);
+
+  if (isCollapsed) return null;
 
   const currentPlate = filteredSteelPlates.find(p => p.serialNumber === selectedPlateId) || 
                        filteredSteelPlates[0] || 
                        steelPlates[0];
+  const currentSeqNo = currentPlate ? parseSeqNo(currentPlate.serialNumber) : null;
+  const currentCacheBadge = currentPlate
+    ? resolveCacheBadge(
+        currentPlate,
+        currentSeqNo !== null ? cacheRecordMap.get(currentSeqNo) : undefined,
+        cacheRangeMin,
+        cacheStatus,
+        isLoadingCache,
+      )
+    : null;
 
   return (
     <div className="flex-1 flex flex-col min-h-0 border-t border-border">
@@ -101,6 +307,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 <span className="text-muted-foreground">缺陷数</span>
                 <span className="font-mono font-bold text-red-400">{currentPlate.defectCount}</span>
               </div>
+              {currentCacheBadge && (
+                <div className="flex justify-between py-0.5 border-t border-border/30">
+                  <span className="text-muted-foreground">缓存</span>
+                  <span
+                    className={`px-1.5 py-0.5 rounded-sm border text-[10px] ${currentCacheBadge.className}`}
+                    title={currentCacheBadge.title}
+                  >
+                    {currentCacheBadge.label}
+                  </span>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -200,7 +417,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </button>
           </div>
         ) : (
-          filteredSteelPlates.map((plate, index) => (
+          filteredSteelPlates.map((plate, index) => {
+            const seqNo = parseSeqNo(plate.serialNumber);
+            const cacheBadge = resolveCacheBadge(
+              plate,
+              seqNo !== null ? cacheRecordMap.get(seqNo) : undefined,
+              cacheRangeMin,
+              cacheStatus,
+              isLoadingCache,
+            );
+            return (
           <div 
             key={`${plate.plateId}-${plate.serialNumber}-${index}`}
             onClick={() => setSelectedPlateId(plate.serialNumber)}
@@ -227,14 +453,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
               <span className="text-[9px] font-mono text-muted-foreground">
                 {plate.serialNumber}
               </span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm border ${
-                plate.level === 'A' ? 'bg-green-500/10 border-green-500/30 text-green-400' :
-                plate.level === 'B' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
-                plate.level === 'C' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400' :
-                'bg-red-500/10 border-red-500/30 text-red-400'
-              }`}>
-                {getLevelText(plate.level)}
-              </span>
+              <div className="flex items-center gap-1">
+                <span
+                  className={`text-[9px] px-1.5 py-0.5 rounded-sm border ${cacheBadge.className}`}
+                  title={cacheBadge.title}
+                >
+                  {cacheBadge.label}
+                </span>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-sm border ${
+                  plate.level === 'A' ? 'bg-green-500/10 border-green-500/30 text-green-400' :
+                  plate.level === 'B' ? 'bg-blue-500/10 border-blue-500/30 text-blue-400' :
+                  plate.level === 'C' ? 'bg-yellow-500/10 border-yellow-500/30 text-yellow-400' :
+                  'bg-red-500/10 border-red-500/30 text-red-400'
+                }`}>
+                  {getLevelText(plate.level)}
+                </span>
+              </div>
             </div>
             <div className="flex items-center justify-between gap-1">
               <span className={`text-xs font-mono font-bold ${selectedPlateId === plate.serialNumber ? 'text-primary-foreground' : ''}`}>
@@ -251,7 +485,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               Defects: {plate.defectCount}
             </div>
           </div>
-          ))
+            );
+          })
         )}
       </div>
       

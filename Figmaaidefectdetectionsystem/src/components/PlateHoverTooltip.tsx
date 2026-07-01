@@ -16,7 +16,7 @@ interface PlateHoverTooltipProps {
     label: string;
     count: number;
     classId?: number | null;
-    items: Array<{ id: string; surface: Surface }>;
+    items: Array<{ id: string; surface: Surface; field?: number | null }>;
   }>;
   maxSummaryItems?: number;
   previewMaxCategories?: number;
@@ -91,12 +91,12 @@ export function PlateHoverTooltip({
 
   return (
     <div
-      className="fixed z-[200] pointer-events-none"
+      className="fixed z-[1000] pointer-events-none"
       style={{ left: tooltipStyle.left, top: tooltipStyle.top }}
     >
       <div className="flex items-start gap-2">
-        <div className="relative w-[260px] bg-popover/95 text-popover-foreground border border-border rounded-sm shadow-lg backdrop-blur-sm overflow-hidden">
-          <div className="px-2 py-1.5 bg-muted/40 border-b border-border">
+        <div className="relative w-[260px] bg-[#05080d] text-[#f0f6fc] border border-[#3f4b5a] rounded-sm shadow-[0_14px_42px_rgba(0,0,0,0.9)] overflow-hidden">
+          <div className="px-2 py-1.5 bg-[#111827] border-b border-[#30363d]">
             <div className="flex items-center justify-between gap-2">
               <span className="text-[11px] font-bold text-primary">
                 {plate.plateId}
@@ -111,7 +111,7 @@ export function PlateHoverTooltip({
               NO.{plate.serialNumber}
             </div>
           </div>
-          <div className="p-2 text-[10px] text-foreground/90 space-y-1">
+          <div className="p-2 text-[10px] text-[#f0f6fc] space-y-1">
             <div className="flex items-center justify-between gap-2">
               <span className="text-muted-foreground">钢种</span>
               <span className="font-mono">{plate.steelGrade}</span>
@@ -146,13 +146,13 @@ export function PlateHoverTooltip({
                     {displaySummary.map((item) => (
                       <span
                         key={item.type}
-                        className="px-1.5 py-0.5 rounded border border-border bg-muted/40 text-foreground/90"
+                        className="px-1.5 py-0.5 rounded border border-[#30363d] bg-[#111827] text-[#e5edf8]"
                       >
                         {item.type} {item.count}
                       </span>
                     ))}
                     {summaryRemaining > 0 && (
-                      <span className="px-1.5 py-0.5 rounded border border-border bg-muted/40 text-muted-foreground">
+                      <span className="px-1.5 py-0.5 rounded border border-[#30363d] bg-[#111827] text-[#a8b3c2]">
                         +{summaryRemaining}
                       </span>
                     )}
@@ -164,14 +164,14 @@ export function PlateHoverTooltip({
             </div>
           </div>
           {!showPreview && (
-            <div className="absolute -right-3 top-1/2 -translate-y-1/2 rounded-full border border-border bg-popover/90 p-1 shadow">
+            <div className="absolute -right-3 top-1/2 -translate-y-1/2 rounded-full border border-[#3f4b5a] bg-[#05080d] p-1 shadow-[0_8px_24px_rgba(0,0,0,0.8)]">
               <ChevronRight className="w-3 h-3 text-muted-foreground" />
             </div>
           )}
         </div>
         {showPreview && (
-          <div className="w-[280px] bg-popover/95 text-popover-foreground border border-border rounded-sm shadow-lg backdrop-blur-sm overflow-hidden">
-            <div className="px-2 py-1.5 bg-muted/40 border-b border-border text-[10px] text-muted-foreground">
+          <div className="w-[280px] bg-[#05080d] text-[#f0f6fc] border border-[#3f4b5a] rounded-sm shadow-[0_14px_42px_rgba(0,0,0,0.9)] overflow-hidden">
+            <div className="px-2 py-1.5 bg-[#111827] border-b border-[#30363d] text-[10px] text-[#a8b3c2]">
               缺陷小图
             </div>
             <div className="p-2 text-[10px] space-y-2">
@@ -193,9 +193,10 @@ export function PlateHoverTooltip({
                           src={getDefectImageUrl({
                             defectId: item.id,
                             surface: item.surface,
+                            field: item.field === 0 ? "bright" : item.field === 1 ? "dark" : "all",
                           })}
                           alt={group.label}
-                          className="rounded border border-border object-cover"
+                          className="rounded border border-[#30363d] object-cover"
                           style={previewImageStyle}
                         />
                       ))}

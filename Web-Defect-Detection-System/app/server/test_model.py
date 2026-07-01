@@ -168,6 +168,11 @@ def _resolve_line_context(config: dict[str, Any]) -> tuple[str | None, str | Non
 
 
 def _resolved_settings(config: dict[str, Any] | None = None) -> ServerSettings:
+    if os.getenv("DEFECT_TEST_MODE", "").strip().lower() in {"1", "true", "yes", "y", "on"}:
+        from app.server import deps
+
+        return deps.get_settings()
+
     config = config or {}
     line_key, ip, view_keys = _resolve_line_context(config)
     view_name = "2D" if "2D" in view_keys else (view_keys[0] if view_keys else "2D")

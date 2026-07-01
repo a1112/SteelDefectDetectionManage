@@ -57,6 +57,7 @@ import { PlateHoverTooltip } from "../../components/PlateHoverTooltip";
 import { useGlobalUiSettings } from "../../hooks/useGlobalUiSettings";
 import type { Tile } from "../../components/LargeImageViewer/utils";
 import { drawTileImage, tryDrawFallbackTile } from "../../utils/tileFallback";
+import { queueTileImageLoad } from "../../utils/tileImageLoader";
 import { globalPreheatManager } from "../../utils/tilePreheatManager";
 import {
   buildOrientationLayout,
@@ -360,6 +361,7 @@ export default function TraditionalMode() {
   useEffect(() => {
     let mounted = true;
     const loadSimple = async () => {
+      if (document.visibilityState === "hidden") return;
       try {
         const kind = "2D";
         const status = await getConfigStatusSimple(currentLineKey || env.getLineName(), kind);
@@ -369,9 +371,16 @@ export default function TraditionalMode() {
       }
     };
     void loadSimple();
-    const timer = window.setInterval(loadSimple, 2000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void loadSimple();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const timer = window.setInterval(loadSimple, 5000);
     return () => {
       mounted = false;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.clearInterval(timer);
     };
   }, [currentLineKey]);
@@ -1386,6 +1395,10 @@ export default function TraditionalMode() {
               tileSize: tileSizeArg,
             }],
             view: analysisOrientation,
+            orientation: analysisOrientation,
+            maxLevel,
+            imageWidth: surfaceLayout.worldWidth,
+            imageHeight: surfaceLayout.worldHeight,
           }).catch(error => {
             // 静默失败，不影响主渲染流程
           });
@@ -1422,18 +1435,13 @@ export default function TraditionalMode() {
             imageScale,
             useTransparentBackground: true,
           });
-          if (!analysisTileImageLoading.has(cacheKey)) {
-            analysisTileImageLoading.add(cacheKey);
-            const img = new Image();
-            img.src = url;
-            img.onload = () => {
-              analysisTileImageCache.set(cacheKey, img);
-              analysisTileImageLoading.delete(cacheKey);
-            };
-            img.onerror = () => {
-              analysisTileImageLoading.delete(cacheKey);
-            };
-          }
+          queueTileImageLoad({
+            cacheKey,
+            url,
+            cache: analysisTileImageCache,
+            loading: analysisTileImageLoading,
+            priority: "high",
+          });
           if (!drewFallback) {
             ctx.fillStyle = "#0b1220";
             ctx.fillRect(tile.x, tile.y, tile.width, tile.height);
@@ -2461,18 +2469,13 @@ export default function TraditionalMode() {
         useTransparentBackground: true,
       });
 
-      if (!mapTileImageLoading.has(cacheKey)) {
-        mapTileImageLoading.add(cacheKey);
-        const img = new Image();
-        img.src = url;
-        img.onload = () => {
-          mapTileImageCache.set(cacheKey, img);
-          mapTileImageLoading.delete(cacheKey);
-        };
-        img.onerror = () => {
-          mapTileImageLoading.delete(cacheKey);
-        };
-      }
+      queueTileImageLoad({
+        cacheKey,
+        url,
+        cache: mapTileImageCache,
+        loading: mapTileImageLoading,
+        priority: "high",
+      });
 
       if (!drewFallback) {
         ctx.fillStyle = "#0b1220";

@@ -45,6 +45,7 @@ class ImageService:
             if value < 0:
                 return 10**9
             return value
+        disk_file_limit = 10**9
         self.frame_cache = TtlLruCache(
             max_items=_resolve_limit(memory_cache.max_frames),
             ttl_seconds=ttl_seconds,
@@ -69,14 +70,14 @@ class ImageService:
             enabled=disk_cache.disk_cache_enabled,
             read_only=self.test_mode,
             flat_layout=False,
-            max_tiles=disk_cache.disk_cache_max_records,
-            max_defects=disk_cache.disk_cache_max_records,
-            # 缺陷缓存最大裁剪保留来自配置
+            max_tiles=disk_file_limit,
+            max_defects=disk_file_limit,
             defect_expand=int(getattr(disk_cache, "defect_cache_expand", 100) or 100),
             tile_size=image_settings.frame_height,
             frame_width=image_settings.frame_width,
             frame_height=image_settings.frame_height,
             view_name=image_settings.default_view,
+            tile_min_cache_size=int(getattr(image_settings, "tile_min_cache_size", 128) or 128),
         )
         self._disk_cache_stop = threading.Event()
         self._disk_cache_thread_started = False
@@ -114,6 +115,8 @@ class ImageService:
         self._cache_task_queue: queue.Queue[tuple[str, object] | None] = queue.Queue()
         self._cache_task_thread_started = False
         self._cache_active_seqs: dict[int, set[str]] = {}
+        self._auto_cache_lock = threading.Lock()
+        self._auto_active_seqs: set[int] = set()
         self._steel_id_cache: dict[int, str] = {}
         self._cache_pause = threading.Event()
         self._cache_abort = threading.Event()
@@ -210,6 +213,126 @@ class ImageService:
         except Exception:
             return None
 
+    def is_dual_field_enabled(self) -> bool:
+        return bool(getattr(self.settings.images, "dual_field_mode", False))
+
+    def normalize_field(self, field: object) -> Optional[str]:
+        if field is None:
+            return None
+        if isinstance(field, str):
+            value = field.strip().lower()
+            if value in {"", "all", "none", "null"}:
+                return None
+            if value in {"bright", "top", "0", "light", "ming", "明场"}:
+                return "bright"
+            if value in {"dark", "bottom", "1", "an", "暗场"}:
+                return "dark"
+        try:
+            numeric = int(field)  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            return None
+        if numeric == 0:
+            return "bright"
+        if numeric == 1:
+            return "dark"
+        return None
+
+    def request_field_or_default(self, field: object) -> Optional[str]:
+        normalized = self.normalize_field(field)
+        if normalized is not None:
+            return normalized
+        if self.is_dual_field_enabled():
+            return "bright"
+        return None
+
+    def field_value(self, field: object) -> Optional[int]:
+        normalized = self.normalize_field(field)
+        if normalized == "bright":
+            return 0
+        if normalized == "dark":
+            return 1
+        return None
+
+    def field_label(self, field: object) -> Optional[str]:
+        normalized = self.normalize_field(field)
+        if normalized == "bright":
+            return "明场"
+        if normalized == "dark":
+            return "暗场"
+        return None
+
+    def should_include_record_field(self, record: DefectRecord, requested_field: object) -> bool:
+        requested = self.normalize_field(requested_field)
+        if requested is None:
+            return True
+        return self.normalize_field(record.field_name or record.field) == requested
+
+    def field_view_name(self, view: Optional[str], field: object) -> str:
+        view_dir = view or self.settings.images.default_view
+        normalized = self.normalize_field(field)
+        if not self.is_dual_field_enabled() or normalized is None:
+            return view_dir
+        suffix = f"_{normalized}"
+        return view_dir if view_dir.lower().endswith(suffix) else f"{view_dir}{suffix}"
+
+    def display_height_for_field(self, image_height: int, field: object) -> int:
+        if not self.is_dual_field_enabled() or self.normalize_field(field) is None:
+            return image_height
+        return max(1, int(image_height) // 2)
+
+    def _crop_image_to_field(self, image: Image.Image, field: object) -> Image.Image:
+        normalized = self.normalize_field(field)
+        if not self.is_dual_field_enabled() or normalized is None:
+            return image
+        half = max(1, image.height // 2)
+        if normalized == "bright":
+            return image.crop((0, 0, image.width, half))
+        return image.crop((0, half, image.width, image.height))
+
+    def adjust_bbox_for_field(
+        self,
+        box: Box,
+        *,
+        record_field: object,
+        requested_field: object = None,
+        frame_height: Optional[int] = None,
+    ) -> Box:
+        if not self.is_dual_field_enabled():
+            return box
+        full_height = int(frame_height or self.settings.images.frame_height or 0)
+        if full_height <= 1:
+            return box
+        half = max(1, full_height // 2)
+        left, top, right, bottom = box
+        requested = self.normalize_field(requested_field)
+        actual = self.normalize_field(record_field)
+
+        def _clip_y(current: Box, min_y: int, max_y: int) -> Box:
+            l, t, r, b = current
+            t = max(min_y, min(t, max_y))
+            b = max(min_y, min(b, max_y))
+            if b < t:
+                b = t
+            return (l, t, r, b)
+
+        if requested is not None:
+            if top >= half:
+                top -= half
+                bottom -= half
+            return _clip_y((left, top, right, bottom), 0, half)
+
+        if actual == "dark":
+            if top < half:
+                top += half
+                bottom += half
+            return _clip_y((left, top, right, bottom), half, full_height)
+        if actual == "bright":
+            if top >= half:
+                top -= half
+                bottom -= half
+            return _clip_y((left, top, right, bottom), 0, half)
+        return _clip_y(box, 0, full_height)
+
     def get_cache_status(self) -> dict[str, object]:
         with self._cache_status_lock:
             return dict(self._cache_status)
@@ -236,7 +359,7 @@ class ImageService:
         surfaces: list[str] | None = None,
         task: dict[str, object] | None = None,
         emit_log: bool = True,
-    ) -> None:
+    ) -> bool:
         with self._cache_status_lock:
             self._cache_status = {
                 "state": state,
@@ -570,15 +693,6 @@ class ImageService:
                 task_type = task.get("type")
                 if task_type == "tile":
                     start_time = time.monotonic()
-                    path = self.disk_cache.tile_path(
-                        task["cache_root"],
-                        task["seq_no"],
-                        view=task.get("view"),
-                        level=task["level"],
-                        orientation=task["orientation"],
-                        tile_x=task["tile_x"],
-                        tile_y=task["tile_y"],
-                    )
                     self.disk_cache.write_tile(
                         task["cache_root"],
                         task["seq_no"],
@@ -591,16 +705,22 @@ class ImageService:
                         ensure_meta=bool(task.get("ensure_meta", True)),
                     )
                     elapsed = time.monotonic() - start_time
-                    logger.info("disk-cache write tile %s elapsed=%.3fs", path, elapsed)
+                    if elapsed >= 1.0 or logger.isEnabledFor(logging.DEBUG):
+                        path = self.disk_cache.tile_path(
+                            task["cache_root"],
+                            task["seq_no"],
+                            view=task.get("view"),
+                            level=task["level"],
+                            orientation=task["orientation"],
+                            tile_x=task["tile_x"],
+                            tile_y=task["tile_y"],
+                        )
+                        if elapsed >= 1.0:
+                            logger.warning("disk-cache slow tile write %s elapsed=%.3fs", path, elapsed)
+                        else:
+                            logger.debug("disk-cache write tile %s elapsed=%.3fs", path, elapsed)
                 elif task_type == "defect":
                     start_time = time.monotonic()
-                    path = self.disk_cache.defect_path(
-                        task["cache_root"],
-                        task["seq_no"],
-                        view=task.get("view"),
-                        surface=task["surface"],
-                        defect_id=task["defect_id"],
-                    )
                     self.disk_cache.write_defect(
                         task["cache_root"],
                         task["seq_no"],
@@ -611,13 +731,27 @@ class ImageService:
                         ensure_meta=bool(task.get("ensure_meta", True)),
                     )
                     elapsed = time.monotonic() - start_time
-                    logger.info("disk-cache write defect %s elapsed=%.3fs", path, elapsed)
+                    if elapsed >= 1.0 or logger.isEnabledFor(logging.DEBUG):
+                        path = self.disk_cache.defect_path(
+                            task["cache_root"],
+                            task["seq_no"],
+                            view=task.get("view"),
+                            surface=task["surface"],
+                            defect_id=task["defect_id"],
+                        )
+                        if elapsed >= 1.0:
+                            logger.warning("disk-cache slow defect write %s elapsed=%.3fs", path, elapsed)
+                        else:
+                            logger.debug("disk-cache write defect %s elapsed=%.3fs", path, elapsed)
                 elif task_type == "finalize":
                     view_dir = task.get("view")
                     seq_no = int(task.get("seq_no"))
-                    for surface in ("top", "bottom"):
+                    surfaces = task.get("surfaces") or ("top", "bottom")
+                    for surface in surfaces:
+                        if surface not in ("top", "bottom"):
+                            continue
                         cache_root = self._cache_root(surface)
-                        self.disk_cache.ensure_cache_meta(cache_root, seq_no, view=view_dir)
+                        self.disk_cache.mark_complete(cache_root, seq_no, view=view_dir)
                     self._update_cache_records(seq_no, view_dir=view_dir)
             except Exception:
                 logger.exception("disk-cache write task failed")
@@ -643,13 +777,13 @@ class ImageService:
         surfaces: Optional[list[str]] = None,
         task_info: Optional[dict[str, object]] = None,
         message: Optional[str] = None,
-    ) -> None:
+    ) -> bool:
         surfaces = surfaces or ["top", "bottom"]
         surfaces = [item for item in surfaces if item in ("top", "bottom")]
         if not surfaces:
-            return
+            return False
         if not force and not self._is_seq_closed(seq_no, view_dir=self.settings.images.default_view):
-            return
+            return False
         start_time = time.monotonic()
         if task_info is None:
             task_info = {
@@ -666,16 +800,73 @@ class ImageService:
             surfaces=surfaces,
             task=task_info,
         )
-        for surface in surfaces:
+        overview_surfaces: list[str] = []
+        completed_surfaces: list[str] = []
+        overview_order = list(reversed(surfaces))
+        for surface in overview_order:
             if self._cache_abort.is_set():
                 break
-            self._precache_seq(
+            self._wait_if_cache_paused(task_info)
+            self._set_cache_status(
+                state="running",
+                message=message or f"姝ｅ湪缂撳瓨 {seq_no}",
+                seq_no=seq_no,
+                surface=surface,
+                surfaces=surfaces,
+                task=task_info,
+                emit_log=False,
+            )
+            overview_done = self._precache_seq(
                 surface,
                 seq_no,
                 precache_levels=precache_levels,
                 force=force,
                 emit_status=False,
+                overview_only=True,
+                task_info=task_info,
+                status_surfaces=surfaces,
+                status_message=message,
             )
+            if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+                break
+            if not overview_done:
+                break
+            overview_surfaces.append(surface)
+        if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+            return False
+        if set(overview_surfaces) != set(surfaces):
+            return False
+        for surface in surfaces:
+            if self._cache_abort.is_set():
+                break
+            self._wait_if_cache_paused(task_info)
+            self._set_cache_status(
+                state="running",
+                message=message or f"姝ｅ湪缂撳瓨 {seq_no}",
+                seq_no=seq_no,
+                surface=surface,
+                surfaces=surfaces,
+                task=task_info,
+                emit_log=False,
+            )
+            surface_done = self._precache_seq(
+                surface,
+                seq_no,
+                precache_levels=precache_levels,
+                force=force,
+                emit_status=False,
+                skip_overview=True,
+                task_info=task_info,
+                status_surfaces=surfaces,
+                status_message=message,
+            )
+            if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+                break
+            if not surface_done:
+                break
+            completed_surfaces.append(surface)
+        if len(completed_surfaces) != len(surfaces):
+            return False
         elapsed = time.monotonic() - start_time
         self._set_cache_status(
             state="running",
@@ -700,13 +891,21 @@ class ImageService:
                 "type": "finalize",
                 "seq_no": seq_no,
                 "view": self.settings.images.default_view,
+                "surfaces": completed_surfaces,
             }
         )
+        return True
 
     def _wait_if_cache_paused(self, task_info: Optional[dict[str, object]] = None) -> None:
         while self._cache_pause.is_set() and not self._disk_cache_stop.is_set():
             self._set_cache_status(state="warning", message="缓存已暂停", task=task_info)
             self._disk_cache_stop.wait(0.5)
+
+    def _yield_background_cache(self, task_info: Optional[dict[str, object]] = None) -> None:
+        self._wait_if_cache_paused(task_info)
+        if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+            return
+        time.sleep(0.003)
 
     def _list_latest_seq_candidates(self, *, limit: int = 100) -> list[int]:
         window = max(1, int(limit))
@@ -741,27 +940,30 @@ class ImageService:
 
     def _needs_precache_seq(self, seq_no: int) -> bool:
         view_dir = self.settings.images.default_view
-        expected_level = self.disk_cache.max_level()
-        expected_expand = self.disk_cache.defect_expand
+        if not self._is_seq_closed(seq_no, view_dir=view_dir):
+            return False
         has_any_view_data = False
         for surface in ("top", "bottom"):
             surface_root = self._surface_root(surface)
-            if not self._has_view_data(surface_root, seq_no, view_dir):
+            if not self._has_view_data_with_fallback(surface_root, seq_no, view_dir):
                 continue
             has_any_view_data = True
             meta = self.disk_cache.read_meta(self._cache_root(surface), seq_no, view=view_dir)
             if not meta:
                 return True
-            meta_tile = meta.get("tile") or {}
-            meta_defects = meta.get("defects") or {}
-            meta_level = int(meta_tile.get("max_level") or 0)
-            meta_expand = int(meta_defects.get("expand") or 0)
-            if meta_level < expected_level:
+            if not self._is_disk_cache_meta_complete(meta):
                 return True
-            if meta_expand != expected_expand:
+            if not self.is_disk_cache_surface_current(surface, seq_no, meta=meta, view_dir=view_dir):
                 return True
         if not has_any_view_data:
             return False
+        return False
+
+    def _has_view_data_with_fallback(self, surface_root: Path, seq_no: int, view_dir: str) -> bool:
+        if self._has_view_data(surface_root, seq_no, view_dir):
+            return True
+        if str(view_dir or "").lower() != "2d":
+            return self._has_view_data(surface_root, seq_no, "2D")
         return False
 
     def _has_view_data(self, surface_root: Path, seq_no: int, view_dir: str) -> bool:
@@ -778,18 +980,29 @@ class ImageService:
         except OSError:
             return False
 
+    def _newer_seq_needs_precache(self, seq_no: int) -> Optional[int]:
+        latest_seq = self._get_latest_steel_seq()
+        if latest_seq is None or int(latest_seq) <= int(seq_no):
+            return None
+        latest_seq = int(latest_seq)
+        with self._auto_cache_lock:
+            if latest_seq in self._auto_active_seqs:
+                return None
+        if self._needs_precache_seq(latest_seq):
+            return latest_seq
+        return None
+
     def _get_latest_cached_seq(self, *, view_dir: str) -> Optional[int]:
         try:
             from app.server import deps
             from sqlalchemy import func
             from app.server.db.models.management.rbac import CacheRecord
 
-            line_key = os.getenv("DEFECT_LINE_KEY") or os.getenv("DEFECT_LINE_NAME") or "default"
             with deps.get_management_db_context() as session:
                 max_seq = (
                     session.query(func.max(CacheRecord.seq_no))
                     .filter(
-                        CacheRecord.line_key == line_key,
+                        CacheRecord.line_key == self._cache_line_key(),
                         CacheRecord.view == view_dir,
                     )
                     .scalar()
@@ -799,6 +1012,25 @@ class ImageService:
             return int(max_seq)
         except Exception:
             return None
+
+    def _list_cached_record_seqs_before(self, *, seq_before: int, view_dir: str) -> list[int]:
+        try:
+            from app.server import deps
+            from app.server.db.models.management.rbac import CacheRecord
+
+            with deps.get_management_db_context() as session:
+                rows = (
+                    session.query(CacheRecord.seq_no)
+                    .filter(
+                        CacheRecord.line_key == self._cache_line_key(),
+                        CacheRecord.view == view_dir,
+                        CacheRecord.seq_no < int(seq_before),
+                    )
+                    .all()
+                )
+            return sorted({int(row.seq_no) for row in rows})
+        except Exception:
+            return []
 
     def _get_latest_steel_seq(self) -> Optional[int]:
         try:
@@ -814,10 +1046,236 @@ class ImageService:
         except Exception:
             return None
 
+    def _cache_line_key(self) -> str:
+        return os.getenv("DEFECT_LINE_KEY") or os.getenv("DEFECT_LINE_NAME") or "default"
+
+    @staticmethod
+    def _is_disk_cache_meta_complete(meta: Optional[dict]) -> bool:
+        if not isinstance(meta, dict):
+            return False
+        state = str(meta.get("state") or "").strip().lower()
+        if state == "complete":
+            return True
+        return meta.get("complete") is True
+
+    def _is_disk_cache_meta_current(self, meta: Optional[dict]) -> bool:
+        if not isinstance(meta, dict):
+            return False
+        tile = meta.get("tile") or {}
+        defects = meta.get("defects") or {}
+        try:
+            meta_level = int(tile.get("max_level") or 0)
+        except (TypeError, ValueError):
+            meta_level = 0
+        try:
+            meta_expand = int(defects.get("expand") or 0)
+        except (TypeError, ValueError):
+            meta_expand = -1
+        meta_render_version = str(tile.get("render_version") or "")
+        return (
+            meta_level >= self.disk_cache.max_level()
+            and meta_expand == self.disk_cache.defect_expand
+            and meta_render_version == self.disk_cache.tile_render_version
+        )
+
+    def is_disk_cache_surface_current(
+        self,
+        surface: str,
+        seq_no: int,
+        *,
+        meta: Optional[dict] = None,
+        view_dir: Optional[str] = None,
+    ) -> bool:
+        view_name = view_dir or self.settings.images.default_view
+        if meta is None:
+            meta = self.disk_cache.read_meta(self._cache_root(surface), seq_no, view=view_name)
+        if not self._is_disk_cache_meta_complete(meta):
+            return False
+        if not self._is_disk_cache_meta_current(meta):
+            return False
+        if not self._is_disk_cache_frame_count_current(surface, seq_no, meta=meta, view_dir=view_name):
+            return False
+        return self._has_required_horizontal_tiles(surface, seq_no, view_dir=view_name, meta=meta)
+
+    def _is_disk_cache_frame_count_current(
+        self,
+        surface: str,
+        seq_no: int,
+        *,
+        meta: Optional[dict],
+        view_dir: str,
+    ) -> bool:
+        if not isinstance(meta, dict):
+            return False
+        image_meta = meta.get("image") or {}
+        try:
+            cached_count = int(image_meta.get("frame_count") or 0)
+        except (TypeError, ValueError):
+            cached_count = 0
+        if cached_count <= 0:
+            return False
+        try:
+            frames = self._list_frame_paths_with_fallback(surface, seq_no, view_dir)
+        except FileNotFoundError:
+            return False
+        actual_count = len(frames)
+        if actual_count <= 0:
+            return False
+        return cached_count == actual_count
+
+    def _default_horizontal_level(self, meta: Optional[dict]) -> int:
+        if not isinstance(meta, dict):
+            return 0
+        tile_meta = meta.get("tile") or {}
+        image_meta = meta.get("image") or {}
+        try:
+            max_level = int(tile_meta.get("max_level") or self.disk_cache.max_level())
+        except (TypeError, ValueError):
+            max_level = self.disk_cache.max_level()
+        try:
+            tile_size = int(tile_meta.get("tile_size") or self.settings.images.frame_height)
+            frame_width = int(image_meta.get("frame_width") or self.settings.images.frame_width)
+        except (TypeError, ValueError):
+            return 0
+        if tile_size <= 0 or frame_width <= 0:
+            return 0
+        level = int(math.ceil(math.log(max(1, frame_width) / tile_size, 2))) if frame_width > tile_size else 0
+        return max(0, min(level, max_level, self.disk_cache.max_level()))
+
+    def _required_horizontal_levels(self, meta: Optional[dict]) -> list[int]:
+        if not isinstance(meta, dict):
+            return []
+        tile_meta = meta.get("tile") or {}
+        try:
+            max_level = int(tile_meta.get("max_level") or self.disk_cache.max_level())
+        except (TypeError, ValueError):
+            max_level = self.disk_cache.max_level()
+        max_level = max(0, min(max_level, self.disk_cache.max_level()))
+        return [max_level]
+
+    def _expected_horizontal_tiles(self, meta: Optional[dict], level: int) -> int:
+        if not isinstance(meta, dict):
+            return 0
+        tile_meta = meta.get("tile") or {}
+        image_meta = meta.get("image") or {}
+        try:
+            tile_size = int(tile_meta.get("tile_size") or self.settings.images.frame_height)
+            frame_count = int(image_meta.get("frame_count") or 0)
+            frame_width = int(image_meta.get("frame_width") or self.settings.images.frame_width)
+            frame_height = int(image_meta.get("frame_height") or self.settings.images.frame_height)
+        except (TypeError, ValueError):
+            return 0
+        if tile_size <= 0 or frame_count <= 0 or frame_width <= 0 or frame_height <= 0:
+            return 0
+        level = max(0, min(int(level), self.disk_cache.max_level()))
+        virtual_tile_size = tile_size * (2**level)
+        if virtual_tile_size <= 0:
+            return 0
+        tiles_x = max(1, int(math.ceil((frame_height * frame_count) / virtual_tile_size)))
+        tiles_y = max(1, int(math.ceil(frame_width / virtual_tile_size)))
+        return tiles_x * tiles_y
+
+    def _expected_highest_horizontal_tiles(self, meta: Optional[dict]) -> tuple[int, int]:
+        if not isinstance(meta, dict):
+            return (0, 0)
+        levels = self._required_horizontal_levels(meta)
+        if not levels:
+            return (0, 0)
+        level = levels[0]
+        return (level, self._expected_horizontal_tiles(meta, level))
+
+    def _has_required_horizontal_tiles(
+        self,
+        surface: str,
+        seq_no: int,
+        *,
+        view_dir: str,
+        meta: Optional[dict],
+    ) -> bool:
+        required_levels = self._required_horizontal_levels(meta)
+        if not required_levels:
+            return False
+
+        overview = (meta or {}).get("overview") if isinstance(meta, dict) else None
+        horizontal_levels = overview.get("horizontal_levels") if isinstance(overview, dict) else None
+        all_complete = True
+
+        for level in required_levels:
+            expected_count = self._expected_horizontal_tiles(meta, level)
+            if expected_count <= 0:
+                all_complete = False
+                continue
+
+            stored = None
+            if isinstance(horizontal_levels, dict):
+                stored = horizontal_levels.get(str(level))
+            if not isinstance(stored, dict) and isinstance(overview, dict):
+                highest = overview.get("highest_horizontal")
+                if isinstance(highest, dict):
+                    stored = highest
+
+            if isinstance(stored, dict):
+                try:
+                    stored_level = int(stored.get("level") or -1)
+                    stored_expected = int(stored.get("expected_count") or 0)
+                    stored_actual = int(stored.get("actual_count") or 0)
+                except (TypeError, ValueError):
+                    stored_level = -1
+                    stored_expected = 0
+                    stored_actual = 0
+                if (
+                    stored.get("complete") is True
+                    and stored_level == level
+                    and stored_expected == expected_count
+                    and stored_actual >= expected_count
+                ):
+                    continue
+
+            try:
+                seq_no_fs = self._resolve_seq_no_for_fs(self._surface_root(surface), seq_no)
+                tile_dir = (
+                    self.disk_cache.cache_dir(self._cache_root(surface), seq_no_fs, view_dir)
+                    / "tile"
+                    / str(level)
+                )
+                actual_count = sum(1 for _ in tile_dir.glob("horizontal_*.jpg")) if tile_dir.exists() else 0
+            except OSError:
+                return False
+            complete = actual_count >= expected_count
+            try:
+                self.disk_cache.update_overview_status(
+                    self._cache_root(surface),
+                    seq_no_fs,
+                    view=view_dir,
+                    level=level,
+                    orientation="horizontal",
+                    expected_count=expected_count,
+                    actual_count=actual_count,
+                    complete=complete,
+                )
+            except Exception:
+                pass
+            if not complete:
+                all_complete = False
+        return all_complete
+
+    def _has_required_highest_horizontal_tiles(
+        self,
+        surface: str,
+        seq_no: int,
+        *,
+        view_dir: str,
+        meta: Optional[dict],
+    ) -> bool:
+        level, expected_count = self._expected_highest_horizontal_tiles(meta)
+        if expected_count <= 0:
+            return False
+        return self._has_required_horizontal_tiles(surface, seq_no, view_dir=view_dir, meta=meta)
+
     def _update_cache_records(self, seq_no: int, *, view_dir: str) -> None:
         if not self.settings.disk_cache.disk_cache_enabled:
             return
-        line_key = os.getenv("DEFECT_LINE_KEY") or os.getenv("DEFECT_LINE_NAME") or "default"
+        line_key = self._cache_line_key()
         try:
             from app.server import deps
             from app.server.db.models.management.rbac import CacheRecord
@@ -837,7 +1295,7 @@ class ImageService:
                         )
                         .one_or_none()
                     )
-                    if not meta:
+                    if not meta or not self._is_disk_cache_meta_complete(meta):
                         if existing is not None:
                             session.delete(existing)
                             updated = True
@@ -864,6 +1322,23 @@ class ImageService:
                     updated = True
                 if updated:
                     session.commit()
+        except Exception:
+            return
+
+    def _delete_cache_records(self, seq_no: int, *, view_dir: Optional[str] = None) -> None:
+        try:
+            from app.server import deps
+            from app.server.db.models.management.rbac import CacheRecord
+
+            with deps.get_management_db_context() as session:
+                query = session.query(CacheRecord).filter(
+                    CacheRecord.line_key == self._cache_line_key(),
+                    CacheRecord.seq_no == int(seq_no),
+                )
+                if view_dir:
+                    query = query.filter(CacheRecord.view == view_dir)
+                query.delete(synchronize_session=False)
+                session.commit()
         except Exception:
             return
 
@@ -946,58 +1421,97 @@ class ImageService:
         self._cache_abort.clear()
         self._set_cache_status(state="ready", message="就绪", task=task_info)
 
+    def _claim_auto_cache_seq(self, seq_no: int) -> bool:
+        with self._auto_cache_lock:
+            if seq_no in self._auto_active_seqs:
+                return False
+            self._auto_active_seqs.add(seq_no)
+            return True
+
+    def _release_auto_cache_seq(self, seq_no: int) -> None:
+        with self._auto_cache_lock:
+            self._auto_active_seqs.discard(seq_no)
+
+    def _precache_seq_pair_with_auto_release(self, seq_no: int, **kwargs) -> bool:
+        try:
+            return self._precache_seq_pair(seq_no, **kwargs)
+        finally:
+            self._release_auto_cache_seq(seq_no)
+
     def _run_cache_task_auto(self, *, precache_levels: int) -> None:
-        view_dir = self.settings.images.default_view
-        max_seq = self._get_latest_steel_seq()
-        if max_seq is None:
-            self._set_cache_status(state="ready", message="等待缓存任务", task=None)
-            return
-        window_size = 100
-        window_start = max(1, int(max_seq) - window_size + 1)
-        latest_cached = self._get_latest_cached_seq(view_dir=view_dir)
-        if latest_cached is None:
-            start_seq = window_start
-        elif latest_cached >= int(max_seq):
-            task_info = {
-                "type": "auto",
-                "total": 0,
-                "done": 0,
-                "current_seq": int(max_seq) + 1,
-            }
-            self._set_cache_status(
-                state="ready",
-                message=f"waiting for {int(max_seq) + 1} data",
-                seq_no=int(max_seq) + 1,
-                task=task_info,
-            )
-            return
-        else:
-            start_seq = max(window_start, int(latest_cached) + 1)
-
-        seq_list = list(range(start_seq, int(max_seq) + 1))
-
-        if not seq_list:
-            self._set_cache_status(state="ready", message="等待缓存任务", task=None)
-            return
+        window_size = max(
+            1,
+            min(
+                200,
+                int(getattr(self.settings.disk_cache, "disk_precache_window_records", 200) or 200),
+            ),
+        )
         task_info: dict[str, object] = {
             "type": "auto",
-            "total": len(seq_list),
+            "total": 0,
             "done": 0,
             "current_seq": None,
+            "window_start": None,
+            "window_end": None,
+            "window_size": window_size,
         }
-        for index, seq_no in enumerate(seq_list, start=1):
+        done = 0
+        current_window: Optional[tuple[int, int]] = None
+        while not self._cache_abort.is_set() and not self._disk_cache_stop.is_set():
+            max_seq = self._get_latest_steel_seq()
+            if max_seq is None:
+                self._set_cache_status(state="ready", message="等待缓存任务", task=None)
+                return False
+            window_start = max(1, int(max_seq) - window_size + 1)
+            window_end = int(max_seq)
+            next_window = (window_start, window_end)
+            if current_window != next_window:
+                current_window = next_window
+                done = 0
+            seq_list = [
+                seq_no
+                for seq_no in range(window_end, window_start - 1, -1)
+                if self._needs_precache_seq(seq_no)
+            ]
+            task_info["window_start"] = window_start
+            task_info["window_end"] = window_end
+            task_info["total"] = min(window_size, done + len(seq_list))
+            if not seq_list:
+                task_info["current_seq"] = window_end
+                task_info["done"] = done
+                self._set_cache_status(
+                    state="ready",
+                    message=f"最近 {window_size} 卷缓存已就绪",
+                    seq_no=window_end,
+                    task=task_info,
+                )
+                return
+
+            seq_no = None
+            for candidate in seq_list:
+                if self._claim_auto_cache_seq(candidate):
+                    seq_no = candidate
+                    break
+            if seq_no is None:
+                self._disk_cache_stop.wait(0.5)
+                continue
             if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+                self._release_auto_cache_seq(seq_no)
                 break
             self._wait_if_cache_paused(task_info)
             task_info["current_seq"] = seq_no
-            task_info["done"] = index - 1
-            self._precache_seq_pair(
+            task_info["done"] = done
+            with self._auto_cache_lock:
+                task_info["active_seqs"] = sorted(self._auto_active_seqs)
+            completed = self._precache_seq_pair_with_auto_release(
                 seq_no,
                 precache_levels=precache_levels,
                 task_info=task_info,
                 message=f"自动缓存 {seq_no}",
             )
-            task_info["done"] = index
+            if completed:
+                done += 1
+                task_info["done"] = done
 
     def _remove_cache_seq(self, seq_no: int) -> None:
         view_dir = self.settings.images.default_view
@@ -1007,6 +1521,7 @@ class ImageService:
             cache_root_dir = cache_dir.parent if cache_dir.name == view_dir else cache_dir
             if cache_root_dir.exists():
                 shutil.rmtree(cache_root_dir, ignore_errors=True)
+        self._delete_cache_records(seq_no, view_dir=view_dir)
 
     def start_background_workers(self) -> None:
         image_settings = self.settings.images
@@ -1016,16 +1531,17 @@ class ImageService:
         if not cache_settings.disk_cache_enabled or self.disk_cache.read_only:
             return
         logger.info(
-            "disk-cache enabled view=%s tile_size=%s max_level=%s max_tiles=%s max_defects=%s",
+            "disk-cache enabled view=%s tile_size=%s max_level=%s keep_records=%s file_limit=%s",
             image_settings.default_view,
             image_settings.frame_height,
             self.disk_cache.max_level(),
             cache_settings.disk_cache_max_records,
-            cache_settings.disk_cache_max_records,
+            self.disk_cache.max_tiles,
         )
         logger.info(
-            "disk-cache threads precache=%s levels=%s workers=%s scan_interval=%ss cleanup_interval=%ss",
+            "disk-cache threads precache=%s window=%s levels=%s workers=%s scan_interval=%ss cleanup_interval=%ss",
             cache_settings.disk_precache_enabled,
+            getattr(cache_settings, "disk_precache_window_records", 200),
             cache_settings.disk_precache_levels,
             cache_settings.disk_precache_workers,
             cache_settings.disk_cache_scan_interval_seconds,
@@ -1055,11 +1571,12 @@ class ImageService:
         image_index: int,
         *,
         view: Optional[str] = None,
+        field: Optional[str] = None,
         width: Optional[int] = None,
         height: Optional[int] = None,
         fmt: str = "JPEG",
     ) -> bytes:
-        image = self._load_frame(surface, seq_no, image_index, view=view)
+        image = self._load_frame(surface, seq_no, image_index, view=view, field=field)
         if width or height:
             image = resize_image(image, width=width, height=height)
         return encode_image(image, fmt=fmt)
@@ -1070,6 +1587,7 @@ class ImageService:
         seq_no: int,
         *,
         view: Optional[str] = None,
+        field: Optional[str] = None,
     ) -> Tuple[int, int, int]:
         """
         返回指定序列在某一表面的帧数量及单帧尺寸信息。
@@ -1106,14 +1624,14 @@ class ImageService:
         # 回退：通过扫描帧文件获取数量
         if frame_count is None:
             try:
-                frames = self._list_frame_paths(surface, seq_no, view_dir)
+                frames = self._list_frame_paths_with_fallback(surface, seq_no, view_dir)
             except FileNotFoundError:
                 raise
             frame_count = len(frames)
 
         # 单帧尺寸由配置文件给出（server.json / map.json views）
         image_width = self.settings.images.frame_width
-        image_height = self.settings.images.frame_height
+        image_height = self.display_height_for_field(self.settings.images.frame_height, field)
 
         return frame_count, image_width, image_height
 
@@ -1128,20 +1646,22 @@ class ImageService:
         fmt: str = "JPEG",
         use_cache: bool = True,
         ensure_meta: bool = True,
+        field: Optional[str] = None,
     ) -> Tuple[bytes, DefectRecord]:
         # 若未显式指定扩展像素，则使用配置中的缺陷缓存扩展像素
         if expand is None:
             expand = self.disk_cache.defect_expand
 
-        cache_key = (surface, defect_id, expand, width, height, fmt)
+        defect = self.defect_service.find_defect_by_surface(surface, defect_id)
+        if not defect or defect.image_index is None:
+            raise FileNotFoundError(f"Defect {defect_id} not found on {surface}")
+
+        field_name = self.normalize_field(field) or self.normalize_field(defect.field_name or defect.field)
+        cache_key = (surface, defect_id, field_name or "all", expand, width, height, fmt)
         if use_cache:
             cached = self.defect_crop_cache.get(cache_key)
             if cached is not None:
                 return cached
-
-        defect = self.defect_service.find_defect_by_surface(surface, defect_id)
-        if not defect or defect.image_index is None:
-            raise FileNotFoundError(f"Defect {defect_id} not found on {surface}")
 
         # 坐标体系说明：
         # - leftInSrcImg/... 一列表示在“原始源图像”上的像素坐标（单帧）——这是可信坐标。
@@ -1171,10 +1691,13 @@ class ImageService:
         height_src = max(0, base_bbox.bottom - base_bbox.top)
         surface_code = "t" if surface.lower() == "top" else "b"
         # 磁盘文件名主体：{seq_no}_{t/b}_{defect_id}_{leftInSrcImg}_{topInSrcImg}_{宽度}_{高度}_{defect_cache_expand}
+        disk_field = field_name or "all"
         disk_defect_id = (
             f"{defect.seq_no}_{surface_code}_{defect.defect_id}_"
-            f"{base_bbox.left}_{base_bbox.top}_{width_src}_{height_src}_{self.disk_cache.defect_expand}"
+            f"{disk_field}_{base_bbox.left}_{base_bbox.top}_{width_src}_{height_src}_{self.disk_cache.defect_expand}"
         )
+        source_view_dir = self.settings.images.default_view
+        cache_view_dir = self.field_view_name(source_view_dir, field_name)
 
         if (
             use_cache
@@ -1189,7 +1712,7 @@ class ImageService:
             disk = self.disk_cache.read_defect(
                 cache_root,
                 seq_no_fs,
-                view=None,
+                view=cache_view_dir,
                 surface=surface,
                 defect_id=disk_defect_id,
             )
@@ -1200,7 +1723,7 @@ class ImageService:
                 return result
 
         try:
-            image = self._load_frame(surface, defect.seq_no, defect.image_index)
+            image = self._load_frame(surface, defect.seq_no, defect.image_index, field=field_name)
         except FileNotFoundError:
             # 原始帧不存在，返回默认错误图像（缓存后的二进制）
             payload = self._error_image_bytes("原图丢失\nDEFECT IMAGE MISSING", fmt=fmt)
@@ -1221,6 +1744,12 @@ class ImageService:
             bottom = base_bbox.bottom
 
         # 使用缩放后的坐标判断是否完全越界
+        left, top, right, bottom = self.adjust_bbox_for_field(
+            (left, top, right, bottom),
+            record_field=defect.field_name or defect.field,
+            requested_field=field_name,
+        )
+
         if right <= 0 or bottom <= 0 or left >= image.width or top >= image.height:
             payload = self._error_image_bytes("坐标越界\nBBOX OUT OF RANGE", fmt=fmt)
             result = (payload, defect)
@@ -1246,7 +1775,7 @@ class ImageService:
                     "type": "defect",
                     "cache_root": self._cache_root(surface),
                     "seq_no": self._resolve_seq_no_for_fs(self._surface_root(surface), defect.seq_no),
-                    "view": None,
+                    "view": cache_view_dir,
                     "surface": surface,
                     "defect_id": disk_defect_id,
                     "payload": payload,
@@ -1271,8 +1800,9 @@ class ImageService:
         width: Optional[int] = None,
         height: Optional[int] = None,
         fmt: str = "JPEG",
+        field: Optional[str] = None,
     ) -> bytes:
-        image = self._load_frame(surface, seq_no, image_index)
+        image = self._load_frame(surface, seq_no, image_index, field=field)
         box: Box = (x, y, x + w, y + h)
         box = expand_box(box, expand, image.width, image.height)
         cropped = image.crop(box)
@@ -1289,6 +1819,7 @@ class ImageService:
         seq_no: int,
         *,
         view: Optional[str] = None,
+        field: Optional[str] = None,
         limit: Optional[int] = None,
         skip: int = 0,
         stride: int = 1,
@@ -1296,7 +1827,7 @@ class ImageService:
         height: Optional[int] = None,
         fmt: str = "JPEG",
     ) -> bytes:
-        mosaic = self._build_mosaic(surface, seq_no, view=view, limit=limit, skip=skip, stride=stride)
+        mosaic = self._build_mosaic(surface, seq_no, view=view, field=field, limit=limit, skip=skip, stride=stride)
         if width or height:
             mosaic = resize_image(mosaic, width=width, height=height)
         return encode_image(mosaic, fmt=fmt)
@@ -1307,6 +1838,7 @@ class ImageService:
         seq_no: int,
         *,
         view: Optional[str] = None,
+        field: Optional[str] = None,
         level: int = 0,
         tile_x: int,
         tile_y: int,
@@ -1322,6 +1854,7 @@ class ImageService:
             surface=surface,
             seq_no=seq_no,
             view=view,
+            field=field,
             level=level,
             tile_x=tile_x,
             tile_y=tile_y,
@@ -1350,10 +1883,14 @@ class ImageService:
         fmt: str,
         trigger_prefetch: bool,
         viewer_id: str,
+        field: Optional[str] = None,
         prefetch: Optional[dict] = None,
         ensure_meta: bool = True,
+        direct_render: bool = False,
     ) -> bytes:
         view_dir = view or self.settings.images.default_view
+        field_name = self.normalize_field(field)
+        cache_view_dir = self.field_view_name(view_dir, field_name)
         tile_size = self.settings.images.frame_height
         surface_root = self._surface_root(surface)
         cache_root = self._cache_root(surface)
@@ -1374,7 +1911,7 @@ class ImageService:
             self.disk_cache.update_frame_count(
                 cache_root,
                 seq_no_fs,
-                view=view_dir,
+                view=cache_view_dir,
                 frame_count=count,
             )
 
@@ -1382,7 +1919,7 @@ class ImageService:
             nonlocal frame_count
             if frame_count is not None:
                 return frame_count
-            meta = self.disk_cache.read_meta(cache_root, seq_no_fs, view=view_dir)
+            meta = self.disk_cache.read_meta(cache_root, seq_no_fs, view=cache_view_dir)
             if meta:
                 image_meta = meta.get("image") or {}
                 cached_count = int(image_meta.get("frame_count") or 0)
@@ -1396,28 +1933,31 @@ class ImageService:
         def _list_frames() -> list[Path]:
             nonlocal frames, frame_count
             if frames is None:
-                frames = self._list_frame_paths(surface, seq_no, view_dir)
+                frames = self._list_frame_paths_with_fallback(surface, seq_no, view_dir)
                 frame_count = len(frames)
                 _update_frame_count(frame_count)
             return frames
 
-        cache_key = (surface, seq_no, view_dir, orientation, level, tile_x, tile_y, fmt)
+        cache_key = (surface, seq_no, cache_view_dir, orientation, level, tile_x, tile_y, fmt)
         data: Optional[bytes] = None
+        cache_meta = self.disk_cache.read_meta(cache_root, seq_no_fs, view=cache_view_dir) if allow_cache else None
+        cache_read_allowed = allow_cache and self._is_disk_cache_meta_current(cache_meta)
         if allow_cache:
             if fmt.upper() == "JPEG":
-                disk = self.disk_cache.read_tile(
-                    cache_root,
-                    seq_no_fs,
-                    view=view_dir,
-                    level=level,
-                    orientation=orientation,
-                    tile_x=tile_x,
-                    tile_y=tile_y,
-                )
-                if disk is not None:
-                    self.tile_cache.put(cache_key, disk)
-                    data = disk
-            if data is None:
+                if cache_read_allowed:
+                    disk = self.disk_cache.read_tile(
+                        cache_root,
+                        seq_no_fs,
+                        view=cache_view_dir,
+                        level=level,
+                        orientation=orientation,
+                        tile_x=tile_x,
+                        tile_y=tile_y,
+                    )
+                    if disk is not None:
+                        self.tile_cache.put(cache_key, disk)
+                        data = disk
+            if data is None and cache_read_allowed:
                 cached = self.tile_cache.get(cache_key)
                 if cached is not None:
                     data = cached
@@ -1425,7 +1965,10 @@ class ImageService:
         def _tile_grid(level_value: int) -> tuple[int, int]:
             count = _resolve_frame_count()
             frame_w = int(self.settings.images.frame_width or 0)
-            frame_h = int(self.settings.images.frame_height or 0)
+            frame_h = self.display_height_for_field(
+                int(self.settings.images.frame_height or 0),
+                field_name,
+            )
             if orientation == "horizontal":
                 mosaic_width = frame_h * max(1, count)
                 mosaic_height = frame_w
@@ -1449,7 +1992,8 @@ class ImageService:
                 return data
             raise FileNotFoundError(f"Tile ({tile_x}, {tile_y}) out of bounds for {surface} seq={seq_no}")
 
-        if data is None and allow_cache and level > 0:
+        skip_recursive_tile_build = direct_render or level > self.disk_cache.max_level()
+        if data is None and allow_cache and level > 0 and not skip_recursive_tile_build:
             sub_tiles_x, sub_tiles_y = _tile_grid(level - 1)
             tiles: dict[tuple[int, int], Image.Image] = {}
             for dy in (0, 1):
@@ -1463,6 +2007,7 @@ class ImageService:
                             surface=surface,
                             seq_no=seq_no,
                             view=view_dir,
+                            field=field_name,
                             level=level - 1,
                             tile_x=sub_x,
                             tile_y=sub_y,
@@ -1503,7 +2048,7 @@ class ImageService:
                                 "type": "tile",
                                 "cache_root": cache_root,
                                 "seq_no": seq_no_fs,
-                                "view": view_dir,
+                                "view": cache_view_dir,
                                 "level": level,
                                 "orientation": orientation,
                                 "tile_x": tile_x,
@@ -1528,7 +2073,7 @@ class ImageService:
                 raise FileNotFoundError(f"No frames found for {surface} seq={seq_no}")
 
             # 假设所有帧尺寸一致，读取首帧确定尺寸
-            first_img = self._load_frame_from_path(frames[0])
+            first_img = self._load_frame_from_path(frames[0], field=field_name)
             frame_w, frame_h = first_img.width, first_img.height
 
             if orientation == "horizontal":
@@ -1562,9 +2107,18 @@ class ImageService:
 
             width0 = right0 - left0
             height0 = bottom0 - top0
+            scale = 1 / (2**level) if level > 0 else 1
+            target_w = max(1, int(round(width0 * scale)))
+            target_h = max(1, int(round(height0 * scale)))
+            direct_scaled_tile = level > 0 and (
+                skip_recursive_tile_build or width0 * height0 > 16_000_000
+            )
 
             # 在 level=0 坐标系下构建瓦片，再按 level 缩放
-            base_tile = Image.new("RGB", (width0, height0))
+            base_tile = Image.new(
+                "RGB",
+                (target_w, target_h) if direct_scaled_tile else (width0, height0),
+            )
 
             if orientation == "horizontal":
                 first_idx = left0 // stripe_w
@@ -1572,8 +2126,12 @@ class ImageService:
 
                 for idx in range(first_idx, last_idx + 1):
                     stripe_path = frames[idx]
-                    src_img = self._load_frame_from_path(stripe_path)
-                    rot = src_img.transpose(Image.Transpose.ROTATE_90)
+                    src_img = self._load_frame_from_path(stripe_path, field=field_name)
+                    # Horizontal overview maps original frame coordinates as
+                    # (x, y) -> (frame_index * frame_h + y, x).  Use a diagonal
+                    # transpose instead of a 90-degree rotation so image pixels
+                    # and defect boxes share the same world coordinate system.
+                    stripe_img = src_img.transpose(Image.Transpose.TRANSPOSE)
 
                     stripe_x0 = idx * stripe_w
                     stripe_x1 = stripe_x0 + stripe_w
@@ -1592,18 +2150,29 @@ class ImageService:
                     y_local1 = bottom0
 
                     crop_box: Box = (int(x_local0), int(y_local0), int(x_local1), int(y_local1))
-                    stripe_crop = rot.crop(crop_box)
+                    stripe_crop = stripe_img.crop(crop_box)
 
                     # 粘贴到当前瓦片的相对位置
-                    dest_x = xg0 - left0
-                    base_tile.paste(stripe_crop, (int(dest_x), 0))
+                    if direct_scaled_tile:
+                        dest_x0 = max(0, int(round((xg0 - left0) * scale)))
+                        dest_x1 = min(target_w, int(round((xg1 - left0) * scale)))
+                        dest_w = max(0, dest_x1 - dest_x0)
+                        if dest_w > 0 and target_h > 0:
+                            stripe_crop = stripe_crop.resize(
+                                (dest_w, target_h),
+                                Image.Resampling.BILINEAR,
+                            )
+                            base_tile.paste(stripe_crop, (dest_x0, 0))
+                    else:
+                        dest_x = xg0 - left0
+                        base_tile.paste(stripe_crop, (int(dest_x), 0))
             else:
                 first_idx = top0 // stripe_h
                 last_idx = min(len(frames) - 1, (bottom0 - 1) // stripe_h)
 
                 for idx in range(first_idx, last_idx + 1):
                     stripe_path = frames[idx]
-                    src_img = self._load_frame_from_path(stripe_path)
+                    src_img = self._load_frame_from_path(stripe_path, field=field_name)
 
                     stripe_y0 = idx * stripe_h
                     stripe_y1 = stripe_y0 + stripe_h
@@ -1621,14 +2190,22 @@ class ImageService:
                     crop_box = (int(x_local0), int(y_local0), int(x_local1), int(y_local1))
                     stripe_crop = src_img.crop(crop_box)
 
-                    dest_y = yg0 - top0
-                    base_tile.paste(stripe_crop, (0, int(dest_y)))
+                    if direct_scaled_tile:
+                        dest_y0 = max(0, int(round((yg0 - top0) * scale)))
+                        dest_y1 = min(target_h, int(round((yg1 - top0) * scale)))
+                        dest_h = max(0, dest_y1 - dest_y0)
+                        if target_w > 0 and dest_h > 0:
+                            stripe_crop = stripe_crop.resize(
+                                (target_w, dest_h),
+                                Image.Resampling.BILINEAR,
+                            )
+                            base_tile.paste(stripe_crop, (0, dest_y0))
+                    else:
+                        dest_y = yg0 - top0
+                        base_tile.paste(stripe_crop, (0, int(dest_y)))
 
             # 对 level>0 进行缩放，得到最终瓦片图像尺寸
-            if level > 0:
-                scale = 1 / (2**level)
-                target_w = max(1, int(round(width0 * scale)))
-                target_h = max(1, int(round(height0 * scale)))
+            if level > 0 and not direct_scaled_tile:
                 tile_img = base_tile.resize((target_w, target_h), Image.Resampling.BILINEAR)
             else:
                 tile_img = base_tile
@@ -1645,7 +2222,7 @@ class ImageService:
                             "type": "tile",
                             "cache_root": cache_root,
                             "seq_no": seq_no_fs,
-                            "view": view_dir,
+                            "view": cache_view_dir,
                             "level": level,
                             "orientation": orientation,
                             "tile_x": tile_x,
@@ -1661,6 +2238,7 @@ class ImageService:
                 surface=surface,
                 seq_no=seq_no_fs,
                 view=view_dir,
+                field=field_name,
                 level=level,
                 tile_x=tile_x,
                 tile_y=tile_y,
@@ -1688,11 +2266,12 @@ class ImageService:
         x: float,
         y: float,
         image_index: int,
+        field: Optional[str] = None,
     ) -> Optional[tuple[int, int]]:
-        frames = self._list_frame_paths(surface, seq_no, view)
+        frames = self._list_frame_paths_with_fallback(surface, seq_no, view)
         if not frames:
             return None
-        first_img = self._load_frame_from_path(frames[0])
+        first_img = self._load_frame_from_path(frames[0], field=field)
         frame_w, frame_h = first_img.width, first_img.height
         frame_count = len(frames)
         if image_index < 0 or image_index >= frame_count:
@@ -1731,6 +2310,60 @@ class ImageService:
 
         return tile_x, tile_y
 
+    def _prefetch_tile_grid(
+        self,
+        *,
+        surface: str,
+        seq_no: int,
+        view: str,
+        field: Optional[str],
+        orientation: str,
+        level: int,
+    ) -> tuple[int, int]:
+        tile_size = max(1, int(self.settings.images.frame_height or 1))
+        field_name = self.normalize_field(field)
+        cache_view_dir = self.field_view_name(view or self.settings.images.default_view, field_name)
+        surface_root = self._surface_root(surface)
+        cache_root = self._cache_root(surface)
+        seq_no_fs = self._resolve_seq_no_for_fs(surface_root, seq_no)
+        meta = self.disk_cache.read_meta(cache_root, seq_no_fs, view=cache_view_dir)
+
+        frame_count = 0
+        if meta:
+            image_meta = meta.get("image") or {}
+            try:
+                frame_count = int(image_meta.get("frame_count") or 0)
+            except (TypeError, ValueError):
+                frame_count = 0
+
+        frame_w = int(self.settings.images.frame_width or 0)
+        frame_h = self.display_height_for_field(
+            int(self.settings.images.frame_height or 0),
+            field_name,
+        )
+        if frame_count <= 0 or frame_w <= 0 or frame_h <= 0:
+            frames = self._list_frame_paths_with_fallback(surface, seq_no, view)
+            if not frames:
+                return (0, 0)
+            first_img = self._load_frame_from_path(frames[0], field=field_name)
+            frame_count = len(frames)
+            frame_w = first_img.width
+            frame_h = first_img.height
+
+        if orientation == "horizontal":
+            mosaic_width = frame_h * max(1, frame_count)
+            mosaic_height = frame_w
+        else:
+            mosaic_width = frame_w
+            mosaic_height = frame_h * max(1, frame_count)
+
+        virtual_tile_size = tile_size * (2**level)
+        if virtual_tile_size <= 0:
+            return (0, 0)
+        tiles_x = max(1, int(math.ceil(mosaic_width / virtual_tile_size)))
+        tiles_y = max(1, int(math.ceil(mosaic_height / virtual_tile_size)))
+        return tiles_x, tiles_y
+
     def _schedule_tile_prefetch(
         self,
         *,
@@ -1743,6 +2376,7 @@ class ImageService:
         tile_y: int,
         prefetch: Optional[dict] = None,
         orientation: str = "vertical",
+        field: Optional[str] = None,
     ) -> None:
         manager = self._tile_prefetch
         if manager is None:
@@ -1764,8 +2398,67 @@ class ImageService:
         if not viewer_id:
             return
 
+        orientation = (orientation or "vertical").lower()
+        if orientation not in {"horizontal", "vertical"}:
+            orientation = "vertical"
         scheduled: list[tuple[int, int, int]] = []
         seq_warm: list[tuple[int, int, int]] = []
+        grid_cache: dict[int, tuple[int, int]] = {}
+
+        def _grid_for(level_value: int) -> Optional[tuple[int, int]]:
+            if level_value < 0 or level_value > max_level:
+                return None
+            cached_grid = grid_cache.get(level_value)
+            if cached_grid is not None:
+                return cached_grid
+            try:
+                grid = self._prefetch_tile_grid(
+                    surface=surface,
+                    seq_no=seq_no,
+                    view=view,
+                    field=field,
+                    orientation=orientation,
+                    level=level_value,
+                )
+            except Exception:
+                logger.debug(
+                    "tile-prefetch grid failed seq=%s surface=%s view=%s orientation=%s level=%s",
+                    seq_no,
+                    surface,
+                    view,
+                    orientation,
+                    level_value,
+                    exc_info=True,
+                )
+                return None
+            grid_cache[level_value] = grid
+            return grid
+
+        def _enqueue_prefetch_tile(level_value: int, x_value: int, y_value: int, priority: int) -> bool:
+            if x_value < 0 or y_value < 0:
+                return False
+            grid = _grid_for(level_value)
+            if grid is None:
+                return False
+            tiles_x, tiles_y = grid
+            if x_value >= tiles_x or y_value >= tiles_y:
+                return False
+            manager.enqueue_tile(
+                TileRequest(
+                    viewer_id=viewer_id,
+                    surface=surface,
+                    seq_no=seq_no,
+                    view=view,
+                    orientation=orientation,
+                    field=field,
+                    level=level_value,
+                    tile_x=x_value,
+                    tile_y=y_value,
+                ),
+                priority=priority,
+            )
+            scheduled.append((level_value, x_value, y_value))
+            return True
 
         prefetch_mode = None
         if prefetch and isinstance(prefetch, dict):
@@ -1781,6 +2474,7 @@ class ImageService:
                     surface=surface,
                     seq_no=seq_no,
                     view=view,
+                    field=field,
                     level=level,
                     orientation=orientation,
                     x=float(px),
@@ -1798,19 +2492,8 @@ class ImageService:
             if target is None:
                 return
             target_x, target_y = target
-            manager.enqueue_tile(
-                TileRequest(
-                    viewer_id=viewer_id,
-                    surface=surface,
-                    seq_no=seq_no,
-                    view=view,
-                    level=level,
-                    tile_x=target_x,
-                    tile_y=target_y,
-                ),
-                priority=0,
-            )
-            scheduled.append((level, target_x, target_y))
+            if not _enqueue_prefetch_tile(level, target_x, target_y, priority=0):
+                return
             if settings.tile_prefetch_log_enabled and settings.tile_prefetch_log_detail == "summary":
                 prefetch_logger.info(
                     "tile-prefetch defect viewer=%s %s seq=%s view=%s req_level=%s hint=(%s,%s,%s) tiles=%s",
@@ -1846,22 +2529,8 @@ class ImageService:
                     continue
                 nx = tile_x + dx
                 ny = tile_y + dy
-                if nx < 0 or ny < 0:
-                    continue
-                manager.enqueue_tile(
-                    TileRequest(
-                        viewer_id=viewer_id,
-                        surface=surface,
-                        seq_no=seq_no,
-                        view=view,
-                        level=level,
-                        tile_x=nx,
-                        tile_y=ny,
-                    ),
-                    priority=1,
-                )
-                scheduled.append((level, nx, ny))
-                picked += 1
+                if _enqueue_prefetch_tile(level, nx, ny, priority=1):
+                    picked += 1
                 if picked >= neighbor_count:
                     break
 
@@ -1873,33 +2542,9 @@ class ImageService:
                 base_y = tile_y * 2
                 for dx in (0, 1):
                     for dy in (0, 1):
-                        manager.enqueue_tile(
-                            TileRequest(
-                                viewer_id=viewer_id,
-                                surface=surface,
-                                seq_no=seq_no,
-                                view=view,
-                                level=child_level,
-                                tile_x=base_x + dx,
-                                tile_y=base_y + dy,
-                            ),
-                            priority=1,
-                        )
-                        scheduled.append((child_level, base_x + dx, base_y + dy))
+                        _enqueue_prefetch_tile(child_level, base_x + dx, base_y + dy, priority=1)
             if level < max_level:
-                manager.enqueue_tile(
-                    TileRequest(
-                        viewer_id=viewer_id,
-                        surface=surface,
-                        seq_no=seq_no,
-                        view=view,
-                        level=level + 1,
-                        tile_x=tile_x // 2,
-                        tile_y=tile_y // 2,
-                    ),
-                    priority=1,
-                )
-                scheduled.append((level + 1, tile_x // 2, tile_y // 2))
+                _enqueue_prefetch_tile(level + 1, tile_x // 2, tile_y // 2, priority=1)
 
         # Adjacent seq_no warmup (optional).
         if settings.tile_prefetch_adjacent_seq_enabled:
@@ -1918,6 +2563,8 @@ class ImageService:
                     surface=surface,
                     seq_no=seq_no,
                     view=view,
+                    orientation=orientation,
+                    field=field,
                     warm_levels=warm_levels,
                     priority=2,
                 )
@@ -1942,16 +2589,22 @@ class ImageService:
         surface: str,
         seq_no: int,
         view: str,
+        orientation: str,
         level: int,
         count: int,
+        field: Optional[str] = None,
     ) -> list[tuple[int, int]]:
         tile_size = self.settings.images.frame_height
-        frames = self._list_frame_paths(surface, seq_no, view)
+        frames = self._list_frame_paths_with_fallback(surface, seq_no, view)
         if not frames:
             return []
-        first_img = self._load_frame_from_path(frames[0])
-        mosaic_width = first_img.width
-        mosaic_height = first_img.height * len(frames)
+        first_img = self._load_frame_from_path(frames[0], field=field)
+        if orientation == "horizontal":
+            mosaic_width = first_img.height * len(frames)
+            mosaic_height = first_img.width
+        else:
+            mosaic_width = first_img.width
+            mosaic_height = first_img.height * len(frames)
 
         virtual_tile_size = tile_size * (2**level)
         tiles_x = max(1, int(math.ceil(mosaic_width / virtual_tile_size)))
@@ -1975,7 +2628,18 @@ class ImageService:
         logger.info("disk-cache worker threads 启动")
         if not self._cache_task_thread_started:
             self._cache_task_thread_started = True
-            threading.Thread(target=self._disk_cache_precache_loop, daemon=True).start()
+            worker_count = max(
+                1,
+                min(4, int(getattr(self.settings.disk_cache, "disk_precache_workers", 1) or 1)),
+            )
+            for worker_index in range(worker_count):
+                threading.Thread(
+                    target=self._disk_cache_precache_loop,
+                    args=(worker_index + 1,),
+                    daemon=True,
+                    name=f"disk-cache-precache-{worker_index + 1}",
+                ).start()
+            logger.info("disk-cache precache workers=%s", worker_count)
             logger.info("disk-cache task thread 启动")
         threading.Thread(target=self._disk_cache_cleanup_loop, daemon=True).start()
         logger.info("disk-cache cleanup thread 启动")
@@ -2087,7 +2751,7 @@ class ImageService:
                 self.end_cache_task()
                 self._cache_task_queue.task_done()
 
-    def _disk_cache_precache_loop(self) -> None:
+    def _disk_cache_precache_loop(self, worker_index: int = 1) -> None:
         settings = self.settings.disk_cache
         scan_interval = settings.disk_cache_scan_interval_seconds
         precache_levels = settings.disk_precache_levels
@@ -2126,7 +2790,7 @@ class ImageService:
             try:
                 self._run_cache_task_auto(precache_levels=precache_levels)
             except Exception:
-                logger.exception("disk-cache auto task failed")
+                logger.exception("disk-cache auto task failed worker=%s", worker_index)
 
             self._disk_cache_stop.wait(scan_interval)
 
@@ -2136,15 +2800,22 @@ class ImageService:
         view_dir = self.settings.images.default_view
 
         while not self._disk_cache_stop.is_set():
-            max_records = int(settings.disk_cache_max_records or 0)
+            max_records = max(
+                1,
+                min(
+                    200,
+                    int(settings.disk_cache_max_records or 200),
+                    int(getattr(settings, "disk_precache_window_records", 200) or 200),
+                ),
+            )
             if max_records > 0:
-                seqs: set[int] = set()
-                for surface in ("top", "bottom"):
-                    root = self._cache_root(surface)
-                    seqs.update(self._list_seq_dirs(root))
-                seq_list = sorted(seqs)
-                if len(seq_list) > max_records:
-                    delete_seqs = seq_list[: len(seq_list) - max_records]
+                latest_seq = self._get_latest_steel_seq()
+                if latest_seq is not None:
+                    window_start = max(1, int(latest_seq) - max_records + 1)
+                    delete_seqs = self._list_cached_record_seqs_before(
+                        seq_before=window_start,
+                        view_dir=view_dir,
+                    )
                     for seq in delete_seqs:
                         try:
                             self._remove_cache_seq(seq)
@@ -2160,35 +2831,37 @@ class ImageService:
         precache_levels: int,
         force: bool = False,
         emit_status: bool = True,
-    ) -> None:
+        overview_only: bool = False,
+        skip_overview: bool = False,
+        task_info: Optional[dict[str, object]] = None,
+        status_surfaces: Optional[list[str]] = None,
+        status_message: Optional[str] = None,
+    ) -> bool:
         if emit_status:
             self._begin_background_cache(seq_no, surface)
         try:
             if not force and not self._is_seq_closed(seq_no, view_dir=self.settings.images.default_view):
                 logger.info("disk-cache precache skip open seq=%s view=%s", seq_no, self.settings.images.default_view)
-                return
+                return False
             view_dir = self.settings.images.default_view
             meta = self.disk_cache.read_meta(self._cache_root(surface), seq_no, view=view_dir)
-            if meta and not force:
-                return
+            if (
+                meta
+                and not force
+                and self.is_disk_cache_surface_current(surface, seq_no, meta=meta, view_dir=view_dir)
+            ):
+                return True
             max_level = self.disk_cache.max_level()
             levels = max(1, int(precache_levels))
             level_min = max(0, max_level - levels + 1)
             level_max = max_level
 
             try:
-                frames = self._list_frame_paths(surface, seq_no, view_dir)
+                frames = self._list_frame_paths_with_fallback(surface, seq_no, view_dir)
             except FileNotFoundError:
-                if view_dir != "2D":
-                    try:
-                        frames = self._list_frame_paths(surface, seq_no, "2D")
-                        view_dir = "2D"
-                    except FileNotFoundError:
-                        return
-                else:
-                    return
+                return False
             if not frames:
-                return
+                return False
 
             frames_count = len(frames)
             first_img = self._load_frame_from_path(frames[0])
@@ -2196,6 +2869,29 @@ class ImageService:
             mosaic_width = frame_w
             mosaic_height = frame_h * frames_count
             tile_size = self.settings.images.frame_height
+            full_frame_limit = int(
+                getattr(self.settings.disk_cache, "disk_precache_full_frame_limit", 1000) or 0
+            )
+            long_sequence_rows = max(
+                1,
+                int(getattr(self.settings.disk_cache, "disk_precache_long_sequence_rows", 64) or 64),
+            )
+            is_long_sequence = (
+                not force
+                and full_frame_limit > 0
+                and frames_count > full_frame_limit
+            )
+            if is_long_sequence:
+                level_min = level_max
+            cache_root = self._cache_root(surface)
+            seq_no_fs = self._resolve_seq_no_for_fs(self._surface_root(surface), seq_no)
+            cache_view_dir = self.field_view_name(view_dir, self.normalize_field(None))
+            self.disk_cache.update_frame_count(
+                cache_root,
+                seq_no_fs,
+                view=cache_view_dir,
+                frame_count=frames_count,
+            )
 
             levels_states: dict[int, dict] = {}
             for level in range(level_min, level_max + 1):
@@ -2208,19 +2904,233 @@ class ImageService:
                     "completed_y": set(),
                 }
 
+            precache_defects = bool(getattr(self.settings.disk_cache, "disk_precache_defects_enabled", False))
             defects_by_index: dict[int, list[DefectRecord]] = {}
-            try:
-                resp = self.defect_service.defects_by_seq(seq_no, surface=surface)
-                for item in resp.items:
-                    if item.image_index is None:
+            if precache_defects:
+                try:
+                    resp = self.defect_service.defects_by_seq(seq_no, surface=surface)
+                    for item in resp.items:
+                        if item.image_index is None:
+                            continue
+                        defects_by_index.setdefault(int(item.image_index), []).append(item)
+                except Exception:
+                    defects_by_index = {}
+
+            completed = True
+            high_level_min = max(1, level_min)
+            last_progress_emit = 0.0
+
+            def _update_tile_progress(
+                *,
+                orientation: str,
+                level: int,
+                done: int,
+                total: int,
+                tile_x: int,
+                tile_y: int,
+                force_emit: bool = False,
+            ) -> None:
+                nonlocal last_progress_emit
+                if task_info is None:
+                    return
+                now = time.monotonic()
+                if not force_emit and done < total and now - last_progress_emit < 0.5:
+                    return
+                last_progress_emit = now
+                percent = round((done * 100.0 / total), 1) if total > 0 else 0.0
+                task_info["current_seq"] = seq_no
+                task_info["tile_progress"] = {
+                    "seq_no": seq_no,
+                    "surface": surface,
+                    "orientation": orientation,
+                    "level": int(level),
+                    "done": int(done),
+                    "total": int(total),
+                    "percent": percent,
+                    "tile_x": int(tile_x),
+                    "tile_y": int(tile_y),
+                }
+                self._set_cache_status(
+                    state="running",
+                    message=status_message or f"自动缓存 {seq_no}",
+                    seq_no=seq_no,
+                    surface=surface,
+                    surfaces=status_surfaces,
+                    task=task_info,
+                    emit_log=False,
+                )
+
+            def _overview_grid(orientation: str, level_value: int) -> tuple[int, int]:
+                virtual_tile_size = tile_size * (2**level_value)
+                if virtual_tile_size <= 0:
+                    return (0, 0)
+                if orientation == "horizontal":
+                    width = frame_h * frames_count
+                    height = frame_w
+                else:
+                    width = mosaic_width
+                    height = mosaic_height
+                return (
+                    max(1, int(math.ceil(width / virtual_tile_size))),
+                    max(1, int(math.ceil(height / virtual_tile_size))),
+                )
+
+            def _precache_overview_orientation(orientation: str) -> bool:
+                if skip_overview or level_max < high_level_min:
+                    return True
+                for level in range(level_max, high_level_min - 1, -1):
+                    if orientation == "vertical":
+                        tiles_x = levels_states[level]["tiles_x"]
+                        tiles_y = levels_states[level]["tiles_y"]
+                    else:
+                        tiles_x, tiles_y = _overview_grid(orientation, level)
+                    if tiles_x <= 0 or tiles_y <= 0:
                         continue
-                    defects_by_index.setdefault(int(item.image_index), []).append(item)
-            except Exception:
-                defects_by_index = {}
+
+                    full_horizontal_level = orientation == "horizontal" and level == level_max
+                    long_limit = None
+                    if is_long_sequence and not full_horizontal_level:
+                        long_limit = long_sequence_rows
+                    effective_tiles_y = tiles_y
+                    if orientation == "vertical" and long_limit is not None:
+                        effective_tiles_y = min(effective_tiles_y, long_limit)
+                    effective_tiles_x = tiles_x
+                    if orientation == "horizontal" and long_limit is not None:
+                        effective_tiles_x = min(effective_tiles_x, long_limit)
+                    level_total = max(1, effective_tiles_x * effective_tiles_y)
+                    level_done = 0
+                    _update_tile_progress(
+                        orientation=orientation,
+                        level=level,
+                        done=0,
+                        total=level_total,
+                        tile_x=0,
+                        tile_y=0,
+                        force_emit=True,
+                    )
+
+                    for tile_y in range(tiles_y):
+                        if orientation == "vertical" and long_limit is not None and tile_y >= long_limit:
+                            break
+                        if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+                            return False
+                        if (
+                            orientation == "vertical"
+                            and not force
+                            and tile_y > 0
+                            and tile_y % 16 == 0
+                        ):
+                            newer_seq = self._newer_seq_needs_precache(seq_no)
+                            if newer_seq is not None:
+                                logger.info(
+                                    "disk-cache precache yield seq=%s surface=%s to newer seq=%s",
+                                    seq_no,
+                                    surface,
+                                    newer_seq,
+                                )
+                                return False
+                        if orientation == "vertical" and tile_y in levels_states[level]["completed_y"]:
+                            level_done = min(level_total, level_done + effective_tiles_x)
+                            continue
+
+                        tile_x_stop = tiles_x
+                        if orientation == "horizontal" and long_limit is not None:
+                            tile_x_stop = min(tile_x_stop, long_limit)
+                        for tile_x in range(tile_x_stop):
+                            if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+                                return False
+                            if (
+                                orientation == "horizontal"
+                                and not force
+                                and tile_x > 0
+                                and tile_x % 16 == 0
+                            ):
+                                newer_seq = self._newer_seq_needs_precache(seq_no)
+                                if newer_seq is not None:
+                                    logger.info(
+                                        "disk-cache precache yield seq=%s surface=%s to newer seq=%s",
+                                        seq_no,
+                                        surface,
+                                        newer_seq,
+                                    )
+                                    return False
+                            self._get_tile_impl(
+                                surface=surface,
+                                seq_no=seq_no,
+                                view=view_dir,
+                                field=None,
+                                level=level,
+                                tile_x=tile_x,
+                                tile_y=tile_y,
+                                orientation=orientation,
+                                width=None,
+                                height=None,
+                                fmt="JPEG",
+                                trigger_prefetch=False,
+                                viewer_id="precache",
+                                prefetch=None,
+                                ensure_meta=False,
+                                direct_render=True,
+                            )
+                            level_done = min(level_total, level_done + 1)
+                            if level_done == 1 or level_done % 16 == 0 or level_done >= level_total:
+                                _update_tile_progress(
+                                    orientation=orientation,
+                                    level=level,
+                                    done=level_done,
+                                    total=level_total,
+                                    tile_x=tile_x,
+                                    tile_y=tile_y,
+                                )
+                        if orientation == "vertical":
+                            levels_states[level]["completed_y"].add(tile_y)
+                        _update_tile_progress(
+                            orientation=orientation,
+                            level=level,
+                            done=level_done,
+                            total=level_total,
+                            tile_x=max(0, tile_x_stop - 1),
+                            tile_y=tile_y,
+                            force_emit=level_done >= level_total,
+                        )
+                        self._yield_background_cache()
+                return True
+
+            if not skip_overview and level_max >= high_level_min:
+                completed = _precache_overview_orientation("horizontal")
+                if completed:
+                    completed = _precache_overview_orientation("vertical")
+            if overview_only:
+                return completed
+
+            if is_long_sequence:
+                logger.info(
+                    "disk-cache precache overview-only long seq=%s surface=%s frames=%s limit=%s rows=%s",
+                    seq_no,
+                    surface,
+                    frames_count,
+                    full_frame_limit,
+                    long_sequence_rows,
+                )
+                return completed
 
             for image_index in range(frames_count):
                 if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+                    completed = False
                     break
+                if not completed:
+                    break
+                if not force and image_index > 0 and image_index % 32 == 0:
+                    newer_seq = self._newer_seq_needs_precache(seq_no)
+                    if newer_seq is not None:
+                        completed = False
+                        logger.info(
+                            "disk-cache precache yield seq=%s surface=%s to newer seq=%s",
+                            seq_no,
+                            surface,
+                            newer_seq,
+                        )
+                        break
                 if level_min == 0:
                     base_tiles_y = levels_states[0]["tiles_y"]
                     base_tiles_x = levels_states[0]["tiles_x"]
@@ -2228,68 +3138,117 @@ class ImageService:
                     for tile_y in range(max_tile_y + 1):
                         if tile_y in levels_states[0]["completed_y"]:
                             continue
+                        missing_tile_x: list[int] = []
                         for tile_x in range(base_tiles_x):
-                            self.get_tile(
-                                surface=surface,
-                                seq_no=seq_no,
-                                view=view_dir,
+                            if self.disk_cache.read_tile(
+                                cache_root,
+                                seq_no_fs,
+                                view=cache_view_dir,
                                 level=0,
+                                orientation="vertical",
                                 tile_x=tile_x,
                                 tile_y=tile_y,
-                                orientation="vertical",
-                                fmt="JPEG",
-                                ensure_meta=False,
-                            )
+                            ) is None:
+                                missing_tile_x.append(tile_x)
+
+                        if missing_tile_x and tile_y < len(frames):
+                            frame_img = self._load_frame_from_path(frames[tile_y])
+                            for tile_x in missing_tile_x:
+                                left = tile_x * tile_size
+                                if left >= frame_img.width:
+                                    continue
+                                right = min(left + tile_size, frame_img.width)
+                                bottom = min(tile_size, frame_img.height)
+                                tile_img = frame_img.crop((left, 0, right, bottom))
+                                data = encode_image(tile_img, fmt="JPEG")
+                                self.tile_cache.put(
+                                    (
+                                        surface,
+                                        seq_no,
+                                        cache_view_dir,
+                                        "vertical",
+                                        0,
+                                        tile_x,
+                                        tile_y,
+                                        "JPEG",
+                                    ),
+                                    data,
+                                )
+                                self._enqueue_disk_write(
+                                    {
+                                        "type": "tile",
+                                        "cache_root": cache_root,
+                                        "seq_no": seq_no_fs,
+                                        "view": cache_view_dir,
+                                        "level": 0,
+                                        "orientation": "vertical",
+                                        "tile_x": tile_x,
+                                        "tile_y": tile_y,
+                                        "payload": data,
+                                        "ensure_meta": False,
+                                    }
+                                )
                         levels_states[0]["completed_y"].add(tile_y)
+                        self._yield_background_cache()
 
-                defect_items = defects_by_index.get(image_index, [])
-                for item in defect_items:
-                    if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
-                        break
-                    try:
-                        self.crop_defect(
-                            surface=item.surface,
-                            defect_id=item.defect_id,
-                            expand=self.disk_cache.defect_expand,
-                            width=None,
-                            height=None,
-                            fmt="JPEG",
-                            ensure_meta=False,
-                        )
-                    except FileNotFoundError:
-                        continue
-                    except Exception:
-                        logger.exception(
-                            "sync defects: crop failed seq=%s surface=%s defect_id=%s",
-                            seq_no,
-                            item.surface,
-                            item.defect_id,
-                        )
-
-                for level in range(max(1, level_min), level_max + 1):
-                    group_size = 2**level
-                    complete_groups = (image_index + 1) // group_size
-                    if complete_groups <= 0:
-                        continue
-                    max_tile_y = min(levels_states[level]["tiles_y"], complete_groups) - 1
-                    for tile_y in range(max_tile_y + 1):
-                        if tile_y in levels_states[level]["completed_y"]:
-                            continue
-                        for tile_x in range(levels_states[level]["tiles_x"]):
-                            self.get_tile(
-                                surface=surface,
-                                seq_no=seq_no,
-                                view=view_dir,
-                                level=level,
-                                tile_x=tile_x,
-                                tile_y=tile_y,
-                                orientation="vertical",
+                if precache_defects:
+                    defect_items = defects_by_index.get(image_index, [])
+                    for item in defect_items:
+                        if self._cache_abort.is_set() or self._disk_cache_stop.is_set():
+                            completed = False
+                            break
+                        try:
+                            self.crop_defect(
+                                surface=item.surface,
+                                defect_id=item.defect_id,
+                                expand=self.disk_cache.defect_expand,
+                                width=None,
+                                height=None,
                                 fmt="JPEG",
                                 ensure_meta=False,
                             )
-                        levels_states[level]["completed_y"].add(tile_y)
+                        except FileNotFoundError:
+                            continue
+                        except Exception:
+                            logger.exception(
+                                "sync defects: crop failed seq=%s surface=%s defect_id=%s",
+                                seq_no,
+                                item.surface,
+                                item.defect_id,
+                            )
+                    if defect_items:
+                        self._yield_background_cache()
+                    if not completed:
+                        break
 
-            logger.info("disk-cache precache %s/%s/%s 完成", surface, seq_no, view_dir)
+                if not skip_overview:
+                    for level in range(max(1, level_min), level_max + 1):
+                        group_size = 2**level
+                        complete_groups = (image_index + 1) // group_size
+                        if complete_groups <= 0:
+                            continue
+                        max_tile_y = min(levels_states[level]["tiles_y"], complete_groups) - 1
+                        for tile_y in range(max_tile_y + 1):
+                            if tile_y in levels_states[level]["completed_y"]:
+                                continue
+                            for tile_x in range(levels_states[level]["tiles_x"]):
+                                self.get_tile(
+                                    surface=surface,
+                                    seq_no=seq_no,
+                                    view=view_dir,
+                                    level=level,
+                                    tile_x=tile_x,
+                                    tile_y=tile_y,
+                                    orientation="vertical",
+                                    fmt="JPEG",
+                                    ensure_meta=False,
+                                )
+                            levels_states[level]["completed_y"].add(tile_y)
+                            self._yield_background_cache()
+
+            if completed:
+                logger.info("disk-cache precache %s/%s/%s 完成", surface, seq_no, view_dir)
+            return completed
         finally:
             if emit_status:
                 self._end_background_cache()
@@ -2313,7 +3272,7 @@ class ImageService:
                 meta_max_level = int(meta_tile.get("max_level") or 0)
                 meta_expand = int(meta_defects.get("expand") or 0)
                 # 如果当前配置支持更多层级或更大的缺陷扩展，则触发补充缓存
-                needs_precache = False
+                needs_precache = not self._is_disk_cache_meta_complete(meta)
                 if current_max_level > meta_max_level:
                     needs_precache = True
                 if self.disk_cache.defect_expand != meta_expand:
@@ -2353,11 +3312,23 @@ class ImageService:
     def _is_seq_closed(self, seq_no: int, *, view_dir: str) -> bool:
         view_dir = view_dir or self.settings.images.default_view
         has_surface = False
+        stable_seconds = max(
+            30,
+            int(getattr(self.settings.disk_cache, "disk_cache_scan_interval_seconds", 5) or 5) * 3,
+        )
+        now = time.time()
         for surface in ("top", "bottom"):
             surface_root = self._surface_root(surface)
             if not surface_root.exists():
                 return False
             has_surface = True
+            view_path = surface_root / str(seq_no) / view_dir
+            if view_path.exists():
+                try:
+                    if now - view_path.stat().st_mtime < stable_seconds:
+                        return False
+                except OSError:
+                    return False
             view_record = self._record_path(surface_root, seq_no, view_dir)
             if view_record.exists():
                 continue
@@ -2371,23 +3342,30 @@ class ImageService:
     # --------------------------------------------------------------------- #
     # Internal helpers
     # --------------------------------------------------------------------- #
-    def _load_frame(self, surface: str, seq_no: int, image_index: int, view: Optional[str] = None) -> Image.Image:
+    def _load_frame(
+        self,
+        surface: str,
+        seq_no: int,
+        image_index: int,
+        view: Optional[str] = None,
+        field: Optional[str] = None,
+    ) -> Image.Image:
         view_dir = view or self.settings.images.default_view
         ext = self.settings.images.file_extension
         root = self._surface_root(surface)
         seq_no_fs = self._resolve_seq_no_for_fs(root, seq_no)
-        path = self._resolve_frame_path(root, seq_no_fs, view_dir, image_index, ext)
+        path = self._resolve_frame_path_with_fallback(root, seq_no_fs, view_dir, image_index, ext)
         key = ("frame", path.as_posix())
         cached = self.frame_cache.get(key)
         if cached is not None:
-            return open_image_from_bytes(cached, mode=self.mode)
+            return self._crop_image_to_field(open_image_from_bytes(cached, mode=self.mode), field)
         if not path.exists():
             if self.test_mode:
-                return self._black_frame()
+                return self._crop_image_to_field(self._black_frame(), field)
             raise FileNotFoundError(path)
         data = path.read_bytes()
         self.frame_cache.put(key, data)
-        return open_image_from_bytes(data, mode=self.mode)
+        return self._crop_image_to_field(open_image_from_bytes(data, mode=self.mode), field)
 
     def _black_frame(self) -> Image.Image:
         width = int(getattr(self.settings.images, "frame_width", 1024) or 1024)
@@ -2482,7 +3460,27 @@ class ImageService:
     @staticmethod
     def _resolve_frame_path(root: Path, seq_no: int, view_dir: str, image_index: int, ext: str) -> Path:
         candidate = root / str(seq_no) / view_dir / f"{image_index}.{ext}"
+        if image_index == 0 and not candidate.exists():
+            one_based = root / str(seq_no) / view_dir / f"1.{ext}"
+            if one_based.exists():
+                return one_based
         return candidate
+
+    def _resolve_frame_path_with_fallback(
+        self,
+        root: Path,
+        seq_no: int,
+        view_dir: str,
+        image_index: int,
+        ext: str,
+    ) -> Path:
+        path = self._resolve_frame_path(root, seq_no, view_dir, image_index, ext)
+        if path.exists() or str(view_dir or "").lower() == "2d":
+            return path
+        fallback = self._resolve_frame_path(root, seq_no, "2D", image_index, ext)
+        if fallback.exists():
+            return fallback
+        return path
 
     def _resolve_seq_no_for_fs(self, root: Path, seq_no: int) -> int:
         """
@@ -2529,6 +3527,30 @@ class ImageService:
         files.sort(key=self._frame_sort_key)
         return files
 
+    def _list_frame_paths_with_fallback(self, surface: str, seq_no: int, view: str) -> List[Path]:
+        exact_frames: Optional[List[Path]] = None
+        exact_error: Optional[FileNotFoundError] = None
+        try:
+            exact_frames = self._list_frame_paths(surface, seq_no, view)
+            if exact_frames:
+                return exact_frames
+        except FileNotFoundError as exc:
+            exact_error = exc
+
+        if str(view or "").lower() != "2d":
+            try:
+                fallback_frames = self._list_frame_paths(surface, seq_no, "2D")
+                if fallback_frames or exact_frames is None:
+                    return fallback_frames
+            except FileNotFoundError:
+                pass
+
+        if exact_frames is not None:
+            return exact_frames
+        if exact_error is not None:
+            raise exact_error
+        return []
+
     def _resolve_steel_id(self, seq_no: int) -> str | None:
         if seq_no in self._steel_id_cache:
             return self._steel_id_cache.get(seq_no)
@@ -2562,16 +3584,17 @@ class ImageService:
         seq_no: int,
         *,
         view: Optional[str],
+        field: Optional[str] = None,
         limit: Optional[int],
         skip: int,
         stride: int,
     ) -> Image.Image:
-        key = (surface, seq_no, view or self.settings.images.default_view, limit, skip, stride)
+        key = (surface, seq_no, view or self.settings.images.default_view, self.normalize_field(field) or "all", limit, skip, stride)
         cached = self.mosaic_cache.get(key)
         if cached is not None:
             return cached.copy()
         view_dir = view or self.settings.images.default_view
-        frames = self._list_frame_paths(surface, seq_no, view_dir)
+        frames = self._list_frame_paths_with_fallback(surface, seq_no, view_dir)
         if skip:
             frames = frames[skip:]
         if stride > 1:
@@ -2580,10 +3603,16 @@ class ImageService:
             frames = frames[:limit]
         if not frames:
             if self.test_mode:
-                return Image.new("RGB", (self.settings.images.frame_width, self.settings.images.frame_height))
+                return Image.new(
+                    "RGB",
+                    (
+                        self.settings.images.frame_width,
+                        self.display_height_for_field(self.settings.images.frame_height, field),
+                    ),
+                )
             raise FileNotFoundError(f"No frames found for {surface} seq={seq_no}")
         # 构建横向长带拼接图：将每帧逆时针旋转 90° 后按 X 方向依次拼接
-        images = [self._load_frame_from_path(path) for path in frames]
+        images = [self._load_frame_from_path(path, field=field) for path in frames]
         # 先对每一帧做逆时针 90° 旋转，使钢板长度方向沿水平方向展开
         rotated_images = [img.transpose(Image.Transpose.ROTATE_90) for img in images]
         width = sum(img.width for img in rotated_images)
@@ -2596,11 +3625,11 @@ class ImageService:
         self.mosaic_cache.put(key, mosaic.copy())
         return mosaic
 
-    def _load_frame_from_path(self, path: Path) -> Image.Image:
+    def _load_frame_from_path(self, path: Path, field: Optional[str] = None) -> Image.Image:
         key = ("frame", path.as_posix())
         cached = self.frame_cache.get(key)
         if cached is not None:
-            return open_image_from_bytes(cached, mode=self.mode)
+            return self._crop_image_to_field(open_image_from_bytes(cached, mode=self.mode), field)
         data = path.read_bytes()
         self.frame_cache.put(key, data)
-        return open_image_from_bytes(data, mode=self.mode)
+        return self._crop_image_to_field(open_image_from_bytes(data, mode=self.mode), field)

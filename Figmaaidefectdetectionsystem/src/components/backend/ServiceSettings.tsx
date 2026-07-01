@@ -94,10 +94,11 @@ const DISK_CACHE_FIELDS: Array<{
   type?: "number" | "boolean";
 }> = [
   { key: "disk_cache_enabled", label: "磁盘缓存", type: "boolean" },
-  { key: "disk_cache_max_records", label: "磁盘缓存记录上限", type: "number" },
+  { key: "disk_cache_max_records", label: "磁盘缓存保留卷数", hint: "最多 200", type: "number" },
   { key: "disk_cache_scan_interval_seconds", label: "磁盘扫描间隔(秒)", type: "number" },
   { key: "disk_cache_cleanup_interval_seconds", label: "磁盘清理间隔(秒)", type: "number" },
   { key: "disk_precache_enabled", label: "磁盘预热", type: "boolean" },
+  { key: "disk_precache_window_records", label: "自动缓存窗口(卷)", hint: "最多 200", type: "number" },
   { key: "disk_precache_levels", label: "预热层级", type: "number" },
   { key: "disk_precache_workers", label: "缓存线程数", type: "number" },
   { key: "defect_cache_enabled", label: "缺陷裁剪缓存", type: "boolean" },

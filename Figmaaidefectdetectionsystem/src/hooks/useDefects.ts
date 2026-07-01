@@ -40,6 +40,10 @@ export const useDefects = (selectedPlateId: string | null, steelPlates: SteelPla
         confidence: item.confidence,
         surface: item.surface,
         imageIndex: item.imageIndex,
+        xMm: item.xMm,
+        yMm: item.yMm,
+        widthMm: item.widthMm,
+        heightMm: item.heightMm,
       }));
 
       setPlateDefects(mapped);

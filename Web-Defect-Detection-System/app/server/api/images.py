@@ -27,6 +27,8 @@ class TilePreheatRequest(BaseModel):
     seq_no: int = Field(..., ge=0)
     tiles: List[TileInfo] = Field(...)
     view: Optional[str] = Field(default=None)
+    field: Optional[str] = Field(default=None)
+    orientation: str = Field(default="vertical", pattern="^(horizontal|vertical)$")
     priority: Optional[str] = Field(default="normal", pattern="^(low|normal|high)$")
 
 
@@ -66,17 +68,20 @@ def api_frame_image(
     width: Optional[int] = Query(default=None, ge=1, le=8192),
     height: Optional[int] = Query(default=None, ge=1, le=8192),
     view: Optional[str] = Query(default=None),
+    field: Optional[str] = Query(default=None),
     scale: float = Query(default=1.0, gt=0.0, le=1.0),
     fmt: str = Query(default="JPEG"),
     service: ImageService = Depends(get_image_service),
 ):
     """获取单帧图像，支持指定上下表面、视角与目标尺寸。"""
     try:
+        requested_field = service.request_field_or_default(field)
         payload = service.get_frame(
             surface=surface,
             seq_no=seq_no,
             image_index=image_index,
             view=view,
+            field=requested_field,
             width=width,
             height=height,
             fmt=fmt,
@@ -96,6 +101,7 @@ def api_defect_crop(
     width: Optional[int] = Query(default=None, ge=1, le=4096),
     height: Optional[int] = Query(default=None, ge=1, le=4096),
     force_crop: bool = Query(default=False),
+    field: Optional[str] = Query(default=None),
     scale: float = Query(default=1.0, gt=0.0, le=1.0),
     fmt: str = Query(default="JPEG"),
     service: ImageService = Depends(get_image_service),
@@ -119,12 +125,14 @@ def api_defect_crop(
             height=height,
             fmt=fmt,
             use_cache=not force_crop,
+            field=field,
         )
         data = _apply_scale(data, scale, fmt, service)
         headers = {
             "X-Seq-No": str(defect.seq_no),
             "X-Image-Index": str(defect.image_index or 0),
             "X-Camera-Id": str(defect.camera_id),
+            "X-Field": str(defect.field_name or defect.field or ""),
         }
         return Response(content=data, media_type=_image_media_type(fmt), headers=headers)
     except FileNotFoundError as exc:
@@ -145,6 +153,7 @@ def api_custom_crop(
     width: Optional[int] = Query(default=None, ge=1, le=4096),
     height: Optional[int] = Query(default=None, ge=1, le=4096),
     force_crop: bool = Query(default=False),
+    field: Optional[str] = Query(default=None),
     scale: float = Query(default=1.0, gt=0.0, le=1.0),
     fmt: str = Query(default="JPEG"),
     service: ImageService = Depends(get_image_service),
@@ -160,6 +169,7 @@ def api_custom_crop(
                 height=height,
                 fmt=fmt,
                 use_cache=not force_crop,
+                field=field,
             )
             payload = _apply_scale(payload, scale, fmt, service)
             headers = {
@@ -167,12 +177,14 @@ def api_custom_crop(
                 "X-Image-Index": str(defect.image_index or 0),
                 "X-Camera-Id": str(defect.camera_id),
                 "X-Defect-Id": str(defect.defect_id),
+                "X-Field": str(defect.field_name or defect.field or ""),
             }
             return Response(content=payload, media_type=_image_media_type(fmt), headers=headers)
 
         if seq_no is None or image_index is None or x is None or y is None or w is None or h is None:
             raise HTTPException(status_code=400, detail="Missing crop parameters")
 
+        requested_field = service.request_field_or_default(field)
         payload = service.crop_custom(
             surface=surface,
             seq_no=seq_no,
@@ -185,6 +197,7 @@ def api_custom_crop(
             width=width,
             height=height,
             fmt=fmt,
+            field=requested_field,
         )
         payload = _apply_scale(payload, scale, fmt, service)
         return Response(content=payload, media_type=_image_media_type(fmt))
@@ -197,6 +210,7 @@ def api_mosaic_image(
     surface: str = Query(..., pattern="^(top|bottom)$"),
     seq_no: int = Query(...),
     view: Optional[str] = Query(default=None),
+    field: Optional[str] = Query(default=None),
     limit: Optional[int] = Query(default=None, ge=1, le=10000),
     skip: int = Query(default=0, ge=0),
     stride: int = Query(default=1, ge=1),
@@ -208,10 +222,12 @@ def api_mosaic_image(
 ):
     """生成指定序列的长带拼接图，可配置抽帧、跳过数量和尺寸。"""
     try:
+        requested_field = service.request_field_or_default(field)
         payload = service.get_mosaic(
             surface=surface,
             seq_no=seq_no,
             view=view,
+            field=requested_field,
             limit=limit,
             skip=skip,
             stride=stride,
@@ -231,6 +247,7 @@ def api_tile_image(
     surface: str = Query(..., pattern="^(top|bottom)$"),
     seq_no: int = Query(...),
     view: Optional[str] = Query(default=None),
+    field: Optional[str] = Query(default=None),
     level: int = Query(default=0, ge=0, le=16),
     tile_x: int = Query(..., ge=0),
     tile_y: int = Query(..., ge=0),
@@ -251,6 +268,7 @@ def api_tile_image(
         if view is not None and view.lower() == "horizontal":
             orientation = "horizontal"
             view = None
+        requested_field = service.request_field_or_default(field)
         resolved_viewer_id = viewer_id
         if not resolved_viewer_id:
             forwarded = (request.headers.get("x-forwarded-for") or "").split(",")[0].strip()
@@ -262,6 +280,7 @@ def api_tile_image(
             surface=surface,
             seq_no=seq_no,
             view=view,
+            field=requested_field,
             level=level,
             tile_x=tile_x,
             tile_y=tile_y,
@@ -288,6 +307,7 @@ def api_tile_image(
             "X-Tile-Y": str(tile_y),
             "X-Tile-Size": str(service.settings.images.frame_height),
             "X-Tile-Orientation": orientation,
+            "X-Field": str(requested_field or "all"),
         }
         cache_ttl = int(getattr(service.settings.memory_cache, "ttl_seconds", 120) or 120)
         headers["Cache-Control"] = f"public, max-age={cache_ttl}"
@@ -326,12 +346,13 @@ async def api_tile_preheat(
         preheated_count = 0
         failed_count = 0
         already_cached_count = 0
+        requested_field = service.request_field_or_default(request.field)
         
         # 处理每个瓦片
         for tile_info in request.tiles:
             try:
                 # 检查是否已缓存
-                cache_key = f"{request.surface}-{request.seq_no}-{tile_info.level}-{tile_info.tile_x}-{tile_info.tile_y}-{tile_info.tile_size or service.settings.images.frame_height}-{request.view or 'default'}"
+                cache_key = f"{request.surface}-{request.seq_no}-{requested_field or 'all'}-{request.orientation}-{tile_info.level}-{tile_info.tile_x}-{tile_info.tile_y}-{tile_info.tile_size or service.settings.images.frame_height}-{request.view or 'default'}"
                 
                 if service.tile_cache.get(cache_key) is not None:
                     already_cached_count += 1
@@ -342,9 +363,11 @@ async def api_tile_preheat(
                     surface=request.surface,
                     seq_no=request.seq_no,
                     view=request.view,
+                    field=requested_field,
                     level=tile_info.level,
                     tile_x=tile_info.tile_x,
                     tile_y=tile_info.tile_y,
+                    orientation=request.orientation,
                     fmt="JPEG",
                     viewer_id=resolved_viewer_id,
                     prefetch=None,  # 不实际返回数据，仅预热到缓存
@@ -352,6 +375,9 @@ async def api_tile_preheat(
                 
                 preheated_count += 1
                 
+            except FileNotFoundError:
+                failed_count += 1
+                continue
             except Exception as e:
                 logger.warning(f"Failed to preheat tile {tile_info.level}-{tile_info.tile_x}-{tile_info.tile_y}: {e}")
                 failed_count += 1

@@ -78,6 +78,7 @@ class CacheSurfacePayload(BaseModel):
     surface: str
     view: str
     cached: bool = False
+    building: Optional[bool] = None
     image_missing: Optional[bool] = None
     stale: Optional[bool] = None
     tile_max_level: Optional[int] = None
@@ -101,6 +102,7 @@ class CacheRecordsResponse(BaseModel):
     total: int
     max_seq: Optional[int] = None
     cache_range_min: Optional[int] = None
+    cache_window_records: Optional[int] = None
     expected_tile_max_level: Optional[int] = None
     expected_defect_expand: Optional[int] = None
 
@@ -177,6 +179,69 @@ class CacheMigrateResponse(BaseModel):
     ok: bool
 
 
+def _clamp_cache_record_window(value: object, default: int = 200) -> int:
+    try:
+        parsed = int(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        parsed = default
+    return max(1, min(200, parsed))
+
+
+def _normalize_disk_cache_payload(payload: dict[str, object]) -> dict[str, object]:
+    normalized = dict(payload or {})
+    for key in ("disk_cache_max_records", "disk_precache_window_records"):
+        if key in normalized:
+            normalized[key] = _clamp_cache_record_window(normalized.get(key))
+    return normalized
+
+
+def _is_cache_meta_complete(meta: Optional[dict]) -> bool:
+    if not isinstance(meta, dict):
+        return False
+    state = str(meta.get("state") or "").strip().lower()
+    if state == "complete":
+        return True
+    return meta.get("complete") is True
+
+
+def _is_cache_meta_current(
+    meta: Optional[dict],
+    *,
+    expected_tile_max_level: int,
+    expected_defect_expand: int,
+    expected_tile_render_version: str = "",
+) -> bool:
+    if not _is_cache_meta_complete(meta):
+        return False
+    tile = meta.get("tile") or {}
+    defects = meta.get("defects") or {}
+    try:
+        tile_max_level = int(tile.get("max_level") or 0)
+    except (TypeError, ValueError):
+        tile_max_level = 0
+    try:
+        defect_expand = int(defects.get("expand") or 0)
+    except (TypeError, ValueError):
+        defect_expand = -1
+    if expected_tile_max_level and tile_max_level < expected_tile_max_level:
+        return False
+    if expected_defect_expand and defect_expand != expected_defect_expand:
+        return False
+    if expected_tile_render_version and str(tile.get("render_version") or "") != expected_tile_render_version:
+        return False
+    return True
+
+
+def _cache_record_meta(row: Optional[CacheRecord]) -> Optional[dict]:
+    if row is None or not row.meta_json:
+        return None
+    try:
+        meta = json.loads(row.meta_json)
+    except (TypeError, json.JSONDecodeError):
+        return None
+    return meta if isinstance(meta, dict) else None
+
+
 def _upsert_cache_record(
     session: Session,
     *,
@@ -197,7 +262,7 @@ def _upsert_cache_record(
         )
         .one_or_none()
     )
-    if not meta:
+    if not meta or not _is_cache_meta_complete(meta):
         if existing is not None:
             session.delete(existing)
             return True
@@ -228,25 +293,61 @@ def _upsert_cache_record(
 def list_cache_records(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=200),
+    seq_nos: Optional[str] = Query(
+        default=None,
+        description="Comma-separated seq numbers to inspect; overrides page slicing when provided.",
+    ),
+    include_disk: bool = Query(
+        default=False,
+        description="When true, inspect disk cache metadata for missing DB rows. Default stays DB-only for UI polling.",
+    ),
+    include_source_check: bool = Query(
+        default=False,
+        description="When true, check source image folders. This can be slow on shared folders.",
+    ),
     main_db: Session = Depends(deps.get_main_db),
     management_db: Session = Depends(deps.get_management_db),
     image_service: ImageService = Depends(get_image_service),
 ):
     line_key = get_line_key()
     base_query = main_db.query(Steelrecord).order_by(Steelrecord.seqNo.desc())
-    total = base_query.count()
     max_seq = main_db.query(func.max(Steelrecord.seqNo)).scalar()
-    records = (
-        base_query.offset((page - 1) * page_size)
-        .limit(page_size)
-        .all()
-    )
-    seq_nos = [int(record.seqNo) for record in records]
-    cache_rows: list[CacheRecord] = []
+    requested_seq_nos: list[int] = []
     if seq_nos:
+        for raw in seq_nos.split(","):
+            raw = raw.strip()
+            if not raw:
+                continue
+            try:
+                requested_seq_nos.append(int(raw))
+            except ValueError:
+                continue
+        requested_seq_nos = list(dict.fromkeys(requested_seq_nos))[:page_size]
+
+    if requested_seq_nos:
+        total = len(requested_seq_nos)
+        records_by_seq = {
+            int(record.seqNo): record
+            for record in (
+                main_db.query(Steelrecord)
+                .filter(Steelrecord.seqNo.in_(requested_seq_nos))
+                .all()
+            )
+        }
+        records = [records_by_seq[seq_no] for seq_no in requested_seq_nos if seq_no in records_by_seq]
+    else:
+        total = base_query.count()
+        records = (
+            base_query.offset((page - 1) * page_size)
+            .limit(page_size)
+            .all()
+        )
+    seq_nos_int = [int(record.seqNo) for record in records]
+    cache_rows: list[CacheRecord] = []
+    if seq_nos_int:
         cache_rows = (
             management_db.query(CacheRecord)
-            .filter(CacheRecord.line_key == line_key, CacheRecord.seq_no.in_(seq_nos))
+            .filter(CacheRecord.line_key == line_key, CacheRecord.seq_no.in_(seq_nos_int))
             .all()
         )
     cache_map: dict[int, dict[str, CacheRecord]] = {}
@@ -255,53 +356,208 @@ def list_cache_records(
         cache_map.setdefault(int(row.seq_no), {})[row.surface] = row
 
     max_records = int(disk_cache.disk_cache_max_records or 0)
+    precache_window = max(
+        1,
+        min(
+            200,
+            int(getattr(disk_cache, "disk_precache_window_records", 200) or 200),
+        ),
+    )
+    cache_window_records = (
+        min(max_records, precache_window)
+        if max_records > 0
+        else precache_window
+    )
     cache_range_min = None
-    if max_records > 0 and max_seq:
-        cache_range_min = int(max_seq) - max_records + 1
+    if cache_window_records > 0 and max_seq:
+        cache_range_min = max(1, int(max_seq) - cache_window_records + 1)
     expected_tile_max_level = image_service.disk_cache.max_level()
     expected_defect_expand = int(getattr(disk_cache, "defect_cache_expand", 0) or 0)
+    expected_tile_render_version = str(getattr(image_service.disk_cache, "tile_render_version", "") or "")
     view_dir = image_service.settings.images.default_view
+    runtime_status = image_service.get_cache_status()
+    runtime_state = str(runtime_status.get("state") or "ready").lower()
+    runtime_task = runtime_status.get("task") if isinstance(runtime_status.get("task"), dict) else {}
+    runtime_seq = runtime_status.get("seq_no") or runtime_task.get("current_seq")
+    runtime_surface = runtime_status.get("surface")
+    try:
+        runtime_seq_no = int(runtime_seq) if runtime_seq is not None else None
+    except (TypeError, ValueError):
+        runtime_seq_no = None
+    runtime_active_seq_nos: set[int] = set()
+    if isinstance(runtime_task, dict):
+        active_seqs = runtime_task.get("active_seqs")
+        if isinstance(active_seqs, list):
+            for value in active_seqs:
+                try:
+                    runtime_active_seq_nos.add(int(value))
+                except (TypeError, ValueError):
+                    continue
+    if runtime_seq_no is not None:
+        runtime_active_seq_nos.add(runtime_seq_no)
+    runtime_is_building = runtime_state not in {"", "ready"}
     items: list[CacheRecordPayload] = []
+    repaired_records = 0
+    disk_meta_by_seq: dict[int, dict[str, dict]] = {}
     for record in records:
         seq_no = int(record.seqNo)
         surfaces: list[CacheSurfacePayload] = []
         surface_rows = cache_map.get(seq_no, {})
         cached_count = 0
+        building_count = 0
         for surface in ("top", "bottom"):
             row = surface_rows.get(surface)
-            cached = row is not None
+            meta: Optional[dict] = _cache_record_meta(row)
+            surface_current_override: Optional[bool] = None
+            is_building_surface = (
+                runtime_is_building
+                and runtime_seq_no == seq_no
+                and (runtime_surface is None or str(runtime_surface) == surface)
+            )
+            if row is not None and not _is_cache_meta_complete(meta):
+                if _upsert_cache_record(
+                    management_db,
+                    line_key=line_key,
+                    seq_no=seq_no,
+                    surface=surface,
+                    view=row.view,
+                    meta=None,
+                    disk_cache_enabled=bool(disk_cache.disk_cache_enabled),
+                ):
+                    repaired_records += 1
+                row = None
+                meta = None
+            if row is None:
+                if include_disk:
+                    if seq_no not in disk_meta_by_seq:
+                        disk_meta_by_seq[seq_no] = image_service.read_disk_cache_meta(seq_no)
+                    disk_meta = disk_meta_by_seq[seq_no].get(surface)
+                    if _is_cache_meta_complete(disk_meta):
+                        meta = disk_meta
+                        surface_current_override = image_service.is_disk_cache_surface_current(
+                            surface,
+                            seq_no,
+                            meta=disk_meta,
+                            view_dir=view_dir,
+                        )
+                        if surface_current_override and _upsert_cache_record(
+                            management_db,
+                            line_key=line_key,
+                            seq_no=seq_no,
+                            surface=surface,
+                            view=view_dir,
+                            meta=meta,
+                            disk_cache_enabled=bool(disk_cache.disk_cache_enabled),
+                        ):
+                            repaired_records += 1
+                    else:
+                        meta = None
+            else:
+                row_is_stale = False
+                if expected_tile_max_level and row.tile_max_level is not None:
+                    row_is_stale = row.tile_max_level < expected_tile_max_level
+                if expected_defect_expand and row.defect_expand is not None:
+                    row_is_stale = row_is_stale or (row.defect_expand != expected_defect_expand)
+                if expected_tile_render_version and meta is not None:
+                    row_tile_meta = meta.get("tile") or {}
+                    row_is_stale = row_is_stale or (
+                        str(row_tile_meta.get("render_version") or "") != expected_tile_render_version
+                    )
+                if include_disk or row_is_stale or is_building_surface:
+                    if seq_no not in disk_meta_by_seq:
+                        disk_meta_by_seq[seq_no] = image_service.read_disk_cache_meta(seq_no)
+                    disk_meta = disk_meta_by_seq[seq_no].get(surface)
+                    if _is_cache_meta_complete(disk_meta):
+                        meta = disk_meta
+                        row = None
+                    surface_current_override = image_service.is_disk_cache_surface_current(
+                        surface,
+                        seq_no,
+                        meta=disk_meta,
+                        view_dir=view_dir,
+                    )
+                    if surface_current_override:
+                        meta = disk_meta
+                        row = None
+                        is_building_surface = False
+                        if _upsert_cache_record(
+                            management_db,
+                            line_key=line_key,
+                            seq_no=seq_no,
+                            surface=surface,
+                            view=view_dir,
+                            meta=meta,
+                            disk_cache_enabled=bool(disk_cache.disk_cache_enabled),
+                        ):
+                            repaired_records += 1
+            cached = row is not None or meta is not None
             view_name = row.view if row is not None else view_dir
             stale = False
-            if row is not None:
+            if surface_current_override is False:
+                stale = True
+            elif row is not None:
                 if expected_tile_max_level and row.tile_max_level is not None:
-                    stale = row.tile_max_level != expected_tile_max_level
+                    stale = row.tile_max_level < expected_tile_max_level
                 if expected_defect_expand and row.defect_expand is not None:
                     stale = stale or (row.defect_expand != expected_defect_expand)
-            image_missing = False
-            try:
-                frames = image_service._list_frame_paths(surface, seq_no, view_name)
-                image_missing = len(frames) == 0
-            except FileNotFoundError:
-                image_missing = True
+                if expected_tile_render_version and meta is not None:
+                    row_tile_meta = meta.get("tile") or {}
+                    stale = stale or (
+                        str(row_tile_meta.get("render_version") or "") != expected_tile_render_version
+                    )
+            elif meta is not None:
+                meta_tile = meta.get("tile") or {}
+                meta_defects = meta.get("defects") or {}
+                meta_max_level = int(meta_tile.get("max_level") or 0)
+                meta_expand = int(meta_defects.get("expand") or 0)
+                if expected_tile_max_level:
+                    stale = meta_max_level < expected_tile_max_level
+                if expected_defect_expand:
+                    stale = stale or (meta_expand != expected_defect_expand)
+                if expected_tile_render_version:
+                    stale = stale or (
+                        str(meta_tile.get("render_version") or "") != expected_tile_render_version
+                    )
+            if (
+                not is_building_surface
+                and runtime_is_building
+                and seq_no in runtime_active_seq_nos
+                and (stale or not cached)
+            ):
+                is_building_surface = True
+            image_missing: Optional[bool] = None
+            if include_source_check:
+                try:
+                    frames = image_service._list_frame_paths_with_fallback(surface, seq_no, view_name)
+                    image_missing = len(frames) == 0
+                except FileNotFoundError:
+                    image_missing = True
+            meta_tile = (meta.get("tile") or {}) if meta is not None else {}
+            meta_defects = (meta.get("defects") or {}) if meta is not None else {}
             surfaces.append(
                 CacheSurfacePayload(
                     surface=surface,
                     view=view_name,
                     cached=cached,
+                    building=is_building_surface,
                     image_missing=image_missing,
                     stale=stale,
-                    tile_max_level=row.tile_max_level if row else None,
-                    tile_size=row.tile_size if row else None,
-                    defect_expand=row.defect_expand if row else None,
-                    defect_cache_enabled=row.defect_cache_enabled if row else None,
+                    tile_max_level=row.tile_max_level if row else (int(meta_tile.get("max_level") or 0) if meta else None),
+                    tile_size=row.tile_size if row else (int(meta_tile.get("tile_size") or 0) if meta else None),
+                    defect_expand=row.defect_expand if row else (int(meta_defects.get("expand") or 0) if meta else None),
+                    defect_cache_enabled=row.defect_cache_enabled if row else (bool(meta_defects.get("enabled", True)) if meta else None),
                     disk_cache_enabled=row.disk_cache_enabled if row else bool(disk_cache.disk_cache_enabled),
                     updated_at=row.updated_at if row else None,
                 )
             )
-            if cached:
+            if is_building_surface:
+                building_count += 1
+            if cached and not stale and not is_building_surface:
                 cached_count += 1
         status = "none"
-        if cached_count == 1:
+        if building_count:
+            status = "building"
+        elif cached_count == 1:
             status = "partial"
         elif cached_count >= 2:
             status = "complete"
@@ -314,12 +570,15 @@ def list_cache_records(
                 surfaces=surfaces,
             )
         )
+    if repaired_records:
+        management_db.commit()
 
     return CacheRecordsResponse(
         items=items,
         total=total,
         max_seq=int(max_seq) if max_seq is not None else None,
         cache_range_min=cache_range_min,
+        cache_window_records=cache_window_records,
         expected_tile_max_level=expected_tile_max_level,
         expected_defect_expand=expected_defect_expand,
     )
@@ -445,6 +704,7 @@ def update_cache_settings(
     config = load_server_config()
     memory_payload = payload.memory_cache if isinstance(payload.memory_cache, dict) else {}
     disk_payload = payload.disk_cache if isinstance(payload.disk_cache, dict) else {}
+    disk_payload = _normalize_disk_cache_payload(disk_payload)
     config = update_config_section(config, "memory_cache", memory_payload)
     config = update_config_section(config, "disk_cache", disk_payload)
     save_server_config(config)

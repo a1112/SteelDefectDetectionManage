@@ -19,10 +19,16 @@ router = APIRouter(prefix="/api")
 def api_defects(
     seq_no: int,
     surface: Optional[str] = Query(default=None, pattern="^(top|bottom)$"),
+    field: Optional[str] = Query(default=None),
     service: DefectService = Depends(get_defect_service),
     image_service: ImageService = Depends(get_image_service),
 ):
-    base = service.defects_by_seq(seq_no, surface=surface)
+    requested_field = image_service.request_field_or_default(field)
+    base = service.defects_by_seq(
+        seq_no,
+        surface=surface,
+        field=image_service.field_value(requested_field),
+    )
     defects: list[UiDefectItem] = []
 
     # SMALL 实例：如果配置了像素缩放（例如 0.5），则需要对 bbox_source/bbox_image 做对应缩放，
@@ -30,6 +36,8 @@ def api_defects(
     scale_x, scale_y = get_image_scale(image_service)
 
     for record in base.items:
+        if not image_service.should_include_record_field(record, requested_field):
+            continue
         bbox = record.bbox_source
         bbox_obj = record.bbox_object
 
@@ -45,6 +53,12 @@ def api_defects(
             bottom = bbox.bottom
         else:
             left = top = right = bottom = 0
+
+        left, top, right, bottom = image_service.adjust_bbox_for_field(
+            (left, top, right, bottom),
+            record_field=record.field_name or record.field,
+            requested_field=requested_field,
+        )
 
         width = max(0, right - left)
         height = max(0, bottom - top)
@@ -77,6 +91,8 @@ def api_defects(
                 confidence=1.0,
                 surface=surface_value,
                 image_index=record.image_index or 0,
+                field=image_service.field_value(record.field_name or record.field),
+                field_name=image_service.field_label(record.field_name or record.field) or record.field_name,
                 x_mm=left_mm,
                 y_mm=top_mm,
                 width_mm=width_mm,

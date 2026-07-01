@@ -60,6 +60,16 @@ const getConfigBase = () => {
   return base ? `${base}/config` : "/config";
 };
 
+const SIMPLE_STATUS_CACHE_TTL_MS = 4500;
+const simpleStatusCache = new Map<
+  string,
+  {
+    value?: SimpleStatus | null;
+    timestamp: number;
+    pending?: Promise<SimpleStatus | null>;
+  }
+>();
+
 export async function getConfigStatus(lineKey?: string, kind?: string): Promise<ConfigStatusPayload> {
   const params = new URLSearchParams();
   if (lineKey) params.set("line_key", lineKey);
@@ -78,12 +88,37 @@ export async function getConfigStatusSimple(lineKey?: string, kind?: string): Pr
   if (lineKey) params.set("line_key", lineKey);
   if (kind) params.set("kind", kind);
   const url = `${getConfigBase()}/status/simple${params.toString() ? `?${params.toString()}` : ""}`;
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    throw new Error(`Failed to load simple status: ${response.status}`);
+  const now = Date.now();
+  const cached = simpleStatusCache.get(url);
+  if (cached?.pending) {
+    return cached.pending;
   }
-  const payload = (await response.json()) as { item?: SimpleStatus | null };
-  return payload.item || null;
+  if (cached && now - cached.timestamp < SIMPLE_STATUS_CACHE_TTL_MS) {
+    return cached.value ?? null;
+  }
+
+  const pending = (async () => {
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error(`Failed to load simple status: ${response.status}`);
+    }
+    const payload = (await response.json()) as { item?: SimpleStatus | null };
+    return payload.item || null;
+  })();
+  simpleStatusCache.set(url, {
+    value: cached?.value,
+    timestamp: cached?.timestamp ?? 0,
+    pending,
+  });
+
+  try {
+    const value = await pending;
+    simpleStatusCache.set(url, { value, timestamp: Date.now() });
+    return value;
+  } catch (error) {
+    simpleStatusCache.delete(url);
+    throw error;
+  }
 }
 
 export async function getConfigStatusLogs(

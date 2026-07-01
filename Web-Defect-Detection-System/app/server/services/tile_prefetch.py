@@ -19,9 +19,11 @@ class TileRequest:
     surface: str
     seq_no: int
     view: str
+    orientation: str
     level: int
     tile_x: int
     tile_y: int
+    field: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -30,8 +32,10 @@ class SeqWarmRequest:
     surface: str
     seq_no: int
     view: str
+    orientation: str
     level: int
     count: int
+    field: Optional[str] = None
 
 
 PrefetchRequest = TileRequest | SeqWarmRequest
@@ -128,6 +132,8 @@ class TilePrefetchManager:
             req.surface,
             req.seq_no,
             req.view,
+            req.orientation,
+            req.field,
             req.level,
             req.tile_x,
             req.tile_y,
@@ -135,7 +141,17 @@ class TilePrefetchManager:
         self._enqueue(key, req, priority=priority)
 
     def enqueue_seq_warm(self, req: SeqWarmRequest, *, priority: int) -> None:
-        key = ("seqwarm", req.viewer_id, req.surface, req.seq_no, req.view, req.level, req.count)
+        key = (
+            "seqwarm",
+            req.viewer_id,
+            req.surface,
+            req.seq_no,
+            req.view,
+            req.orientation,
+            req.field,
+            req.level,
+            req.count,
+        )
         self._enqueue(key, req, priority=priority)
 
     def maybe_enqueue_adjacent_warm(
@@ -145,12 +161,14 @@ class TilePrefetchManager:
         surface: str,
         seq_no: int,
         view: str,
+        orientation: str,
         warm_levels: list[tuple[int, int]],
         priority: int,
+        field: Optional[str] = None,
     ) -> None:
         if not viewer_id:
             return
-        mark_key = ("adjacent", viewer_id, surface, seq_no, view)
+        mark_key = ("adjacent", viewer_id, surface, seq_no, view, orientation, field)
         if self._seq_warm_mark.get(mark_key):
             return
         self._seq_warm_mark.put(mark_key, True)
@@ -167,6 +185,8 @@ class TilePrefetchManager:
                         surface=surface,
                         seq_no=neighbor,
                         view=view,
+                        orientation=orientation,
+                        field=field,
                         level=level,
                         count=count,
                     ),
@@ -234,9 +254,10 @@ class TilePrefetchManager:
         if isinstance(req, TileRequest):
             if self._log_enabled and self._log_detail == "task":
                 prefetch_logger.info(
-                    "tile-prefetch run tile viewer=%s seq=%s level=%s x=%s y=%s",
+                    "tile-prefetch run tile viewer=%s seq=%s orientation=%s level=%s x=%s y=%s",
                     req.viewer_id,
                     req.seq_no,
+                    req.orientation,
                     req.level,
                     req.tile_x,
                     req.tile_y,
@@ -245,22 +266,28 @@ class TilePrefetchManager:
                 surface=req.surface,
                 seq_no=req.seq_no,
                 view=req.view,
+                field=req.field,
                 level=req.level,
                 tile_x=req.tile_x,
                 tile_y=req.tile_y,
-                orientation="vertical",
+                orientation=req.orientation,
+                width=None,
+                height=None,
                 fmt="JPEG",
                 trigger_prefetch=False,
                 viewer_id=req.viewer_id,
+                prefetch=None,
+                ensure_meta=False,
             )
             return
 
         if isinstance(req, SeqWarmRequest):
             if self._log_enabled and self._log_detail == "task":
                 prefetch_logger.info(
-                    "tile-prefetch run seqwarm viewer=%s seq=%s level=%s count=%s",
+                    "tile-prefetch run seqwarm viewer=%s seq=%s orientation=%s level=%s count=%s",
                     req.viewer_id,
                     req.seq_no,
+                    req.orientation,
                     req.level,
                     req.count,
                 )
@@ -268,6 +295,8 @@ class TilePrefetchManager:
                 surface=req.surface,
                 seq_no=req.seq_no,
                 view=req.view,
+                orientation=req.orientation,
+                field=req.field,
                 level=req.level,
                 count=req.count,
             )
@@ -278,6 +307,8 @@ class TilePrefetchManager:
                         surface=req.surface,
                         seq_no=req.seq_no,
                         view=req.view,
+                        orientation=req.orientation,
+                        field=req.field,
                         level=req.level,
                         tile_x=tile_x,
                         tile_y=tile_y,

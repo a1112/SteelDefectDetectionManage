@@ -52,6 +52,7 @@ const STATUS_COLORS: Record<string, string> = {
   missing: "bg-rose-500",
   out_range: "bg-purple-500",
   stale: "bg-blue-500",
+  building: "bg-amber-400",
   running: "bg-amber-400",
   complete: "bg-emerald-500",
   none: "bg-muted-foreground/60",
@@ -79,10 +80,11 @@ const DISK_CACHE_FIELDS: Array<{
   { key: "defect_cache_enabled", label: "缺陷裁剪缓存", type: "boolean" },
   { key: "defect_cache_expand", label: "缺陷扩展像素", type: "number" },
   { key: "disk_cache_enabled", label: "磁盘缓存", type: "boolean" },
-  { key: "disk_cache_max_records", label: "磁盘缓存记录上限", type: "number" },
+  { key: "disk_cache_max_records", label: "磁盘缓存保留卷数", hint: "最多 200", type: "number" },
   { key: "disk_cache_scan_interval_seconds", label: "磁盘扫描间隔(秒)", type: "number" },
   { key: "disk_cache_cleanup_interval_seconds", label: "磁盘清理间隔(秒)", type: "number" },
   { key: "disk_precache_enabled", label: "磁盘预热", type: "boolean" },
+  { key: "disk_precache_window_records", label: "自动缓存窗口(卷)", hint: "最多 200", type: "number" },
   { key: "disk_precache_levels", label: "预热层级", type: "number" },
   { key: "disk_precache_workers", label: "预热线程数", type: "number" },
 ];
@@ -422,6 +424,13 @@ export default function CacheDebug() {
     logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [activeLogs, activeTab]);
 
+  const tileProgress = cacheStatus?.task?.tile_progress;
+  const tileProgressPercent =
+    tileProgress?.percent ??
+    (tileProgress?.total
+      ? Math.round(((tileProgress.done ?? 0) / tileProgress.total) * 1000) / 10
+      : 0);
+
   useEffect(() => {
     const task = cacheStatus?.task;
     if (!task?.type) return;
@@ -584,6 +593,7 @@ export default function CacheDebug() {
     if (target?.image_missing) return "missing";
     if (cacheRangeMin !== null && item.seq_no < cacheRangeMin) return "out_range";
     if (target?.stale) return "stale";
+    if (target?.building || item.status === "building") return "building";
     if (cacheStatus?.seq_no === item.seq_no && cacheStatus?.state !== "ready") {
       if (!cacheStatus.surface || cacheStatus.surface === surface) {
         return "running";
@@ -996,6 +1006,28 @@ export default function CacheDebug() {
                       </div>
                     </div>
                   ) : null}
+                  {tileProgress ? (
+                    <div className="mt-2 space-y-1">
+                      <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
+                        <span>
+                          瓦片：{tileProgress.surface === "top" ? "上表" : "下表"}{" "}
+                          {tileProgress.orientation === "horizontal" ? "横向" : "纵向"} L
+                          {tileProgress.level ?? "-"}
+                        </span>
+                        <span className="font-mono text-foreground">
+                          {tileProgress.done ?? 0}/{tileProgress.total ?? 0} ({tileProgressPercent}%)
+                        </span>
+                      </div>
+                      <div className="h-1.5 rounded-full bg-muted/40 overflow-hidden">
+                        <div
+                          className="h-full bg-cyan-400/80 transition-all"
+                          style={{
+                            width: `${Math.min(100, Math.max(0, Math.round(tileProgressPercent)))}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  ) : null}
                   {cacheStatus?.task?.type && ["delete", "rebuild"].includes(cacheStatus.task.type) ? (
                     <div className="text-[11px] text-muted-foreground">
                       {cacheStatus.task.type === "delete" ? "删除" : "重建"}{" "}
@@ -1075,6 +1107,9 @@ export default function CacheDebug() {
                   </div>
                   <div className="text-[11px] text-muted-foreground">
                     预热层级：{cacheSettings?.disk_cache?.disk_precache_levels ?? precacheLevels}
+                  </div>
+                  <div className="text-[11px] text-muted-foreground">
+                    自动缓存窗口：{cacheSettings?.disk_cache?.disk_precache_window_records ?? 200} 卷
                   </div>
                   <div className="text-[11px] text-muted-foreground">
                     预热线程数：{cacheSettings?.disk_cache?.disk_precache_workers ?? "-"}

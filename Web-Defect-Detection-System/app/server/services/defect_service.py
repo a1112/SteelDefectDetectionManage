@@ -25,10 +25,10 @@ class DefectService:
         """
         self.session_factory = session_factory
 
-    def defects_by_seq(self, seq_no: int, surface: Optional[str]) -> DefectResponse:
+    def defects_by_seq(self, seq_no: int, surface: Optional[str], field: Optional[int] = None) -> DefectResponse:
         with self.session_factory() as session:
-            up_items = self._fetch_defects(session, Camdefect1, seq_no) if surface in (None, "top") else []
-            down_items = self._fetch_defects(session, Camdefect2, seq_no) if surface in (None, "bottom") else []
+            up_items = self._fetch_defects(session, Camdefect1, seq_no, field=field) if surface in (None, "top") else []
+            down_items = self._fetch_defects(session, Camdefect2, seq_no, field=field) if surface in (None, "bottom") else []
 
             items: List[DefectRecord] = []
             stats: List[DefectStats] = []
@@ -77,8 +77,11 @@ class DefectService:
     # ------------------------------------------------------------------ #
     # Helpers
     # ------------------------------------------------------------------ #
-    def _fetch_defects(self, session: Session, model, seq_no: int):
-        return session.query(model).filter(model.seqNo == seq_no).all()
+    def _fetch_defects(self, session: Session, model, seq_no: int, field: Optional[int] = None):
+        query = session.query(model).filter(model.seqNo == seq_no)
+        if field in (0, 1):
+            query = query.filter(model.field == field)
+        return query.all()
 
     def _to_model(self, defect, camera_id: int, surface: Literal["top", "bottom"]) -> DefectRecord:
         bbox_img = BoundingBox(
@@ -105,6 +108,8 @@ class DefectService:
             camera_id=camera_id,
             surface=surface,  # type: ignore[arg-type]
             image_index=getattr(defect, "imgIndex", None),
+            field=getattr(defect, "field", None),
+            field_name=self._field_name(getattr(defect, "field", None)),
             class_id=getattr(defect, "defectClass", None),
             grade=getattr(defect, "grade", None),
             area=getattr(defect, "area", None),
@@ -112,3 +117,15 @@ class DefectService:
             bbox_source=bbox_src,
             bbox_object=bbox_obj,
         )
+
+    @staticmethod
+    def _field_name(value) -> Optional[str]:
+        try:
+            field = int(value)
+        except (TypeError, ValueError):
+            return None
+        if field == 0:
+            return "bright"
+        if field == 1:
+            return "dark"
+        return None

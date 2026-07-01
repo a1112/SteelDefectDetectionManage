@@ -2,6 +2,8 @@ import type {
   Surface,
 } from "../api/types";
 
+export type { ImageField } from "../api/types";
+
 export type ActiveTab = "plates" | "defects" | "images" | "reports" | "settings" | "mockdata";
 
 export type SurfaceFilter = "all" | "top" | "bottom";
@@ -25,6 +27,12 @@ export interface Defect {
   confidence: number;
   surface: Surface;
   imageIndex: number;
+  field?: number | null;
+  fieldName?: string | null;
+  xMm?: number;
+  yMm?: number;
+  widthMm?: number;
+  heightMm?: number;
 }
 
 export interface SteelPlate {

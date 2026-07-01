@@ -1,5 +1,56 @@
 @import "tailwindcss";
 
+.distribution-scroll-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.distribution-scroll-container::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.distribution-middle-scrollbar {
+  background: transparent !important;
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.distribution-middle-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.62);
+  border: 0;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.35);
+  pointer-events: none;
+}
+
+.distribution-middle-scrollbar::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  background: transparent !important;
+}
+
+.distribution-middle-scrollbar::-webkit-scrollbar-track {
+  background: transparent !important;
+  border: 0;
+  box-shadow: none;
+}
+
+.distribution-middle-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.58);
+  border: 0;
+  border-radius: 0;
+}
+
+.distribution-middle-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(203, 213, 225, 0.65);
+}
+
+.distribution-middle-scrollbar::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 @theme {
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));

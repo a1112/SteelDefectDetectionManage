@@ -71,9 +71,11 @@ class ImageSettings(BaseModel):
     org_height: Optional[int] = Field(default=None, ge=1)
     image_scale_x: float = Field(default=1.0, gt=0)
     image_scale_y: float = Field(default=1.0, gt=0)
+    dual_field_mode: bool = Field(default=False, description="Split one frame into bright/dark field views.")
     tile_max_level: int = Field(default=2, ge=0)
     tile_min_level: int = Field(default=0, ge=0)
     tile_default_size: Optional[int] = Field(default=None, ge=64)
+    tile_min_cache_size: int = Field(default=128, ge=16, le=4096)
     tile_prefetch_enabled: bool = Field(default=True)
     tile_prefetch_workers: int = Field(default=2, ge=1)
     tile_prefetch_ttl_seconds: int = Field(default=300, ge=1)
@@ -225,6 +227,7 @@ class ServerSettings(BaseModel):
                 "disk_cache_scan_interval_seconds",
                 "disk_cache_cleanup_interval_seconds",
                 "disk_precache_enabled",
+                "disk_precache_window_records",
                 "disk_precache_levels",
                 "disk_precache_workers",
             }
@@ -313,12 +316,23 @@ class DiskCacheSettings(BaseModel):
         description="????????????????????????",
     )
     disk_cache_enabled: bool = Field(default=False)
-    disk_cache_max_records: int = Field(default=20000, ge=1)
+    disk_cache_max_records: int = Field(default=200, ge=1, le=200)
     disk_cache_scan_interval_seconds: int = Field(default=5, ge=1)
     disk_cache_cleanup_interval_seconds: int = Field(default=60, ge=1)
     disk_precache_enabled: bool = Field(default=False)
+    disk_precache_window_records: int = Field(default=200, ge=1, le=200)
     disk_precache_levels: int = Field(default=1, ge=1)
     disk_precache_workers: int = Field(default=4, ge=1)
+    disk_precache_full_frame_limit: int = Field(default=1000, ge=0)
+    disk_precache_long_sequence_rows: int = Field(default=64, ge=1)
+
+    @validator("disk_cache_max_records", "disk_precache_window_records", pre=True)
+    def _clamp_record_window(cls, value: object) -> int:
+        try:
+            parsed = int(value)  # type: ignore[arg-type]
+        except (TypeError, ValueError):
+            parsed = 200
+        return max(1, min(200, parsed))
 
 
 

@@ -63,6 +63,8 @@ class DefectRecord(BaseModel):
     camera_id: int
     surface: Literal["top", "bottom"]
     image_index: Optional[int]
+    field: Optional[int] = None
+    field_name: Optional[str] = None
     class_id: Optional[int]
     grade: Optional[int]
     area: Optional[int]
@@ -98,6 +100,8 @@ class UiDefectItem(BaseModel):
     confidence: float
     surface: Literal["top", "bottom"]
     image_index: int
+    field: Optional[int] = None
+    field_name: Optional[str] = None
     # 物理坐标系下的边界信息（mm），来自 leftInObj/rightInObj/topInObj/bottomInObj，供前端展示使用。
     x_mm: Optional[int] = None
     y_mm: Optional[int] = None
@@ -128,6 +132,7 @@ class SurfaceImageInfo(BaseModel):
     image_width: int = Field(description="单帧图像宽度（像素）")
     image_height: int = Field(description="单帧图像高度（像素）")
     max_level: int = Field(description="此序列在当前瓦片规则下支持的最大瓦片级别")
+    field: Optional[str] = None
 
 
 class TileDescriptor(BaseModel):

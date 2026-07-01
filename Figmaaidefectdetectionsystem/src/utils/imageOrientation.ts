@@ -168,8 +168,8 @@ export function computeTileRequestInfo({
     return null;
   }
 
-  const sourceX = orientation === "horizontal" ? localY : localX;
-  const sourceY = orientation === "horizontal" ? localX : localY;
+  const sourceX = localX;
+  const sourceY = localY;
 
   const tileX = Math.floor(sourceX / virtualTileSize);
   const tileY = Math.floor(sourceY / virtualTileSize);
@@ -177,8 +177,8 @@ export function computeTileRequestInfo({
     return null;
   }
 
-  const maxTileX = Math.ceil(surface.mosaicWidth / virtualTileSize);
-  const maxTileY = Math.ceil(surface.mosaicHeight / virtualTileSize);
+  const maxTileX = Math.ceil(surface.worldWidth / virtualTileSize);
+  const maxTileY = Math.ceil(surface.worldHeight / virtualTileSize);
 
   if (tileX >= maxTileX || tileY >= maxTileY) {
     return null;

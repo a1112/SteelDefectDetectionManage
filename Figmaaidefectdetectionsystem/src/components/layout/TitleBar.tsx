@@ -216,6 +216,7 @@ export const TitleBar: React.FC<TitleBarProps> = ({
   useEffect(() => {
     let mounted = true;
     const loadSimple = async () => {
+      if (document.visibilityState === "hidden") return;
       try {
         const kind = "2D";
         const status = await getConfigStatusSimple(lineKey || env.getLineName(), kind);
@@ -227,9 +228,16 @@ export const TitleBar: React.FC<TitleBarProps> = ({
       }
     };
     void loadSimple();
-    const timer = window.setInterval(loadSimple, 2000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void loadSimple();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const timer = window.setInterval(loadSimple, 5000);
     return () => {
       mounted = false;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.clearInterval(timer);
     };
   }, [lineKey]);

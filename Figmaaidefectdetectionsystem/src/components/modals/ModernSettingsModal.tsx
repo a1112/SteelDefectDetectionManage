@@ -20,7 +20,7 @@ import {
   Info,
   Check
 } from "lucide-react";
-import type { ImageOrientation, DistributionScaleMode } from "../types/app.types";
+import type { ImageOrientation, DistributionScaleMode, ImageField } from "../types/app.types";
 import { useTheme, themePresets } from "../ThemeContext";
 import type { ApiNode } from "../../api/types";
 import { InfoPanel } from "../InfoPanel";
@@ -34,6 +34,10 @@ interface ModernSettingsModalProps {
   setShowDistributionImages: (show: boolean) => void;
   showTileBorders: boolean;
   setShowTileBorders: (show: boolean) => void;
+  dualFieldMode: boolean;
+  setDualFieldMode: (enabled: boolean) => void;
+  activeImageField: ImageField;
+  setActiveImageField: (field: ImageField) => void;
   distributionScaleMode: DistributionScaleMode;
   setDistributionScaleMode: (mode: DistributionScaleMode) => void;
   defectHoverCardWidth: number;
@@ -64,6 +68,10 @@ export function ModernSettingsModal({
   setShowDistributionImages,
   showTileBorders,
   setShowTileBorders,
+  dualFieldMode,
+  setDualFieldMode,
+  activeImageField,
+  setActiveImageField,
   distributionScaleMode,
   setDistributionScaleMode,
   defectHoverCardWidth,
@@ -225,6 +233,46 @@ export function ModernSettingsModal({
                                 }`} 
                               />
                             </button>
+                          </div>
+                          <div className="p-3 rounded-lg border border-border bg-muted/30 flex items-center justify-between gap-3">
+                            <div className="flex flex-col gap-0.5">
+                              <span className="text-xs font-bold">双视场模式</span>
+                              <span className="text-[10px] text-muted-foreground">按明场/暗场半幅加载图像与缺陷</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {dualFieldMode && (
+                                <div className="flex items-center gap-1">
+                                  {([
+                                    ["bright", "明场"],
+                                    ["dark", "暗场"],
+                                  ] as const).map(([field, label]) => (
+                                    <button
+                                      key={field}
+                                      onClick={() => setActiveImageField(field)}
+                                      className={`px-2 py-1 text-[10px] font-bold rounded border transition-colors ${
+                                        activeImageField === field
+                                          ? "border-primary bg-primary/10 text-primary"
+                                          : "border-border text-muted-foreground hover:text-foreground"
+                                      }`}
+                                    >
+                                      {label}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                              <button
+                                onClick={() => setDualFieldMode(!dualFieldMode)}
+                                className={`w-8 h-4 rounded-full relative transition-colors ${
+                                  dualFieldMode ? "bg-primary" : "bg-muted-foreground/30"
+                                }`}
+                              >
+                                <div
+                                  className={`absolute top-0.5 w-3 h-3 bg-white rounded-full shadow-sm transition-all ${
+                                    dualFieldMode ? "right-0.5" : "left-0.5"
+                                  }`}
+                                />
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>

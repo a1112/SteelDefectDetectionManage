@@ -1,46 +1,78 @@
 @echo off
 setlocal
 set "ROOT=%~dp0.."
+set "LOCAL_PYTHON=%ROOT%\.runtime\Python312\python.exe"
 
 if "%~1"=="" (
-  if defined DTS_Python (
-    echo Current DTS_Python: %DTS_Python%
+  echo Backend Python:
+  if exist "%LOCAL_PYTHON%" (
+    echo   %LOCAL_PYTHON%
   ) else (
-    echo Current DTS_Python: (not set, using system python)
+    py -3.12 --version >nul 2>nul
+    if not errorlevel 1 (
+      echo   py -3.12
+    ) else (
+      echo   python
+    )
   )
   echo.
-  echo [1] Set DTS_Python
-  echo [2] Use system python (clear DTS_Python)
-  echo [3] Code update (pull project + submodules)
+  echo [1] Start backend
+  echo [2] Show backend Python
+  echo [3] Code update ^(pull project + submodules^)
   echo [4] Exit
   choice /c 1234 /n /m "Select:"
   if errorlevel 4 exit /b 0
   if errorlevel 3 goto code_update
-  if errorlevel 2 goto clear_env
-  if errorlevel 1 goto set_env
+  if errorlevel 2 goto show_python
+  if errorlevel 1 goto start_backend
   exit /b 0
 )
 
-set "PYTHON_EXE=%~1"
-goto apply_env
+if /i "%~1"=="backend" goto start_backend
+if /i "%~1"=="python" goto show_python
+if /i "%~1"=="update" goto code_update
 
-:set_env
-set /p PYTHON_EXE=Enter python.exe full path: 
-if "%PYTHON_EXE%"=="" (
-  echo No path provided. Exit.
-  exit /b 1
+echo Unknown command: %~1
+echo Usage: %~nx0 [backend^|python^|update]
+exit /b 1
+
+:start_backend
+if exist "%LOCAL_PYTHON%" (
+  set "PYTHON_EXE=%LOCAL_PYTHON%"
+  set "PYTHON_CMD="
+) else (
+  set "PYTHON_EXE="
+  py -3.12 --version >nul 2>nul
+  if not errorlevel 1 (
+    set "PYTHON_CMD=py -3.12"
+  ) else (
+    set "PYTHON_CMD=python"
+  )
 )
+pushd "%ROOT%\Web-Defect-Detection-System" || exit /b 1
+if defined PYTHON_EXE (
+  "%PYTHON_EXE%" server.py
+) else (
+  %PYTHON_CMD% server.py
+)
+set "EXIT_CODE=%ERRORLEVEL%"
+popd
+exit /b %EXIT_CODE%
 
-:apply_env
-set "DTS_Python=%PYTHON_EXE%"
-setx DTS_Python "%PYTHON_EXE%" >nul
-echo DTS_Python set to "%PYTHON_EXE%".
-exit /b 0
-
-:clear_env
-set "DTS_Python="
-setx DTS_Python "" >nul
-echo DTS_Python cleared. Using system python.
+:show_python
+if exist "%LOCAL_PYTHON%" (
+  "%LOCAL_PYTHON%" --version
+  echo %LOCAL_PYTHON%
+  exit /b 0
+)
+py -3.12 --version >nul 2>nul
+if not errorlevel 1 (
+  py -3.12 --version
+  echo py -3.12
+  exit /b 0
+)
+python --version
+echo python
 exit /b 0
 
 :code_update
@@ -49,3 +81,4 @@ git pull
 git submodule update --init --recursive
 git submodule foreach --recursive "git pull"
 popd
+exit /b %ERRORLEVEL%

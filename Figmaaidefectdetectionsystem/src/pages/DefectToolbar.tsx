@@ -40,16 +40,24 @@ export function DefectToolbar({
 }: DefectToolbarProps) {
   const shouldShowFilters =
     activeTab === "defects" || activeTab === "images";
+  const defectTypeCounts = new Map<string, number>();
+  activeDefects.forEach((defect) => {
+    defectTypeCounts.set(
+      defect.type,
+      (defectTypeCounts.get(defect.type) ?? 0) + 1,
+    );
+  });
+  const visibleDefectTypes = availableDefectTypes.filter(
+    (type) => (defectTypeCounts.get(type) ?? 0) > 0,
+  );
 
   return (
     <div className="border-b border-border relative sm:px-4 sm:py-2 bg-card/50 shrink-0 px-[5px] py-[3px]">
       {shouldShowFilters && (
         <>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap pr-10 sm:pr-12">
-            {availableDefectTypes.map((type) => {
-              const count = activeDefects.filter(
-                (defect) => defect.type === type,
-              ).length;
+            {visibleDefectTypes.map((type) => {
+              const count = defectTypeCounts.get(type) ?? 0;
               const isSelected =
                 selectedDefectTypes.includes(type);
 

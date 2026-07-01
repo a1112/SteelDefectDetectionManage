@@ -13,9 +13,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { clamp, getVisibleTiles, Size, Point, Tile } from './utils';
-import { globalPreheatManager } from '../../utils/tilePreheatManager';
+import {
+  clamp,
+  computeCompressedTileMaxLevel,
+  computeTileLevelForScale,
+  getVisibleTiles,
+  Size,
+  Point,
+  Tile,
+} from './utils';
+import { globalPreheatManager, type TileInfo } from '../../utils/tilePreheatManager';
 import type { Surface } from '../../api/types';
+
+const VIEWER_FRAME_INTERVAL_MS = 1000 / 30;
+const HIDDEN_TAB_FRAME_INTERVAL_MS = 250;
 
 type AnnotationSurface = "top" | "bottom";
 
@@ -50,6 +61,8 @@ interface LargeImageViewerProps {
   imageWidth: number;
   imageHeight: number;
   tileSize?: number;
+  tileOrientation?: "horizontal" | "vertical";
+  preheatSurface?: Surface | null;
   className?: string;
   maxLevel?: number;
   /**
@@ -173,6 +186,8 @@ export const LargeImageViewer: React.FC<LargeImageViewerProps> = ({
   imageWidth,
   imageHeight,
   tileSize = 256,
+  tileOrientation = "vertical",
+  preheatSurface = null,
   className,
   maxLevel: maxLevelProp,
   prefetchMargin = 0,
@@ -212,6 +227,10 @@ export const LargeImageViewer: React.FC<LargeImageViewerProps> = ({
   // 瓦片预热相关状态
   const lastPreheatTime = useRef(0);
   const preheatThrottle = 300; // 300ms节流
+  const preheatMaxLevel =
+    typeof maxLevelProp === 'number'
+      ? Math.max(0, Math.floor(maxLevelProp))
+      : computeCompressedTileMaxLevel(tileSize);
   const zoomAnimRef = useRef<number | null>(null);
   const drawingRef = useRef<{
     mode: "measure" | "mark";
@@ -266,28 +285,32 @@ export const LargeImageViewer: React.FC<LargeImageViewerProps> = ({
       }));
 
       // 获取surface和seqNo信息（从annotationContext推断）
-      const surface = annotationContext?.lineKey?.includes('top') ? 'top' : 'bottom';
+      const surface = preheatSurface;
       const seqNo = annotationContext?.seqNo || 0;
 
-      if (seqNo > 0) {
+      if (seqNo > 0 && surface) {
         globalPreheatManager.preheatFromVisibleTiles({
-          surface: surface as Surface,
+          surface,
           seqNo: seqNo,
           visibleTiles: tileInfos,
           view: annotationContext?.view,
+          orientation: tileOrientation,
+          maxLevel: preheatMaxLevel,
+          imageWidth,
+          imageHeight,
         }).catch(error => {
           console.warn('Tile preheat failed:', error);
         });
       }
     }, 100); // 延迟100ms执行，避免影响渲染
-  }, [annotationContext, tileSize, preheatThrottle, globalPreheatManager]);
+  }, [annotationContext, tileOrientation, tileSize, preheatThrottle, preheatMaxLevel, imageWidth, imageHeight, preheatSurface]);
 
   // 缩放时预热指定层级的瓦片
   const triggerTilePreheatForLevel = useCallback((targetLevel: number) => {
-    const surface = annotationContext?.lineKey?.includes('top') ? 'top' : 'bottom';
+    const surface = preheatSurface;
     const seqNo = annotationContext?.seqNo || 0;
 
-    if (seqNo <= 0) return;
+    if (seqNo <= 0 || !surface) return;
 
     // 计算当前视口对应的世界坐标区域
     const { x, y, scale } = transform.current;
@@ -323,16 +346,20 @@ export const LargeImageViewer: React.FC<LargeImageViewerProps> = ({
 
     if (tiles.length > 0) {
       globalPreheatManager.preheatFromVisibleTiles({
-        surface: surface as Surface,
+        surface,
         seqNo,
         visibleTiles: tiles,
         view: annotationContext?.view,
+        orientation: tileOrientation,
+        maxLevel: preheatMaxLevel,
+        imageWidth,
+        imageHeight,
         immediate: true, // 立即预热
       }).catch(error => {
         console.warn('[Zoom Preheat] Failed:', error);
       });
     }
-  }, [annotationContext, tileSize, containerSize, transform]);
+  }, [annotationContext, tileOrientation, tileSize, containerSize, transform, preheatMaxLevel, imageWidth, imageHeight, preheatSurface]);
   const [drawMode, setDrawMode] = useState<"none" | "view" | "measure" | "mark">("none");
   const [showScrollbars, setShowScrollbars] = useState(false);
   const [showMeasureData, setShowMeasureData] = useState(true);
@@ -379,20 +406,14 @@ export const LargeImageViewer: React.FC<LargeImageViewerProps> = ({
 
   const computePreferredLevel = useCallback(
     (scale: number) => {
-      const computedMaxLevel = Math.max(
-        0,
-        Math.ceil(Math.log2(Math.max(1, imageWidth / tileSize))),
-      );
+      const computedMaxLevel = computeCompressedTileMaxLevel(tileSize);
       const maxLevel =
         typeof maxLevelProp === 'number'
           ? Math.max(0, Math.floor(maxLevelProp))
           : computedMaxLevel;
-      let preferredLevel = Math.floor(Math.log2(1 / scale));
-      if (preferredLevel < 0) preferredLevel = 0;
-      if (preferredLevel > maxLevel) preferredLevel = maxLevel;
-      return preferredLevel;
+      return computeTileLevelForScale(scale, maxLevel);
     },
-    [imageWidth, tileSize, maxLevelProp],
+    [tileSize, maxLevelProp],
   );
 
   const getDrawRect = (current: { start: Point; end: Point }) => {
@@ -697,10 +718,7 @@ export const LargeImageViewer: React.FC<LargeImageViewerProps> = ({
     const { x, y, scale } = transform.current;
 
     // 计算推荐等级（用于通知上层）
-    const computedMaxLevel = Math.max(
-      0,
-      Math.ceil(Math.log2(Math.max(1, imageWidth / tileSize))),
-    );
+    const computedMaxLevel = computeCompressedTileMaxLevel(tileSize);
     const maxLevel =
       typeof maxLevelProp === 'number'
         ? Math.max(0, Math.floor(maxLevelProp))
@@ -862,13 +880,31 @@ export const LargeImageViewer: React.FC<LargeImageViewerProps> = ({
 
   // Animation Loop
   useEffect(() => {
-    let animationFrameId: number;
-    const renderLoop = () => {
-      draw();
+    let animationFrameId = 0;
+    let timeoutId = 0;
+    let lastDrawAt = 0;
+
+    const renderLoop = (now: number) => {
+      if (document.hidden) {
+        timeoutId = window.setTimeout(() => {
+          animationFrameId = requestAnimationFrame(renderLoop);
+        }, HIDDEN_TAB_FRAME_INTERVAL_MS);
+        return;
+      }
+
+      if (now - lastDrawAt >= VIEWER_FRAME_INTERVAL_MS) {
+        draw();
+        lastDrawAt = now;
+      }
       animationFrameId = requestAnimationFrame(renderLoop);
     };
-    renderLoop();
-    return () => cancelAnimationFrame(animationFrameId);
+
+    draw();
+    animationFrameId = requestAnimationFrame(renderLoop);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(timeoutId);
+    };
   }, [draw]);
 
   useEffect(() => {

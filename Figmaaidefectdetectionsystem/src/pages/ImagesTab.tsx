@@ -1,4 +1,4 @@
-import type { Defect, SteelPlate, ImageOrientation } from "../types/app.types";
+import type { Defect, SteelPlate, ImageOrientation, ImageField } from "../types/app.types";
 import type { SurfaceImageInfo } from "../api/types";
 import { LargeImageViewer } from "../components/LargeImageViewer/LargeImageViewer";
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
@@ -12,7 +12,11 @@ import {
 import { getTileImageUrl } from "../api/client";
 import { env } from "../config/env";
 import { drawTileImage, tryDrawFallbackTile } from "../utils/tileFallback";
-import type { Tile } from "../components/LargeImageViewer/utils";
+import { cancelPendingTileImageLoads, queueTileImageLoad } from "../utils/tileImageLoader";
+import {
+  computeCompressedTileMaxLevel,
+  type Tile,
+} from "../components/LargeImageViewer/utils";
 
 // 实时更新导入
 import { useRealtimeUpdates } from "../hooks/useRealtimeUpdates";
@@ -21,6 +25,7 @@ import { getOrCreateLRUCache } from "../utils/lruImageCache";
 // 使用 LRU 缓存，限制最大缓存数量防止内存泄漏
 const tileImageCache = getOrCreateLRUCache("ImagesTab", 500);
 const tileImageLoading = new Set<string>();
+const TILE_LOAD_SCOPE = "ImagesTab";
 
 interface ImagesTabProps {
   selectedPlateId: string | null;
@@ -34,6 +39,7 @@ interface ImagesTabProps {
   onPreferredLevelChange: (level: number) => void;
   defaultTileSize: number;
   maxTileLevel: number;
+  activeImageField?: ImageField;
   lineKey?: string | null;
   defectClasses?: { id: number; name: string; color?: string }[];
   onDefectHover?: (defect: Defect, position: { screenX: number; screenY: number }) => void;
@@ -53,6 +59,7 @@ export function ImagesTab({
   onPreferredLevelChange,
   defaultTileSize,
   maxTileLevel,
+  activeImageField = "all",
   lineKey,
   defectClasses = [],
   onDefectHover,
@@ -67,6 +74,11 @@ export function ImagesTab({
         : undefined,
     [selectedPlateId, steelPlates],
   );
+  const seqNo = useMemo(() => {
+    if (!selectedPlate) return null;
+    const parsed = parseInt(selectedPlate.serialNumber, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }, [selectedPlate]);
   
   // 实时更新相关状态
   const [realtimeEnabled, setRealtimeEnabled] = useState(env.isProduction());
@@ -178,6 +190,12 @@ export function ImagesTab({
     };
   }, [realtimeEnabled, manualCheck]);
 
+  useEffect(() => {
+    return () => {
+      cancelPendingTileImageLoads((task) => task.scope === TILE_LOAD_SCOPE);
+    };
+  }, [seqNo, surfaceFilter, imageOrientation, activeImageField]);
+
   const plateWidth = selectedPlate?.dimensions.width ?? 0;
   const plateLength = selectedPlate?.dimensions.length ?? 0;
   const distLeft = hoveredDefect ? Math.round(hoveredDefect.x) : null;
@@ -185,7 +203,7 @@ export function ImagesTab({
   const annotationContext = selectedPlate
     ? {
         lineKey: lineKey || "default",
-        seqNo: parseInt(selectedPlate.serialNumber, 10),
+        seqNo: seqNo ?? 0,
         view: "2D",
       }
     : null;
@@ -244,8 +262,7 @@ export function ImagesTab({
               </div>
             );
           }
-          const seqNo = parseInt(selectedPlate.serialNumber, 10);
-          if (Number.isNaN(seqNo)) {
+          if (seqNo == null) {
             return (
               <div className="absolute inset-0 flex items-center justify-center text-xs text-muted-foreground">
                 无法解析流水号，无法请求图像
@@ -263,6 +280,12 @@ export function ImagesTab({
             bottomMeta?.image_height ?? 0,
             defaultTileSize,
             512,
+          );
+          const adaptiveMaxTileLevel = Math.max(
+            maxTileLevel,
+            computeCompressedTileMaxLevel(viewerTileSize),
+            topMeta?.max_level ?? 0,
+            bottomMeta?.max_level ?? 0,
           );
           let surfaceGap = 0;
           if (
@@ -400,7 +423,7 @@ export function ImagesTab({
               return;
             }
             const imageScale = env.getImageScale();
-            const cacheKey = `${imageOrientation}-${surfaceLayout.surface}-${seqNo}-${tile.level}-${requestInfo.tileX}-${requestInfo.tileY}-${tileSizeArg}-s${imageScale}`;
+            const cacheKey = `${imageOrientation}-${activeImageField}-${surfaceLayout.surface}-${seqNo}-${tile.level}-${requestInfo.tileX}-${requestInfo.tileY}-${tileSizeArg}-s${imageScale}`;
             const cached = tileImageCache.get(cacheKey);
             const url = getTileImageUrl({
               surface: surfaceLayout.surface,
@@ -410,6 +433,8 @@ export function ImagesTab({
               tileY: requestInfo.tileY,
               tileSize: tileSizeArg,
               fmt: "JPEG",
+              field: activeImageField,
+              orientation: imageOrientation,
             });
             // 首先尝试用低层级的瓦片撑场面
             const drewFallback = tryDrawFallbackTile({
@@ -417,13 +442,13 @@ export function ImagesTab({
               tile,
               orientation: imageOrientation,
               cache: tileImageCache,
-              cacheKeyPrefix: imageOrientation,
+              cacheKeyPrefix: `${imageOrientation}-${activeImageField}`,
               surface: surfaceLayout.surface,
               seqNo,
               tileX: requestInfo.tileX,
               tileY: requestInfo.tileY,
               tileSize: tileSizeArg,
-              maxLevel: maxTileLevel,
+              maxLevel: adaptiveMaxTileLevel,
               imageScale,
               useTransparentBackground: false,
             });
@@ -438,20 +463,43 @@ export function ImagesTab({
               });
             } else {
               // 当前层级瓦片未加载，开始加载
-              if (!tileImageLoading.has(cacheKey)) {
-                tileImageLoading.add(cacheKey);
-                const img = new Image();
-                img.src = url;
-                img.onload = () => {
-                  tileImageCache.set(cacheKey, img);
-                  tileImageLoading.delete(cacheKey);
-                };
-                img.onerror = () => {
-                  tileImageLoading.delete(cacheKey);
-                };
-              }
+              queueTileImageLoad({
+                cacheKey,
+                url,
+                cache: tileImageCache,
+                loading: tileImageLoading,
+                scope: TILE_LOAD_SCOPE,
+                priority: "high",
+              });
 
               // 如果没有 fallback 可用，显示占位符
+              if (tile.level < adaptiveMaxTileLevel) {
+                const delta = adaptiveMaxTileLevel - tile.level;
+                const factor = 2 ** delta;
+                const fallbackTileX = Math.floor(requestInfo.tileX / factor);
+                const fallbackTileY = Math.floor(requestInfo.tileY / factor);
+                const fallbackCacheKey = `${imageOrientation}-${activeImageField}-${surfaceLayout.surface}-${seqNo}-${adaptiveMaxTileLevel}-${fallbackTileX}-${fallbackTileY}-${tileSizeArg}-s${imageScale}`;
+                const fallbackUrl = getTileImageUrl({
+                  surface: surfaceLayout.surface,
+                  seqNo,
+                  level: adaptiveMaxTileLevel,
+                  tileX: fallbackTileX,
+                  tileY: fallbackTileY,
+                  tileSize: tileSizeArg,
+                  fmt: "JPEG",
+                  field: activeImageField,
+                  orientation: imageOrientation,
+                });
+                queueTileImageLoad({
+                  cacheKey: fallbackCacheKey,
+                  url: fallbackUrl,
+                  cache: tileImageCache,
+                  loading: tileImageLoading,
+                  scope: TILE_LOAD_SCOPE,
+                  priority: "high",
+                });
+              }
+
               if (!drewFallback) {
                 ctx.fillStyle = "#0b1220";
                 ctx.fillRect(tile.x, tile.y, tile.width, tile.height);
@@ -532,8 +580,10 @@ export function ImagesTab({
               imageWidth={layout.worldWidth}
               imageHeight={layout.worldHeight}
               tileSize={viewerTileSize}
+              tileOrientation={imageOrientation}
+              preheatSurface={surfaceFilter === "all" ? null : surfaceFilter}
               className="bg-[#0d1117]"
-              maxLevel={maxTileLevel}
+              maxLevel={adaptiveMaxTileLevel}
               prefetchMargin={400}
               onPreferredLevelChange={onPreferredLevelChange}
               renderTile={renderTile}
@@ -566,6 +616,7 @@ export function ImagesTab({
                 setHoveredDefect(null);
                 onDefectHoverEnd?.();
               }}
+              fitToHeight={imageOrientation === "horizontal"}
             />
           );
          })()}

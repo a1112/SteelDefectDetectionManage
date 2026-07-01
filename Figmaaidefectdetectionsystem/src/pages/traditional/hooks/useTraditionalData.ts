@@ -4,10 +4,10 @@ import {
   listSteels,
   searchSteels,
   getTestModelStatus,
-  getConfigStatusSimple,
   type SteelItem,
   type SearchCriteria,
 } from "../../../api/client";
+import { getConfigStatusSimple } from "../../../api/status";
 import { toast } from "sonner";
 
 export interface TraditionalDataState {
@@ -74,6 +74,7 @@ export function useTraditionalData(
   useEffect(() => {
     let mounted = true;
     const loadSimple = async () => {
+      if (document.visibilityState === "hidden") return;
       try {
         const kind = "2D";
         const status = await getConfigStatusSimple(currentLineKey || env.getLineName(), kind);
@@ -83,9 +84,16 @@ export function useTraditionalData(
       }
     };
     void loadSimple();
-    const timer = window.setInterval(loadSimple, 2000);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        void loadSimple();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    const timer = window.setInterval(loadSimple, 5000);
     return () => {
       mounted = false;
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.clearInterval(timer);
     };
   }, [currentLineKey]);

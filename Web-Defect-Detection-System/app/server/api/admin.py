@@ -437,6 +437,22 @@ def _deep_merge(base: dict[str, Any], override: dict[str, Any]) -> dict[str, Any
     return result
 
 
+def _clamp_cache_record_window(value: object, default: int = 200) -> int:
+    try:
+        parsed = int(value)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        parsed = default
+    return max(1, min(200, parsed))
+
+
+def _normalize_disk_cache_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(payload or {})
+    for key in ("disk_cache_max_records", "disk_precache_window_records"):
+        if key in normalized:
+            normalized[key] = _clamp_cache_record_window(normalized.get(key))
+    return normalized
+
+
 def _check_database(session_factory):
     try:
         with session_factory() as session:
@@ -786,6 +802,7 @@ def _split_cache_payload(payload: dict[str, Any]) -> tuple[dict[str, Any], dict[
             "disk_cache_scan_interval_seconds",
             "disk_cache_cleanup_interval_seconds",
             "disk_precache_enabled",
+            "disk_precache_window_records",
             "disk_precache_levels",
             "disk_precache_workers",
         }
@@ -795,7 +812,7 @@ def _split_cache_payload(payload: dict[str, Any]) -> tuple[dict[str, Any], dict[
         for key in disk_keys:
             if key in legacy_cache and key not in disk_cache:
                 disk_cache[key] = legacy_cache[key]
-    return memory_cache, disk_cache
+    return memory_cache, _normalize_disk_cache_payload(disk_cache)
 
 
 def _load_server_template() -> dict[str, Any]:
@@ -836,7 +853,8 @@ def _save_server_template(updates: dict[str, Any]) -> None:
             current = payload.get(key) or {}
             if not isinstance(current, dict):
                 current = {}
-            payload[key] = _deep_merge(current, updates[key])
+            merged = _deep_merge(current, updates[key])
+            payload[key] = _normalize_disk_cache_payload(merged) if key == "disk_cache" else merged
     try:
         CURRENT_SERVER_CONFIG_PATH.write_text(
             json.dumps(payload, ensure_ascii=False, indent=2),
@@ -1047,7 +1065,9 @@ def update_cache_config(payload: CacheConfigUpdatePayload) -> dict[str, Any]:
                         }
                     current_memory, current_disk = _split_cache_payload(existing)
                     existing["memory_cache"] = _deep_merge(current_memory, override.get("memory_cache") or {})
-                    existing["disk_cache"] = _deep_merge(current_disk, override.get("disk_cache") or {})
+                    existing["disk_cache"] = _normalize_disk_cache_payload(
+                        _deep_merge(current_disk, override.get("disk_cache") or {})
+                    )
                     override_path.write_text(
                         json.dumps(existing, ensure_ascii=False, indent=2),
                         encoding="utf-8",

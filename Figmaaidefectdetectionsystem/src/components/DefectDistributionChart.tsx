@@ -3,6 +3,7 @@ import type {
   Defect,
   ImageOrientation,
   DistributionScaleMode,
+  ImageField,
 } from "../types/app.types";
 import type {
   SurfaceImageInfo,
@@ -16,6 +17,10 @@ import type { Tile } from "./LargeImageViewer/utils";
 interface DefectDistributionChartProps {
   defects: Defect[];
   surface: "all" | "top" | "bottom";
+  plateDimensions?: {
+    length?: number;
+    width?: number;
+  } | null;
   defectColors?: {
     [key: string]: { bg: string; border: string; text: string };
   };
@@ -36,13 +41,18 @@ interface DefectDistributionChartProps {
   showTileBorders?: boolean;
   distributionScaleMode?: DistributionScaleMode;
   setDistributionScaleMode?: (mode: DistributionScaleMode) => void;
+  activeImageField?: ImageField;
   onViewportCenterChange?: (center: { x: number; y: number } | null) => void;
 }
 
 const MAX_DEFECTS_TO_DRAW = 1000;
+const DRAG_CLICK_THRESHOLD = 4;
+const RULER_HEIGHT = 16;
+const MIDDLE_SCROLLBAR_HIT_HEIGHT = 12;
+const MIDDLE_SCROLLBAR_THUMB_HEIGHT = 4;
 
 // 模拟示例数据（用于没有真实数据时的占位展示）
-const SAMPLE_DEFECTS: Defect[] = [
+/* const SAMPLE_DEFECTS: Defect[] = [
   {
     id: "sample-1",
     type: "纵向裂纹",
@@ -98,11 +108,12 @@ const SAMPLE_DEFECTS: Defect[] = [
     height: 15,
     surface: "bottom",
   },
-];
+]; */
 
 export function DefectDistributionChart({
   defects,
   surface,
+  plateDimensions,
   defectColors,
   surfaceImageInfo,
   selectedDefectId,
@@ -122,6 +133,7 @@ export function DefectDistributionChart({
   showTileBorders = false,
   distributionScaleMode = "fit",
   setDistributionScaleMode,
+  activeImageField = "all",
 }: DefectDistributionChartProps) {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -176,19 +188,9 @@ export function DefectDistributionChart({
     return normalized;
   };
 
-  const hasMeta =
-    !!surfaceImageInfo &&
-    surfaceImageInfo.length > 0 &&
-    defects.some((d) => typeof d.imageIndex === "number");
-
   // 开发/无真实数据时才使用示例数据：存在 surfaceImageInfo 说明是后端真实数据场景
-  const showSampleData = defects.length === 0 && !hasMeta;
-
   // Use useMemo to prevent creating new array reference on every render
-  const displayDefects = useMemo(() => 
-    showSampleData ? SAMPLE_DEFECTS : defects,
-    [showSampleData, defects]
-  );
+  const displayDefects = defects;
   
   // Use useMemo to prevent filteredDefects from creating new array reference on every render
   const filteredDefects = useMemo(() => 
@@ -207,6 +209,15 @@ export function DefectDistributionChart({
     // 后续如需按视图窗口动态裁剪，可在这里加入视图相关逻辑。
     return filteredDefects.slice(0, MAX_DEFECTS_TO_DRAW);
   }, [filteredDefects]);
+  const fallbackFrameCount = useMemo(() => {
+    const maxIndex = visibleDefects.reduce((maxValue, defect) => {
+      const imageIndex = Number.isFinite(defect.imageIndex)
+        ? defect.imageIndex
+        : 1;
+      return Math.max(maxValue, imageIndex);
+    }, 1);
+    return Math.max(1, maxIndex);
+  }, [visibleDefects]);
   const handleWheel = useCallback(
     (event: React.WheelEvent<HTMLDivElement>) => {
       if (!onDefectSelect || visibleDefects.length === 0) {
@@ -238,16 +249,275 @@ export function DefectDistributionChart({
     },
     [onDefectSelect, onDefectSelectDetail, selectedDefectId, selectedDefectSurface, visibleDefects],
   );
+  const endDistributionDrag = useCallback(() => {
+    dragStateRef.current = null;
+    setIsDraggingDistribution(false);
+  }, []);
+
+  const syncDistributionScroll = useCallback((scrollLeft: number) => {
+    const refs = [
+      scrollContainerRef.current,
+      topViewportRef.current,
+      bottomViewportRef.current,
+    ];
+    refs.forEach((element) => {
+      if (!element || Math.abs(element.scrollLeft - scrollLeft) < 1) {
+        return;
+      }
+      element.scrollLeft = scrollLeft;
+    });
+    const actualScrollLeft = scrollContainerRef.current?.scrollLeft ?? scrollLeft;
+    setDistributionScrollLeft((previous) =>
+      Math.abs(previous - actualScrollLeft) < 1 ? previous : actualScrollLeft,
+    );
+  }, []);
+
+  const handleDistributionScroll = useCallback(
+    (event: React.UIEvent<HTMLDivElement>) => {
+      syncDistributionScroll(event.currentTarget.scrollLeft);
+    },
+    [syncDistributionScroll],
+  );
+
+  const handleDistributionPointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (event.button !== 0) return;
+      const container = scrollContainerRef.current;
+      if (!container || container.scrollWidth <= container.clientWidth) {
+        return;
+      }
+      dragStateRef.current = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY,
+        scrollLeft: container.scrollLeft,
+        hasDragged: false,
+      };
+      event.currentTarget.setPointerCapture?.(event.pointerId);
+    },
+    [],
+  );
+
+  const handleDistributionPointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const dragState = dragStateRef.current;
+      const container = scrollContainerRef.current;
+      if (!dragState || !container || dragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      const deltaX = event.clientX - dragState.startX;
+      const deltaY = event.clientY - dragState.startY;
+      if (
+        !dragState.hasDragged &&
+        Math.hypot(deltaX, deltaY) >= DRAG_CLICK_THRESHOLD
+      ) {
+        dragState.hasDragged = true;
+        setIsDraggingDistribution(true);
+      }
+
+      if (dragState.hasDragged) {
+        event.preventDefault();
+        const nextScrollLeft = dragState.scrollLeft - deltaX;
+        container.scrollLeft = nextScrollLeft;
+        syncDistributionScroll(nextScrollLeft);
+      }
+    },
+    [syncDistributionScroll],
+  );
+
+  const handleDistributionPointerUp = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const dragState = dragStateRef.current;
+      if (dragState?.pointerId === event.pointerId && dragState.hasDragged) {
+        suppressClickRef.current = true;
+        window.setTimeout(() => {
+          suppressClickRef.current = false;
+        }, 0);
+      }
+      event.currentTarget.releasePointerCapture?.(event.pointerId);
+      endDistributionDrag();
+    },
+    [endDistributionDrag],
+  );
+
+  const handleDistributionMouseDown = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (event.button !== 0 || dragStateRef.current) return;
+      const container = scrollContainerRef.current;
+      if (!container || container.scrollWidth <= container.clientWidth) {
+        return;
+      }
+      dragStateRef.current = {
+        startX: event.clientX,
+        startY: event.clientY,
+        scrollLeft: container.scrollLeft,
+        hasDragged: false,
+      };
+    },
+    [],
+  );
+
+  const handleDistributionMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      const dragState = dragStateRef.current;
+      const container = scrollContainerRef.current;
+      if (!dragState || dragState.pointerId !== undefined || !container) {
+        return;
+      }
+
+      const deltaX = event.clientX - dragState.startX;
+      const deltaY = event.clientY - dragState.startY;
+      if (
+        !dragState.hasDragged &&
+        Math.hypot(deltaX, deltaY) >= DRAG_CLICK_THRESHOLD
+      ) {
+        dragState.hasDragged = true;
+        setIsDraggingDistribution(true);
+      }
+
+      if (dragState.hasDragged) {
+        event.preventDefault();
+        const nextScrollLeft = dragState.scrollLeft - deltaX;
+        container.scrollLeft = nextScrollLeft;
+        syncDistributionScroll(nextScrollLeft);
+      }
+    },
+    [syncDistributionScroll],
+  );
+
+  const handleDistributionMouseUp = useCallback(() => {
+    const dragState = dragStateRef.current;
+    if (dragState?.pointerId === undefined && dragState.hasDragged) {
+      suppressClickRef.current = true;
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    }
+    if (!dragState || dragState.pointerId === undefined) {
+      endDistributionDrag();
+    }
+  }, [endDistributionDrag]);
+
+  const handleDistributionClickCapture = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!suppressClickRef.current) return;
+      event.preventDefault();
+      event.stopPropagation();
+      suppressClickRef.current = false;
+    },
+    [],
+  );
+
+  const handleMiddleScrollbarPointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (event.button !== 0) return;
+      const container = scrollContainerRef.current;
+      if (!container || container.scrollWidth <= container.clientWidth) {
+        return;
+      }
+
+      const track = event.currentTarget;
+      const rect = track.getBoundingClientRect();
+      const trackWidth = Math.max(1, rect.width);
+      const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+      const thumbWidth = Math.min(
+        trackWidth,
+        Math.max(36, (container.clientWidth / container.scrollWidth) * trackWidth),
+      );
+      const trackTravel = Math.max(1, trackWidth - thumbWidth);
+      const nextScrollLeft = Math.min(
+        maxScroll,
+        Math.max(
+          0,
+          ((event.clientX - rect.left - thumbWidth / 2) / trackTravel) * maxScroll,
+        ),
+      );
+
+      container.scrollLeft = nextScrollLeft;
+      syncDistributionScroll(nextScrollLeft);
+      middleScrollbarDragRef.current = {
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        scrollLeft: nextScrollLeft,
+        trackWidth,
+        thumbWidth,
+      };
+      setIsDraggingDistribution(true);
+      track.setPointerCapture?.(event.pointerId);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [syncDistributionScroll],
+  );
+
+  const handleMiddleScrollbarPointerMove = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      const dragState = middleScrollbarDragRef.current;
+      const container = scrollContainerRef.current;
+      if (!dragState || !container || dragState.pointerId !== event.pointerId) {
+        return;
+      }
+
+      const maxScroll = Math.max(0, container.scrollWidth - container.clientWidth);
+      const trackTravel = Math.max(1, dragState.trackWidth - dragState.thumbWidth);
+      const deltaX = event.clientX - dragState.startX;
+      const nextScrollLeft = Math.min(
+        maxScroll,
+        Math.max(0, dragState.scrollLeft + (deltaX / trackTravel) * maxScroll),
+      );
+
+      container.scrollLeft = nextScrollLeft;
+      syncDistributionScroll(nextScrollLeft);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    [syncDistributionScroll],
+  );
+
+  const endMiddleScrollbarDrag = useCallback(
+    (event?: React.PointerEvent<HTMLDivElement>) => {
+      if (
+        event &&
+        middleScrollbarDragRef.current?.pointerId === event.pointerId
+      ) {
+        event.currentTarget.releasePointerCapture?.(event.pointerId);
+      }
+      middleScrollbarDragRef.current = null;
+      setIsDraggingDistribution(false);
+    },
+    [],
+  );
 
   const findMetaForSurface = (
     surf: "top" | "bottom",
   ): SurfaceImageInfo | undefined =>
     surfaceImageInfo?.find((info) => info.surface === surf);
   
-  // 容器引用，用于获取宽度
+  // Container refs for sizing and scroll synchronization.
   const containerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const topViewportRef = useRef<HTMLDivElement>(null);
+  const bottomViewportRef = useRef<HTMLDivElement>(null);
+  const dragStateRef = useRef<{
+    pointerId?: number;
+    startX: number;
+    startY: number;
+    scrollLeft: number;
+    hasDragged: boolean;
+  } | null>(null);
+  const middleScrollbarDragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    scrollLeft: number;
+    trackWidth: number;
+    thumbWidth: number;
+  } | null>(null);
+  const suppressClickRef = useRef(false);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [containerHeight, setContainerHeight] = useState<number>(0);
+  const [isDraggingDistribution, setIsDraggingDistribution] = useState(false);
+  const [distributionScrollLeft, setDistributionScrollLeft] = useState(0);
 
   // 监听容器宽度变化
   useEffect(() => {
@@ -306,7 +576,9 @@ export function DefectDistributionChart({
 
     // 计算每个表面的高度（非拉伸模式）
     const perSurfaceHeight =
-      surface === "all" ? baseHeight / 2 : baseHeight;
+      surface === "all"
+        ? Math.max(80, (baseHeight - RULER_HEIGHT * 2) / 2)
+        : Math.max(120, baseHeight - RULER_HEIGHT);
     const topWidth = calculatePlateWidth(topMeta, perSurfaceHeight);
     const bottomWidth = calculatePlateWidth(bottomMeta, perSurfaceHeight);
 
@@ -355,24 +627,40 @@ export function DefectDistributionChart({
     };
   }, [surface, containerWidth, surfaceImageInfo, distributionScaleMode, plateHeight]);
 
+  useEffect(() => {
+    syncDistributionScroll(scrollContainerRef.current?.scrollLeft ?? 0);
+  }, [
+    calculateFinalDimensions.topWidth,
+    calculateFinalDimensions.bottomWidth,
+    surface,
+    syncDistributionScroll,
+  ]);
+
   const computeDisplayRect = (
     defect: Defect,
     meta: SurfaceImageInfo | undefined,
     perSurfaceHeight: number,
     plateWidth: number,
   ) => {
+    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
+
     if (!meta || typeof defect.imageIndex !== "number") {
-      // 无元数据时退回到“单帧 400x300” 的近似映射
-      const displayX = (defect.x / 400) * plateWidth;
-      const displayY = (defect.y / 300) * perSurfaceHeight;
-      const displayWidth = (defect.width / 400) * plateWidth;
-      const displayHeight =
-        (defect.height / 300) * perSurfaceHeight;
+      const fallbackFrameWidth = 4096;
+      const fallbackFrameHeight = 1024;
+      const frameIndex = Math.max(0, (defect.imageIndex || 1) - 1);
+      const lengthCenter = clamp01(
+        (frameIndex + (defect.y + defect.height / 2) / fallbackFrameHeight) /
+          fallbackFrameCount,
+      );
+      const widthCenter = clamp01(
+        (defect.x + defect.width / 2) / fallbackFrameWidth,
+      );
+      const markerSize = 4;
       return {
-        x: displayX,
-        y: displayY,
-        w: displayWidth,
-        h: displayHeight,
+        x: lengthCenter * plateWidth - markerSize / 2,
+        y: (1 - widthCenter) * perSurfaceHeight - markerSize / 2,
+        w: markerSize,
+        h: markerSize,
       };
     }
 
@@ -386,8 +674,9 @@ export function DefectDistributionChart({
         ? defect.imageIndex
         : 0;
     // 防止索引越界（兼容 0/1-based）
+    const zeroBasedIndex = rawIndex > 0 ? rawIndex - 1 : 0;
     const frameIndex = Math.min(
-      Math.max(rawIndex, 0),
+      Math.max(zeroBasedIndex, 0),
       frameCount - 1,
     );
 
@@ -400,8 +689,6 @@ export function DefectDistributionChart({
 
     const x1 = defect.x;
     const x2 = defect.x + defect.width;
-
-    const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
     // 长度方向：0~1 映射到钢板缩略图宽度，从左往右
     let lengthStart =
@@ -427,16 +714,30 @@ export function DefectDistributionChart({
       widthEnd = tmp;
     }
 
-    const lengthWidth = Math.max(
-      lengthEnd - lengthStart,
-      0.002,
-    );
-    const widthHeight = Math.max(widthEnd - widthStart, 0.002);
+    let lengthWidth = lengthEnd - lengthStart;
+    const plateLength = plateDimensions?.length ?? 0;
+    const defectLengthMm = defect.heightMm ?? 0;
+    if (plateLength > 0 && defectLengthMm > 0) {
+      lengthWidth = defectLengthMm / plateLength;
+    }
 
-    const displayX = lengthStart * plateWidth;
+    let widthHeight = widthEnd - widthStart;
+    const platePhysicalWidth = plateDimensions?.width ?? 0;
+    const defectWidthMm = defect.widthMm ?? 0;
+    if (platePhysicalWidth > 0 && defectWidthMm > 0) {
+      widthHeight = defectWidthMm / platePhysicalWidth;
+    }
+
+    lengthWidth = Math.max(lengthWidth, 2 / Math.max(plateWidth, 1));
+    widthHeight = Math.max(widthHeight, 2 / Math.max(perSurfaceHeight, 1));
+
+    const lengthCenter = (lengthStart + lengthEnd) / 2;
+    const widthCenter = (widthStart + widthEnd) / 2;
+    const displayX = clamp01(lengthCenter - lengthWidth / 2) * plateWidth;
     const displayWidth = lengthWidth * plateWidth;
     // 0 点在左下角：把 0 映射到 bottom
-    const displayY = (1 - widthEnd) * perSurfaceHeight;
+    const displayY =
+      (1 - clamp01(widthCenter + widthHeight / 2)) * perSurfaceHeight;
     const displayHeight = widthHeight * perSurfaceHeight;
 
     return {
@@ -486,17 +787,22 @@ export function DefectDistributionChart({
       typeof (seqNo as number | undefined) === "number"
     ) {
       // 直接使用 mosaic 尺寸，不使用 buildOrientationLayout
-      const mosaicWidth = meta.image_width ?? 0;
-      const mosaicHeight = (meta.frame_count ?? 0) * (meta.image_height ?? 0);
+      const sourceWidth = meta.image_width ?? 0;
+      const sourceLength = (meta.frame_count ?? 0) * (meta.image_height ?? 0);
+      const mosaicWidth =
+        orientation === "horizontal" ? sourceLength : sourceWidth;
+      const mosaicHeight =
+        orientation === "horizontal" ? sourceWidth : sourceLength;
 
       if (mosaicWidth > 0 && mosaicHeight > 0) {
         // 计算瓦片层级
-        const level = getDistributionTileLevel(
+        const requestedLevel = getDistributionTileLevel(
           mosaicWidth,
           mosaicHeight,
           plateWidth,
           perSurfaceHeight,
         );
+        const level = Math.min(requestedLevel, 16);
 
         let tileSize = Math.max(
           defaultTileSize ?? 0,
@@ -535,6 +841,7 @@ export function DefectDistributionChart({
               tileY: row,
               tileSize,
               orientation: "horizontal",
+              field: activeImageField,
               // 分布图不使用 view 参数，因为后端直接返回适合横向布局的瓦片
             });
 
@@ -545,7 +852,7 @@ export function DefectDistributionChart({
 
             tileImages.push(
               <img
-                key={`tile-${surf}-L${level}-${tileSize}-${col}-${row}`}
+                key={`tile-${activeImageField}-${surf}-L${level}-${tileSize}-${col}-${row}`}
                 src={url}
                 alt="mosaic-tile"
                 className="absolute select-none"
@@ -578,32 +885,28 @@ export function DefectDistributionChart({
         return null;
       }
 
-      const mosaicWidth = meta.image_width ?? 0;
-      const mosaicHeight = (meta.frame_count ?? 0) * (meta.image_height ?? 0);
+      const sourceWidth = meta.image_width ?? 0;
+      const sourceLength = (meta.frame_count ?? 0) * (meta.image_height ?? 0);
+      const mosaicWidth =
+        orientation === "horizontal" ? sourceLength : sourceWidth;
+      const mosaicHeight =
+        orientation === "horizontal" ? sourceWidth : sourceLength;
       if (mosaicWidth <= 0 || mosaicHeight <= 0) {
         return null;
       }
 
       const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
-      const mosaicRect =
-        orientation === "horizontal"
-          ? {
-              x: viewportInfo.y,
-              y: viewportInfo.x,
-              width: viewportInfo.height,
-              height: viewportInfo.width,
-            }
-          : {
-              x: viewportInfo.x,
-              y: viewportInfo.y,
-              width: viewportInfo.width,
-              height: viewportInfo.height,
-            };
+      const mosaicRect = {
+        x: viewportInfo.x,
+        y: viewportInfo.y,
+        width: viewportInfo.width,
+        height: viewportInfo.height,
+      };
 
-      const lengthStart = clamp01(mosaicRect.y / mosaicHeight);
-      const lengthEnd = clamp01((mosaicRect.y + mosaicRect.height) / mosaicHeight);
-      const widthStart = clamp01(mosaicRect.x / mosaicWidth);
-      const widthEnd = clamp01((mosaicRect.x + mosaicRect.width) / mosaicWidth);
+      const lengthStart = clamp01(mosaicRect.x / mosaicWidth);
+      const lengthEnd = clamp01((mosaicRect.x + mosaicRect.width) / mosaicWidth);
+      const widthStart = clamp01(mosaicRect.y / mosaicHeight);
+      const widthEnd = clamp01((mosaicRect.y + mosaicRect.height) / mosaicHeight);
 
       const displayX = Math.min(lengthStart, lengthEnd) * plateWidth;
       const displayWidth =
@@ -630,7 +933,7 @@ export function DefectDistributionChart({
     // 生成刻度尺
     const renderRuler = (position: "top" | "bottom") => (
       <div 
-        className="relative w-full h-4 bg-muted/20 border-x-2 border-foreground/60"
+        className="relative w-full h-4 bg-muted/20"
         style={{ width: plateWidth }}
       >
         {/* 刻度线和标签 */}
@@ -660,7 +963,7 @@ export function DefectDistributionChart({
         {surf === "top" && renderRuler("top")}
         
         <div
-          className="relative border-2 border-foreground/60 bg-muted/5 overflow-hidden"
+          className="relative bg-muted/5 overflow-hidden"
           style={{ width: plateWidth, height: perSurfaceHeight }}
           onDragStart={(e) => e.preventDefault()}
           onMouseLeave={() => onDefectHoverEnd?.()}
@@ -679,26 +982,23 @@ export function DefectDistributionChart({
             const relY = (e.clientY - rect.top) / Math.max(1, rect.height);
             const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
 
-            const mosaicWidth = meta.image_width ?? 0;
-            const mosaicHeight = (meta.frame_count ?? 0) * (meta.image_height ?? 0);
+            const sourceWidth = meta.image_width ?? 0;
+            const sourceLength = (meta.frame_count ?? 0) * (meta.image_height ?? 0);
+            const mosaicWidth =
+              orientation === "horizontal" ? sourceLength : sourceWidth;
+            const mosaicHeight =
+              orientation === "horizontal" ? sourceWidth : sourceLength;
             if (mosaicWidth <= 0 || mosaicHeight <= 0) {
               return;
             }
 
             const lengthRatio = clamp01(relX);
             const widthRatio = clamp01(1 - relY);
-            const mosaicX = widthRatio * mosaicWidth;
-            const mosaicY = lengthRatio * mosaicHeight;
+            const imageWorldWidth = mosaicWidth;
+            const imageWorldHeight = mosaicHeight;
 
-            const imageWorldWidth =
-              orientation === "horizontal" ? mosaicHeight : mosaicWidth;
-            const imageWorldHeight =
-              orientation === "horizontal" ? mosaicWidth : mosaicHeight;
-
-            let centerX =
-              orientation === "horizontal" ? mosaicY : mosaicX;
-            let centerY =
-              orientation === "horizontal" ? mosaicX : mosaicY;
+            let centerX = lengthRatio * imageWorldWidth;
+            let centerY = widthRatio * imageWorldHeight;
 
             if (viewportInfo) {
               const halfW = viewportInfo.width / 2;
@@ -760,17 +1060,11 @@ export function DefectDistributionChart({
           </div>
 
           {/* 坐标原点调试点：表示旋转后 (0,0) 期望位置 */}
-          <div
-            className="absolute w-2 h-2 bg-red-500/60 rounded-full"
-            style={{ left: 0, bottom: 0 }}
-            title="Origin debug point (0,0)"
-          />
-
           {/* Selected defect marker (hollow cross) */}
           {selectedDefect && (() => {
             const { x, y, w, h } = computeDisplayRect(
               selectedDefect,
-              hasMeta ? meta : undefined,
+              meta,
               perSurfaceHeight,
               plateWidth,
             );
@@ -804,7 +1098,7 @@ export function DefectDistributionChart({
           {plateDefects.map((defect) => {
             const { x, y, w, h } = computeDisplayRect(
               defect,
-              hasMeta ? meta : undefined,
+              meta,
               perSurfaceHeight,
               plateWidth,
             );
@@ -828,7 +1122,7 @@ export function DefectDistributionChart({
                   onDefectHover?.(defect, { screenX: e.clientX, screenY: e.clientY })
                 }
                 onMouseLeave={() => onDefectHoverEnd?.()}
-                className={`absolute border-2 ${borderColor} ${showSampleData ? "opacity-40" : "opacity-30"} ${
+                className={`absolute border-2 ${borderColor} opacity-30 ${
                   isSelected
                     ? "ring-2 ring-offset-2 ring-primary/80 ring-offset-background"
                     : ""
@@ -910,10 +1204,58 @@ export function DefectDistributionChart({
     });
   }, []);
 
+  const sharedScrollWidth = Math.max(
+    containerWidth,
+    surface === "top"
+      ? calculateFinalDimensions.topWidth
+      : surface === "bottom"
+        ? calculateFinalDimensions.bottomWidth
+        : Math.max(
+            calculateFinalDimensions.topWidth,
+            calculateFinalDimensions.bottomWidth,
+          ),
+  );
+  const perSurfaceHeight =
+    calculateFinalDimensions.perSurfaceHeight ??
+    calculateFinalDimensions.height / (surface === "all" ? 2 : 1);
+  const surfaceViewportHeight = perSurfaceHeight + RULER_HEIGHT;
+  const dragCursor = isDraggingDistribution ? "grabbing" : "grab";
+  const middleScrollbarMaxScroll = Math.max(
+    0,
+    sharedScrollWidth - Math.max(1, containerWidth),
+  );
+  const middleScrollbarThumbWidth =
+    middleScrollbarMaxScroll > 1
+      ? Math.min(
+          Math.max(1, containerWidth),
+          Math.max(
+            36,
+            (Math.max(1, containerWidth) / Math.max(1, sharedScrollWidth)) *
+              Math.max(1, containerWidth),
+          ),
+        )
+      : Math.max(1, containerWidth);
+  const middleScrollbarTravel = Math.max(
+    1,
+    Math.max(1, containerWidth) - middleScrollbarThumbWidth,
+  );
+  const middleScrollbarLeft =
+    middleScrollbarMaxScroll > 1
+      ? Math.min(
+          middleScrollbarTravel,
+          Math.max(
+            0,
+            (Math.min(distributionScrollLeft, middleScrollbarMaxScroll) /
+              middleScrollbarMaxScroll) *
+              middleScrollbarTravel,
+          ),
+        )
+      : 0;
+
   return (
     <div
       ref={containerRef}
-      className="flex flex-col"
+      className="relative flex flex-col"
       style={{ 
         height: `${calculateFinalDimensions.height}px`,
         minHeight: `${calculateFinalDimensions.height}px`
@@ -922,24 +1264,70 @@ export function DefectDistributionChart({
 
       {/* 横向滚动容器 - 支持横向滚动查看长钢板 */}
       <div
-        className="flex-1 overflow-x-auto overflow-y-hidden"
+        ref={scrollContainerRef}
+        className="distribution-scroll-container flex-1 overflow-x-auto overflow-y-hidden select-none"
+        onScroll={handleDistributionScroll}
         onWheel={handleWheel}
+        onPointerDown={handleDistributionPointerDown}
+        onPointerMove={handleDistributionPointerMove}
+        onPointerUp={handleDistributionPointerUp}
+        onPointerCancel={endDistributionDrag}
+        onPointerLeave={endDistributionDrag}
+        onMouseDown={handleDistributionMouseDown}
+        onMouseMove={handleDistributionMouseMove}
+        onMouseUp={handleDistributionMouseUp}
+        onMouseLeave={handleDistributionMouseUp}
+        onClickCapture={handleDistributionClickCapture}
+        style={{ cursor: dragCursor }}
         // onContextMenu={handleContextMenu}  // 暂时禁用右键菜单
       >
-        <div className="flex flex-col gap-0 h-full">
+        <div className="flex flex-col gap-0 h-full" style={{ width: sharedScrollWidth }}>
           {surface === "all" ? (
             <>
-              {renderPlate("top", calculateFinalDimensions.perSurfaceHeight ?? calculateFinalDimensions.height / 2)}
-              {renderPlate("bottom", calculateFinalDimensions.perSurfaceHeight ?? calculateFinalDimensions.height / 2)}
+              {renderPlate("top", perSurfaceHeight)}
+              {renderPlate("bottom", perSurfaceHeight)}
             </>
           ) : (
             renderPlate(
               surface === "top" ? "top" : "bottom",
-              calculateFinalDimensions.perSurfaceHeight ?? calculateFinalDimensions.height,
+              perSurfaceHeight,
             )
           )}
         </div>
       </div>
+
+      {surface === "all" && middleScrollbarMaxScroll > 1 && (
+        <div
+          className="absolute left-0 right-0 z-30 bg-transparent"
+          style={{
+            height: MIDDLE_SCROLLBAR_HIT_HEIGHT,
+            top: surfaceViewportHeight - MIDDLE_SCROLLBAR_HIT_HEIGHT / 2,
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            className="distribution-middle-scrollbar relative h-full bg-transparent"
+            onPointerDown={handleMiddleScrollbarPointerDown}
+            onPointerMove={handleMiddleScrollbarPointerMove}
+            onPointerUp={endMiddleScrollbarDrag}
+            onPointerCancel={endMiddleScrollbarDrag}
+            style={{ pointerEvents: "auto" }}
+          >
+            <div
+              className="distribution-middle-scrollbar-thumb absolute"
+              style={{
+                left: middleScrollbarLeft,
+                top:
+                  (MIDDLE_SCROLLBAR_HIT_HEIGHT -
+                    MIDDLE_SCROLLBAR_THUMB_HEIGHT) /
+                  2,
+                width: middleScrollbarThumbWidth,
+                height: MIDDLE_SCROLLBAR_THUMB_HEIGHT,
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {/* 右键菜单 */}
       {contextMenu && (

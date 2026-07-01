@@ -10,7 +10,7 @@ export interface DrawTileParams {
 }
 
 export function drawTileImage(params: DrawTileParams): void {
-  const { ctx, img, tile, orientation, source } = params;
+  const { ctx, img, tile, source } = params;
 
   ctx.save();
   const prevSmoothing = ctx.imageSmoothingEnabled;
@@ -18,40 +18,20 @@ export function drawTileImage(params: DrawTileParams): void {
   ctx.imageSmoothingEnabled = true;
   ctx.imageSmoothingQuality = "medium";
 
-  if (orientation === "horizontal") {
-    ctx.translate(tile.x, tile.y);
-    ctx.transform(0, 1, 1, 0, 0, 0);
-    if (source) {
-      ctx.drawImage(
-        img,
-        source.x,
-        source.y,
-        source.width,
-        source.height,
-        0,
-        0,
-        tile.height,
-        tile.width,
-      );
-    } else {
-      ctx.drawImage(img, 0, 0, tile.height, tile.width);
-    }
+  if (source) {
+    ctx.drawImage(
+      img,
+      source.x,
+      source.y,
+      source.width,
+      source.height,
+      tile.x,
+      tile.y,
+      tile.width,
+      tile.height,
+    );
   } else {
-    if (source) {
-      ctx.drawImage(
-        img,
-        source.x,
-        source.y,
-        source.width,
-        source.height,
-        tile.x,
-        tile.y,
-        tile.width,
-        tile.height,
-      );
-    } else {
-      ctx.drawImage(img, tile.x, tile.y, tile.width, tile.height);
-    }
+    ctx.drawImage(img, tile.x, tile.y, tile.width, tile.height);
   }
 
   ctx.imageSmoothingEnabled = prevSmoothing;

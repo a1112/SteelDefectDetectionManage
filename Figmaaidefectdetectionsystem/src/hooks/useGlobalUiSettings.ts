@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
-import type { DistributionScaleMode } from "../types/app.types";
+import type { DistributionScaleMode, ImageField } from "../types/app.types";
 
 export interface GlobalUiSettings {
   showDistributionImages: boolean;
   showTileBorders: boolean;
+  dualFieldMode: boolean;
+  activeImageField: ImageField;
   distributionScaleMode: DistributionScaleMode;
   defectHoverCardWidth: number;
   defectHoverImageStretch: boolean;
@@ -19,6 +21,8 @@ const STORAGE_KEY = "global_ui_settings_v1";
 export const defaultGlobalUiSettings: GlobalUiSettings = {
   showDistributionImages: true,
   showTileBorders: false,
+  dualFieldMode: true,
+  activeImageField: "bright",
   distributionScaleMode: "fit",
   defectHoverCardWidth: 220,
   defectHoverImageStretch: false,
@@ -41,10 +45,23 @@ const readNumber = (value: unknown, fallback: number) => {
 const readBool = (value: unknown, fallback: boolean) =>
   typeof value === "boolean" ? value : fallback;
 
+const readImageField = (value: unknown, fallback: ImageField): ImageField =>
+  value === "bright" || value === "dark" || value === "all"
+    ? value
+    : fallback;
+
 const normalizeSettings = (
   input?: Partial<GlobalUiSettings>,
 ): GlobalUiSettings => {
   const merged = { ...defaultGlobalUiSettings, ...(input ?? {}) };
+  const dualFieldMode = readBool(
+    merged.dualFieldMode,
+    defaultGlobalUiSettings.dualFieldMode,
+  );
+  const activeImageField = readImageField(
+    merged.activeImageField,
+    defaultGlobalUiSettings.activeImageField,
+  );
   return {
     ...merged,
     showDistributionImages: readBool(
@@ -55,6 +72,11 @@ const normalizeSettings = (
       merged.showTileBorders,
       defaultGlobalUiSettings.showTileBorders,
     ),
+    dualFieldMode,
+    activeImageField:
+      dualFieldMode && activeImageField === "all"
+        ? "bright"
+        : activeImageField,
     distributionScaleMode:
       merged.distributionScaleMode === "stretch" ? "stretch" : "fit",
     defectHoverCardWidth: clampNumber(

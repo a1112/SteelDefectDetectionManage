@@ -4,6 +4,7 @@ export type CacheSurfaceInfo = {
   surface: "top" | "bottom";
   view: string;
   cached?: boolean;
+  building?: boolean | null;
   image_missing?: boolean | null;
   stale?: boolean | null;
   tile_max_level?: number | null;
@@ -18,7 +19,7 @@ export type CacheRecordItem = {
   seq_no: number;
   steel_no?: string | null;
   detect_time?: string | null;
-  status: "none" | "partial" | "complete";
+  status: "none" | "building" | "partial" | "complete";
   surfaces: CacheSurfaceInfo[];
 };
 
@@ -27,6 +28,7 @@ export type CacheRecordsResponse = {
   total: number;
   max_seq?: number | null;
   cache_range_min?: number | null;
+  cache_window_records?: number | null;
   expected_tile_max_level?: number | null;
   expected_defect_expand?: number | null;
 };
@@ -48,7 +50,21 @@ export type CacheStatus = {
     total?: number;
     done?: number;
     current_seq?: number;
+    window_start?: number;
+    window_end?: number;
+    window_size?: number;
     force?: boolean;
+    tile_progress?: {
+      seq_no?: number;
+      surface?: string;
+      orientation?: string;
+      level?: number;
+      done?: number;
+      total?: number;
+      percent?: number;
+      tile_x?: number;
+      tile_y?: number;
+    };
   } | null;
 };
 
@@ -80,7 +96,7 @@ export type CacheSettingsResponse = {
               surface: "top",
               view: "2D",
               cached: status !== "none",
-              tile_max_level: status !== "none" ? 4 : null,
+              tile_max_level: status !== "none" ? 5 : null,
               tile_size: 1024,
               defect_expand: 100,
               defect_cache_enabled: true,
@@ -91,7 +107,7 @@ export type CacheSettingsResponse = {
               surface: "bottom",
               view: "2D",
               cached: status === "complete",
-              tile_max_level: status === "complete" ? 4 : null,
+              tile_max_level: status === "complete" ? 5 : null,
               tile_size: 1024,
               defect_expand: 100,
               defect_cache_enabled: true,
@@ -114,28 +130,50 @@ const buildApiUrl = (path: string): string => {
   return `${base}${path}`;
 };
 
+const CACHE_RECORDS_TIMEOUT_MS = 5000;
+
 export async function listCacheRecords(
   page: number,
   pageSize: number,
+  seqNos?: number[],
 ): Promise<CacheRecordsResponse> {
-  if (env.isDevelopment()) {
-     const items = getMockItems(page, pageSize);
-     return {
-       items,
-       total: items.length,
-       max_seq: items[0]?.seq_no ?? null,
-       cache_range_min: items[0]?.seq_no ? items[0].seq_no - 200 + 1 : null,
-       expected_tile_max_level: 4,
-       expected_defect_expand: 100,
-     };
-   }
-  const url = `${buildApiUrl("/cache/records")}?page=${page}&page_size=${pageSize}`;
-  const response = await fetch(url, { cache: "no-store" });
-  if (!response.ok) {
-    const data = await response.json().catch(() => null);
-    throw new Error(data?.detail || `Failed to load cache records: ${response.status}`);
+  const query = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+  const scopedSeqNos = (seqNos ?? [])
+    .filter((seqNo) => Number.isFinite(seqNo))
+    .slice(0, pageSize);
+  if (scopedSeqNos.length > 0) {
+    query.set("seq_nos", scopedSeqNos.join(","));
   }
-  return (await response.json()) as CacheRecordsResponse;
+  const url = `${buildApiUrl("/cache/records")}?${query.toString()}`;
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), CACHE_RECORDS_TIMEOUT_MS);
+  try {
+    const response = await fetch(url, { cache: "no-store", signal: controller.signal });
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new Error(data?.detail || `Failed to load cache records: ${response.status}`);
+    }
+    return (await response.json()) as CacheRecordsResponse;
+  } catch (error) {
+    if (env.isDevelopment()) {
+      const items = getMockItems(page, pageSize);
+      return {
+        items,
+        total: items.length,
+        max_seq: items[0]?.seq_no ?? null,
+        cache_range_min: items[0]?.seq_no ? items[0].seq_no - 200 + 1 : null,
+        cache_window_records: 200,
+        expected_tile_max_level: 5,
+        expected_defect_expand: 100,
+      };
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeoutId);
+  }
 }
 
 export async function scanCacheRecords(payload: {
@@ -287,10 +325,11 @@ export async function getCacheSettings(): Promise<CacheSettingsResponse> {
         defect_cache_enabled: true,
         defect_cache_expand: 100,
         disk_cache_enabled: true,
-        disk_cache_max_records: 20000,
+        disk_cache_max_records: 200,
         disk_cache_scan_interval_seconds: 5,
         disk_cache_cleanup_interval_seconds: 60,
         disk_precache_enabled: true,
+        disk_precache_window_records: 200,
         disk_precache_levels: 4,
         disk_precache_workers: 4,
       },

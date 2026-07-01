@@ -14,6 +14,11 @@ Web-Defect-Detection-System/app/ui/DefectWebUi/build/
 __pycache__/
 *.pyc
 .venv/
+.venv*/
+.runtime/
+*.db-shm
+*.db-wal
+*.db-journal
 node_modules/
 dist/
 target

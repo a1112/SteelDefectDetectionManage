@@ -11,6 +11,7 @@ import type {
   SteelPlate,
   ImageOrientation,
   DistributionScaleMode,
+  ImageField,
 } from "../../types/app.types";
 import type { SurfaceImageInfo } from "../../api/types";
 import type {
@@ -55,6 +56,9 @@ interface DefectsPageProps {
   imageOrientation: ImageOrientation;
   defaultTileSize: number;
   maxTileLevel: number;
+  dualFieldMode: boolean;
+  activeImageField: ImageField;
+  setActiveImageField: (field: ImageField) => void;
   showDistributionImages: boolean;
   showTileBorders: boolean;
   distributionScaleMode: DistributionScaleMode;
@@ -90,6 +94,9 @@ export const DefectsPage: React.FC<DefectsPageProps> = ({
   imageOrientation,
   defaultTileSize,
   maxTileLevel,
+  dualFieldMode,
+  activeImageField,
+  setActiveImageField,
   showDistributionImages,
   showTileBorders,
   distributionScaleMode,
@@ -103,6 +110,8 @@ export const DefectsPage: React.FC<DefectsPageProps> = ({
     (defect) =>
       (surfaceFilter === "all" ||
         defect.surface === surfaceFilter) &&
+      (activeImageField === "all" ||
+        defect.field === (activeImageField === "bright" ? 0 : 1)) &&
       selectedDefectTypes.includes(defect.type),
   );
 
@@ -181,6 +190,26 @@ export const DefectsPage: React.FC<DefectsPageProps> = ({
                     缺陷
                   </button>
                 </div>
+                {dualFieldMode && (
+                  <div className="flex items-center gap-1 bg-black/20 rounded p-0.5 shrink-0">
+                    {([
+                      ["bright", "明场"],
+                      ["dark", "暗场"],
+                    ] as const).map(([field, label]) => (
+                      <button
+                        key={field}
+                        onClick={() => setActiveImageField(field)}
+                        className={`px-2 py-0.5 text-[10px] rounded transition-colors ${
+                          activeImageField === field
+                            ? "bg-white text-primary"
+                            : "text-white/70 hover:text-white"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {manualConfirmStatus && (
                   <div className="flex items-center gap-1 bg-black/30 rounded px-2 py-0.5 border border-white/20">
                     <span
@@ -246,6 +275,7 @@ export const DefectsPage: React.FC<DefectsPageProps> = ({
                   imageOrientation={imageOrientation}
                   defaultTileSize={defaultTileSize}
                   maxTileLevel={maxTileLevel}
+                  activeImageField={activeImageField}
                 />
               ) : (
                 <div className="text-xs text-muted-foreground">
@@ -256,10 +286,11 @@ export const DefectsPage: React.FC<DefectsPageProps> = ({
           </div>
 
           {/* 缺陷缩略分布图（小钢板示意） */}
-          <div className={`bg-card border border-border ${isMobileDevice ? "hidden" : ""}`}>
+          <div className={`bg-black/80 overflow-hidden ${isMobileDevice ? "hidden" : ""}`}>
             <DefectDistributionChart
               defects={filteredDefectsByControls}
               surface={surfaceFilter}
+              plateDimensions={selectedPlate?.dimensions ?? null}
               defectColors={defectColors}
               surfaceImageInfo={surfaceImageInfo}
               selectedDefectId={selectedDefectId}
@@ -274,6 +305,7 @@ export const DefectsPage: React.FC<DefectsPageProps> = ({
               onViewportCenterChange={setCenterTarget}
               defaultTileSize={defaultTileSize}
               maxTileLevel={maxTileLevel}
+              activeImageField={activeImageField}
               showDistributionImages={showDistributionImages}
               showTileBorders={showTileBorders}
               distributionScaleMode={distributionScaleMode}

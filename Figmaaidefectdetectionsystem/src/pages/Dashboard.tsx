@@ -68,12 +68,16 @@ import { ModernSettingsModal } from "../components/modals/ModernSettingsModal";
 import { DefectHoverTooltip } from "../components/DefectHoverTooltip";
 import { PlateHoverTooltip } from "../components/PlateHoverTooltip";
 import { useGlobalUiSettings } from "../hooks/useGlobalUiSettings";
+import { queueTileImageLoad } from "../utils/tileImageLoader";
 
 type DefectClassOption = {
   id: number;
   name: string;
   color?: string;
 };
+
+const neighborTileImageCache = new Map<string, HTMLImageElement>();
+const neighborTileImageLoading = new Set<string>();
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -83,6 +87,8 @@ export function Dashboard() {
   const {
     showDistributionImages,
     showTileBorders,
+    dualFieldMode,
+    activeImageField,
     distributionScaleMode,
     defectHoverCardWidth,
     defectHoverImageStretch,
@@ -92,6 +98,12 @@ export function Dashboard() {
     defectListHoverMaxItems,
     defectListHoverItemSize,
   } = settings;
+  const effectiveImageField =
+    dualFieldMode
+      ? activeImageField === "all"
+        ? "bright"
+        : activeImageField
+      : "all";
   
   const [history, setHistory] = useState<DetectionRecord[]>([]);
   const [activeTab, setActiveTab] = useState<AppTab>("defects");
@@ -133,7 +145,7 @@ export function Dashboard() {
         count: number;
         classId?: number | null;
         severity?: number;
-        items: Array<{ id: string; surface: "top" | "bottom" }>;
+        items: Array<{ id: string; surface: "top" | "bottom"; field?: number | null }>;
       }>
     >
   >({});
@@ -195,7 +207,7 @@ export function Dashboard() {
         count: number;
         classId?: number | null;
         severity?: number;
-        items: Array<{ id: string; surface: "top" | "bottom" }>;
+        items: Array<{ id: string; surface: "top" | "bottom"; field?: number | null }>;
       }
     >();
 
@@ -211,14 +223,14 @@ export function Dashboard() {
           count: 1,
           classId,
           severity,
-          items: [{ id: defect.defect_id, surface }],
+          items: [{ id: defect.defect_id, surface, field: defect.field }],
         });
         return;
       }
       existing.count += 1;
       existing.severity = Math.max(existing.severity ?? 1, severity);
       if (existing.items.length < 5) {
-        existing.items.push({ id: defect.defect_id, surface });
+        existing.items.push({ id: defect.defect_id, surface, field: defect.field });
       }
       if (classId !== null) {
         if (existing.classId === null || existing.classId === undefined) {
@@ -268,13 +280,14 @@ export function Dashboard() {
       });
 
       const serialNumber = plate.serialNumber;
-      if (plateDefectPreviewMap[serialNumber]) return;
-      if (plateDefectSummaryLoadingRef.current.has(serialNumber)) return;
+      const previewKey = `${serialNumber}:${effectiveImageField}`;
+      if (plateDefectPreviewMap[previewKey]) return;
+      if (plateDefectSummaryLoadingRef.current.has(previewKey)) return;
       const seqNo = Number.parseInt(serialNumber, 10);
       if (!Number.isFinite(seqNo)) return;
 
-      plateDefectSummaryLoadingRef.current.add(serialNumber);
-      getDefectsRaw(seqNo)
+      plateDefectSummaryLoadingRef.current.add(previewKey);
+      getDefectsRaw(seqNo, effectiveImageField)
         .then((response) => {
           const previewGroups = buildPlatePreviewGroups(response.defects);
           const summary = previewGroups.map((group) => ({
@@ -283,19 +296,19 @@ export function Dashboard() {
           }));
           setPlateDefectPreviewMap((prev) => ({
             ...prev,
-            [serialNumber]: previewGroups,
+            [previewKey]: previewGroups,
           }));
           setPlateDefectSummaryMap((prev) => ({
             ...prev,
-            [serialNumber]: summary,
+            [previewKey]: summary,
           }));
         })
         .catch(() => {})
         .finally(() => {
-          plateDefectSummaryLoadingRef.current.delete(serialNumber);
+          plateDefectSummaryLoadingRef.current.delete(previewKey);
         });
     },
-    [buildPlatePreviewGroups, plateDefectPreviewMap, plateHoverEnabled],
+    [buildPlatePreviewGroups, effectiveImageField, plateDefectPreviewMap, plateHoverEnabled],
   );
 
   const handlePlateHoverEnd = useCallback(() => {
@@ -358,7 +371,7 @@ export function Dashboard() {
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const filterButtonRef = useRef<HTMLButtonElement>(null);
   const diagnosticButtonRef = useRef<HTMLButtonElement>(null);
-  const [startupReady, setStartupReady] = useState(true);
+  const [startupReady, setStartupReady] = useState(false);
   const [apiNodes, setApiNodes] = useState<ApiNode[]>([]);
   const [activeLineKey, setActiveLineKey] = useState(
     env.getLineName(),
@@ -704,12 +717,12 @@ export function Dashboard() {
     }, [selectedPlateId, steelPlates]);
     const hoveredPlateSummary = hoveredPlateRecord
       ? plateDefectSummaryMap[
-          hoveredPlateRecord.plate.serialNumber
+          `${hoveredPlateRecord.plate.serialNumber}:${effectiveImageField}`
         ]
       : undefined;
     const hoveredPlatePreview = hoveredPlateRecord
       ? plateDefectPreviewMap[
-          hoveredPlateRecord.plate.serialNumber
+          `${hoveredPlateRecord.plate.serialNumber}:${effectiveImageField}`
         ]
       : undefined;
     const [isLoadingSteels, setIsLoadingSteels] = useState(false);
@@ -962,11 +975,12 @@ export function Dashboard() {
         }
 
         const seqNo = parseInt(selectedPlate.serialNumber, 10);
-        const response = await getDefectsRaw(seqNo);
+        const response = await getDefectsRaw(seqNo, effectiveImageField);
         const previewGroups = buildPlatePreviewGroups(response.defects);
+        const previewKey = `${selectedPlate.serialNumber}:${effectiveImageField}`;
         setPlateDefectPreviewMap((prev) => ({
           ...prev,
-          [selectedPlate.serialNumber]: previewGroups,
+          [previewKey]: previewGroups,
         }));
         const defectItems: DefectItem[] = response.defects.map(
           (item) => ({
@@ -980,6 +994,12 @@ export function Dashboard() {
             confidence: item.confidence,
             surface: item.surface,
             imageIndex: item.image_index,
+            field: item.field,
+            fieldName: item.field_name ?? undefined,
+            xMm: item.x_mm,
+            yMm: item.y_mm,
+            widthMm: item.width_mm,
+            heightMm: item.height_mm,
           }),
         );
 
@@ -994,12 +1014,18 @@ export function Dashboard() {
           confidence: item.confidence,
           surface: item.surface,
           imageIndex: item.imageIndex,
+          field: item.field,
+          fieldName: item.fieldName,
+          xMm: item.xMm,
+          yMm: item.yMm,
+          widthMm: item.widthMm,
+          heightMm: item.heightMm,
         }));
 
         setPlateDefects(mapped);
 
         try {
-          const steelMeta = await getSteelMeta(seqNo);
+          const steelMeta = await getSteelMeta(seqNo, effectiveImageField);
           setSurfaceImageInfo(steelMeta.surface_images ?? null);
         } catch (metaError) {
           console.warn("⚠️ 加载钢板图像元信息失败:", metaError);
@@ -1013,11 +1039,12 @@ export function Dashboard() {
     };
 
     loadPlateDefects();
-  }, [selectedPlateId, steelPlates, defaultTileSize]);
+  }, [selectedPlateId, steelPlates, defaultTileSize, effectiveImageField]);
 
   useEffect(() => {
     if (!selectedPlateId) return;
-    const preview = plateDefectPreviewMap[selectedPlateId];
+    const previewKey = `${selectedPlateId}:${effectiveImageField}`;
+    const preview = plateDefectPreviewMap[previewKey];
     if (preview) {
       const summary = preview.map((group) => ({
         type: group.label,
@@ -1025,7 +1052,7 @@ export function Dashboard() {
       }));
       setPlateDefectSummaryMap((prev) => ({
         ...prev,
-        [selectedPlateId]: summary,
+        [previewKey]: summary,
       }));
       return;
     }
@@ -1034,9 +1061,9 @@ export function Dashboard() {
     );
     setPlateDefectSummaryMap((prev) => ({
       ...prev,
-      [selectedPlateId]: summary,
+      [previewKey]: summary,
     }));
-  }, [buildDefectSummary, plateDefects, plateDefectPreviewMap, selectedPlateId]);
+  }, [buildDefectSummary, effectiveImageField, plateDefects, plateDefectPreviewMap, selectedPlateId]);
 
   useEffect(() => {
     if (activeTab !== "defects") {
@@ -1063,7 +1090,7 @@ export function Dashboard() {
 
     neighbors.forEach((plate) => {
       const seqNo = parseInt(plate.serialNumber, 10);
-      getSteelMeta(seqNo)
+      getSteelMeta(seqNo, effectiveImageField)
         .then((meta) => {
           const metas = meta.surface_images ?? [];
           metas.forEach((surfaceMeta) => {
@@ -1078,14 +1105,20 @@ export function Dashboard() {
               tileX: 0,
               tileY: 0,
               tileSize,
+              field: effectiveImageField,
             });
-            const img = new Image();
-            img.src = url;
+            queueTileImageLoad({
+              cacheKey: `neighbor-${effectiveImageField}-${surfaceMeta.surface}-${seqNo}-${tileSize}`,
+              url,
+              cache: neighborTileImageCache,
+              loading: neighborTileImageLoading,
+              priority: "low",
+            });
           });
         })
         .catch(() => {});
     });
-  }, [activeTab, selectedPlateId, steelPlates]);
+  }, [activeTab, selectedPlateId, steelPlates, effectiveImageField]);
 
   const navigateToReports = () => {
     navigate("/reports");
@@ -1207,6 +1240,7 @@ export function Dashboard() {
                     }
                     defaultTileSize={defaultTileSize}
                     maxTileLevel={maxTileLevel}
+                    activeImageField={effectiveImageField}
                     lineKey={activeLineKey}
                     defectClasses={defectClassOptions}
                     onDefectHover={handleDefectHover}
@@ -1246,6 +1280,11 @@ export function Dashboard() {
                     imageOrientation={imageOrientation}
                     defaultTileSize={defaultTileSize}
                     maxTileLevel={maxTileLevel}
+                    dualFieldMode={dualFieldMode}
+                    activeImageField={effectiveImageField}
+                    setActiveImageField={(value) =>
+                      updateSetting("activeImageField", value)
+                    }
                     showDistributionImages={showDistributionImages}
                     showTileBorders={showTileBorders}
                     distributionScaleMode={distributionScaleMode}
@@ -1402,6 +1441,14 @@ export function Dashboard() {
         showTileBorders={showTileBorders}
         setShowTileBorders={(value) =>
           updateSetting("showTileBorders", value)
+        }
+        dualFieldMode={dualFieldMode}
+        setDualFieldMode={(value) =>
+          updateSetting("dualFieldMode", value)
+        }
+        activeImageField={activeImageField}
+        setActiveImageField={(value) =>
+          updateSetting("activeImageField", value)
         }
         distributionScaleMode={distributionScaleMode}
         setDistributionScaleMode={(value) =>
