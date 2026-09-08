@@ -1,0 +1,3044 @@
+{
+  "source_repository": "a1112/Web-Defect-Detection-System",
+  "source_commit": "5958c4df6b22ec8d34f5ca68d87f7e82023befc4",
+  "source_tree": "15a3c36dc5d1cd8f6e5b4ecdf4c937df0d1bd8f1",
+  "consumer_repository": "a1112/SteelDefectDetectionManage",
+  "consumer_base_commit": "07b05bc88e5b7fdb77477ef7adeb4c07dc095898",
+  "consumer_prefix": "Web-Defect-Detection-System/",
+  "scope": "Pinned default-branch file tree only; no complete history, other branches, releases or hosted records.",
+  "files": [
+    {
+      "source_path": ".gitignore",
+      "source_mode": "100644",
+      "source_git_blob": "06329f67c6b361d5e429b756cc7b5ba8cb4c6cd4",
+      "consumer_path": "Web-Defect-Detection-System/.gitignore",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": ".gitlab-ci.yml",
+      "source_mode": "100644",
+      "source_git_blob": "9305b1184db57d87186d8b6962d2c3f9c1d603d6",
+      "consumer_path": "Web-Defect-Detection-System/.gitlab-ci.yml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "AGENTS.md",
+      "source_mode": "100644",
+      "source_git_blob": "aa7b3ff8644e0ca057557182cba95a1ba2812bd2",
+      "consumer_path": "Web-Defect-Detection-System/AGENTS.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "Dockerfile",
+      "source_mode": "100644",
+      "source_git_blob": "3d41371ed854d70a8a40b025ce2a85ae5cb915aa",
+      "consumer_path": "Web-Defect-Detection-System/Dockerfile",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "README.md",
+      "source_mode": "100644",
+      "source_git_blob": "397f6175959cf76cea45ce5e81512448c3910f13",
+      "consumer_path": "Web-Defect-Detection-System/README.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/DataBase/DefectDetectionDatabBase.db",
+      "source_mode": "100644",
+      "source_git_blob": "a367c62bed6c944afd83a809b09468365492f6b6",
+      "consumer_path": "Web-Defect-Detection-System/TestData/DataBase/DefectDetectionDatabBase.db",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/DataBase/ncdplate.db",
+      "source_mode": "100644",
+      "source_git_blob": "1307046f5e44a098de449985c317736e4d3da56b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/DataBase/ncdplate.db",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/DataBase/ncdplate.db-shm",
+      "source_mode": "100644",
+      "source_git_blob": "fe9ac2845eca6fe6da8a63cd096d9cf9e24ece10",
+      "consumer_path": "Web-Defect-Detection-System/TestData/DataBase/ncdplate.db-shm",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/DataBase/ncdplate.db-wal",
+      "source_mode": "100644",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "consumer_path": "Web-Defect-Detection-System/TestData/DataBase/ncdplate.db-wal",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/DataBase/ncdplatedefect.db",
+      "source_mode": "100644",
+      "source_git_blob": "766dad21b0cfe706c043732641e13ec310d191ae",
+      "consumer_path": "Web-Defect-Detection-System/TestData/DataBase/ncdplatedefect.db",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "1527c48e794c3d0db9f06a287e640f6f2dd4e507",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "432d7cc8dae16987a3f02dfa1b607ddaf635ecb9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/11.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fc2d2b8f75be0499d2077fa0ca7a47d3b3d05d91",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/11.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/12.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e6eb0a4d4de324c82f33d2214723b90a08a59fa0",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/12.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/13.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "84c733ea92aeaf6ddfcab3cc5e4a186481799727",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/13.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/14.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "82ffa106dc70e51c6366b943073db53333d8da92",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/14.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/15.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8d802729031f3e246d66ea6f2450783baefce976",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/15.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/16.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6e834ac7d5d60699c00c04fa22cfa60e359f7d1b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/16.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/17.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a838d1bc359a4fa508466620b584c1f3293310f1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/17.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/18.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "acee9fa1cc3f49a20f7e0773505d3edb6dfafc0f",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/18.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/19.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "11cbbb8a18742b47acb274746003d614e498a730",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/19.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "f47dd4d305ae998f0525ee56e92abbdbe163817c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/20.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "11e86932e5c0b58aa0d7b7d61f56a0220e3907d3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/20.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/21.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "bb7a5eb070507842e560727583229037bdfec5e4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/21.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6790e8376a873fbf8520b8c129eacdeb91007b22",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "48c1b87dfbaa19485057f486cbcd787562d389b5",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "1ab65d69344d20b845582301baa17d70cb72edc9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fb31f4b87916af3d55f4650720fce9c015033ad6",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8c3e1afd3a3d239bfaf7a282ccf07ff08a9b9e32",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "149dd7f50a6ce158bf31efcfcc549af12b9f0ac4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e5fc6fb2c3c98d7ca9a40c33996bda38519e2eeb",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/2D/record.json",
+      "source_mode": "100644",
+      "source_git_blob": "46bf2ff36577ca2f6ebb56d2d5e9864e1c4800fe",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/2D/record.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/cache.json",
+      "source_mode": "100644",
+      "source_git_blob": "d873eb54e51e9798cb412e62099ff35836b8fd1a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/cache.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_1_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "964bc24a81fe644a2c6dc50940ffc8c2961e994f",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_1_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_1_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a589e3cbc7d3bcc449fa13e17021213a431e9596",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_1_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_2_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "360997d15bfb47f25900103e5ccb2555ee2ec6d1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_2_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_2_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "18c57b2773807c9febcf2290156f140bd6af0902",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_2_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_3_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a34f7dec891f2c22fbb902843d259ee4b04d9f1d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_3_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_3_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "05719a740be7c319db267cfcb2a19b5ef2bf28c8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_3_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_4_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a35ec00878cd6e6f3b58d009d831dcf46502697",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_4_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/0/vertical_4_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "f443d6da03b315c6586071066be3f274f5fb2ea3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/0/vertical_4_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4b70a5c42a724161ca3811032744df0bdedf3532",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "21da08140ad5d750b6e9635f188b06c813e4b18e",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "83c2119b64c2b3ac900277149b442aa318d1b54c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8ec1d415d226f18375611216f15851aac9ac14ae",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "bca566d0eaa8da814c3298731f0ed2aef431ed36",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "034709dacddd0c8ac7b499b5902d667c15790156",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "420988fcbacb49c34eb23e8b426d7d908a2bf540",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "904df6dc0d8eb7ca21e015800f8e0dccdf5992eb",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3445d1834bab23bc10a12f2e42b4c23a5a08aa07",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0f641f04a0ece8908ff90871d8645cb58b9525d8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_0_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_0_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "5f31641d1a55d36c1333ca4ef06e38bb8e28cf54",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "dd850ba64cce565f2c5536ed2cbc9174921c599e",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "83c2119b64c2b3ac900277149b442aa318d1b54c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "355fdf24168756d81b734d418a4b45a50a99eb95",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "44401dfbc38c7a8f51f97fce0ffd44895a85f361",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "857411b6d3b9bf9a04720e1c6289614815cd77f2",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4c2cc0d64db43d40c4c2d6c20a65c7bd64cd85b1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "2664c8ccf5d8635aeefe14f29625a38bec2b6286",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "aa8cbbaf0d4456bb1814367f684f8a0b45b958c0",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c36ae813ecdc161ed2205b4bcc8d28056e1c3121",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_1_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_1_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "560eacb88502c651100235d74d497274b2c78434",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0cc490f15eb782f8bf11a905deeaaed9e6e8a655",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "83c2119b64c2b3ac900277149b442aa318d1b54c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a927e5013aff8dced15d3b9cff532a493c1005fa",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "508ccd3874a39711480e3881af39618710f9d053",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "2ecf396acc714925b1e99f8276bbfd879cb84ff9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "985228fee7b39dcf086f21934b2a38b4eb6116a3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b37e61e58681ab3b64642429777a26b088ab8bcf",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "741f0b051f0078681bb592bce653f5021f9d74a3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "38f240932f5771dd1d2f0c64ea93338f12a4e96d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_2_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_2_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c7469cf83f678e3fc6723ed069a435f05ed377ea",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6203a9194abbc328141956fbb281171b7fab7085",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "83c2119b64c2b3ac900277149b442aa318d1b54c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "09251201a16fa9468a472cc4fbbb6ff394a5b2d3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9adf098596e0bffd1db7bd495def5bb53d96a688",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fa3020d0034841036dc0e46e16f032529963ea46",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fd11fa7e7e8944400b0ce93bb778d4ad5b43f415",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "74dcc1a0c992e464e3861f30d6cbc7c1d86e4540",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0cbcf29d8e27c5b5f5fd093416680efebbaf0148",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e87d1853e93b960c9021ada846c511c4f5ac76cd",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_3_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_3_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3b0f3f5a6311db3be505acf47558bc4522cc889a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b7b6ff913ab926995aa91a37664130d99a9b66e9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "83c2119b64c2b3ac900277149b442aa318d1b54c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "97fe676a8ceebec56fa0f22f1c3a316e9d6d1411",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "65433ae3c59f553715ee99f5231b7d4e6c4ca0d9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a802449cf39ab0f10c7579a8ebcc9588e4bb62cf",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4eb2cbd769c2a62617d5bf577d6d067fe88f9b42",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8b08dc1f5c03e22b08cced05ce0e78aff0b34b60",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "dd4dc525fc568206155535f57356e243ac8c551b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4d7e25ea37cf0366a4181be92f40d84838baa7cb",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_4_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_4_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "7dd43f560f2553d62c265d2d15638f59cea5bd21",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "25842eb6ed77d91ae5a826f56ad16f2376082975",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "83c2119b64c2b3ac900277149b442aa318d1b54c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "24a2c59269d8f1fb72df3080497ec3346df127f5",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "46c75fe8759366f58fdf0431312f3090b1c066d1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d18c074dbc5cd68ce44655c59052d2366fc583b2",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "27ab73cfa875f5b08ec967ab4ccc8b6fb262c5ce",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d953d1bbce9be95b7e920eafa750d69054a8a154",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e011f970a7585e3bc2fd09c7b857f2f380260c26",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3ecaa390b45d229152f2b65d1937b2dc69b0b8aa",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_5_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_5_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ce26bed42da1eb37d380066bf57aeefabf2b36e9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "7b26cae0cdb40e6aabea698d954d166d40ba9b6a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "83c2119b64c2b3ac900277149b442aa318d1b54c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fb383a492948d583ecd5cac3b89b5307ff3eb9ef",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b44f7fa683a12de647273e09ad3288fcf9766835",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8c0760fcefd8668048126ee25a0c6016fa52aa78",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a8de38d22152f8fddb587ba6755d42b34fdfab92",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "67721bd1063b6177873f5168bd6bccb8af407be8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "52ab3ccd8dec4629884352ce673c32d5d4e5fe41",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "be366de97273a7a6074f8779d5d15932c9e5f630",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_6_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a3ed5d1b84560cdd7e337480c054a81f63df461",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_6_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "074c3a213aef3c4acbd551b025e58d8ca79156b5",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "36ba83a71af9bd54c8b08eacb96d9d3fb3059bdc",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "cbfed3466e1f79f466345340aaf2d5d1c6af6d9b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "33c5d3fc3e132dce812dd87ea82d006ec00ee628",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6703fe584a96313f685e10eb7c7083637c228b4f",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "97e5b3c0c421a835be90c00f9088880c34392aa2",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3048b1131654deaa823bce80fc865a65c18bfc28",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0fb734db371439f81e1c596800fd6cb91328cd39",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "caafb09810de6caadbe3b9d0a7d67d29368532e7",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9144de6630922915d67ec57a14ba8d5a3ab033a1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/1/vertical_7_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "841767b57d442f726e97b724fbaf98eef9153121",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/1/vertical_7_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ca291a109913590c8cf800a1b14d111180cc953f",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b2a69c0dc57c8cfce98ecf8b8b1e5f14ef660b05",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_0_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "dc6212b02680fc489c11dba8b1c1fdcc96015f89",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_0_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_0_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "20a46dde57c7112eae01b6faee43a46f570a7630",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_0_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_0_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "12bec885ae938616b4beafa26cf599cc29005732",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_0_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_0_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e75561d1ac48a784d0215cc8bf71faf023746d9b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_0_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "92df0b687bc4dc7a09ed236a7f6ae4b809c27e19",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_1_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "64048c10cf0809697bea11970098408342359130",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_1_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_1_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "1b1d03db5f344d3e61b0ab951ab18ab5b9828a77",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_1_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_1_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "05cf35c9ed791109f4a3837f27d7a7918ae84900",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_1_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_1_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d2c1f28108a69fbf9662abaddd21331b588e6fbb",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_1_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_1_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e75561d1ac48a784d0215cc8bf71faf023746d9b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_1_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_2_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d8e35386a4756c9776d07a7da0183c18a1a803c9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_2_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_2_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6445e5c0df525904e19b631010600ac3565896a4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_2_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_2_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fc9a97002a82eab583ed69f847857ea5ba65da46",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_2_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_2_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "806c32c5fcbf6b448a10d365abf570a51d733a05",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_2_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_2_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e3bfff7926d330dc848e2d02ec8bc88ebb90b0aa",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_2_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_2_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e75561d1ac48a784d0215cc8bf71faf023746d9b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_2_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_3_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "924a514cbe88a07d7f6290d5d084d367e779ab5c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_3_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_3_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ce2e0673eb4d7bcd9c0c6f19442aba93900762bf",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_3_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_3_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "46d96a2473e06291ba99f8bda1ac1273c8fd54e3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_3_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_3_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "437c591d441627fe30e2dad477f4c875675f3221",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_3_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_3_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4289ab44fc5b2ab7799c1c7e41e6656f55831036",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_3_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/2/vertical_3_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "04e90a3e646ed2174bb9409b6f8ad6f52d32a260",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/2/vertical_3_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/3/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3d0d3eaba66fa2480318c5a9e75361472853ea97",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/3/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/3/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "789bbc8d57c57cc5de9ab42c67d5c533d10f90cd",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/3/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/3/vertical_0_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "66a2169791bac8311607d4b199c5ffbc8cb3ba18",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/3/vertical_0_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/3/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0f56c842e5c0a8067171678583416c352b8e3ba6",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/3/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/3/vertical_1_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9733ee78a50028ae0a1c9a7ea83524fefc168ed8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/3/vertical_1_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/3/vertical_1_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "30b520c454b6880cdd0cc97d4cb9c11972cc0ea8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/3/vertical_1_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/4/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "43a36bffe40932b9bffcf7611515501a64b9b0b6",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/4/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/2D/tile/4/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9c15575cdac2830d2c16ca89b6f19337634f904d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/2D/tile/4/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/cache.json",
+      "source_mode": "100644",
+      "source_git_blob": "e9f2a5946dd6e7e6a971b933c5965792698726c2",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/cache.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/0/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/0/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/0/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/0/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0d9ecd8232909b97a055b19d2e6d272bdcad5312",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "daf3069db7fc21102ce3006d8499268bb75ef467",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a54c30cf8f6e4783580c799da245a9e8a8ad23ee",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "7df727a440b32864f078eede50b02c0896946006",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "7ebad62a111c435901b458a3a1681977739627ba",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "82584a6f1235a979e4a78ad4607a338f1e7763fc",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "bc8af59f357900c85f8988e6704938fdd6381ca9",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "5caec26e9dce79df08baebf56bf42dc287251e25",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4cd3bb12d9f85e2e3db3b01c991856e0c4f75ed1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_0_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_0_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fba7090a9a3511e962d1f6cf524c9719ea31c2ce",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e54f9464ac9f7ee01fc8137ffed0cc9640bb87c6",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "cce6657dacd96ef4df658d09c298c2c76131425b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0630019b32595473ba7ca281298e643b9cd919c4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b7ac1c8c92ffddcca2ca960a2cf6217e08aabb47",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b1aac5985ff6ed33497fe1f4556d25a4c2d32146",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "7ef17e8f882f0a704b4b1e4e1bb918e6a425bbfb",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8aa324d89c2464f6a0871d2b7a68ebf0989392e7",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "02399af7b752100f13dd9a419be045f7bf3b47e4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_1_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_1_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "edd4c8c31596797b338dca1f5df89b9b97249b7d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "cb1ed4d1761bd6f54123187b3cfc697d5e2f6669",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3accd04d32dcdc9a685fa3675869ab73b7c4bc7f",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "38796b15441da7b4927244f6e253a7a46163a3a3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "430c4fe539d0ae9f457f1b56855d33bd1d21af64",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "72265190057f3391dde9b38a3d7d5cb12e34092a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c11460229280ae429fc9f5eabd74500eea5753f8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d4123bfc6126e74c18f257b388ac9f84cf29e5c2",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "938d7485b148c6baab3f008ab368040911ff3e39",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_2_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_2_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "45bca42ef493f074c8e81474dd7daaee3b77da4a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "481b501c2a5b9c2b6efe56e35f057b2ed1d66bb1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ed9038d0e4332b044d7027d641a572fa706cbec4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "35187a5851ec0655cabd538bcfa3a59664a0808b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0088682d5c47b8f97a33c8f07216ab2504062854",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4cdf3b71ccac81f863546e4d77192244ba8e278e",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3ac94a50999dfa77994d36469522fb2a99c6ef29",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "86134bb0dea1fd8ffc4c9fe1598293cae38a3260",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "80540792d807f2e827353f9539c75050b1c2c112",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_3_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_3_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c623b973c61c8e8051a8d73621c6ad32e3dc5fc5",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "adacf6b4cfbb1c4053586e1a0c90f1f8f4d22464",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d41943a77f29e8f7a6cbe5ad58cceabbc25e4ac8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a6ab65a69a55902ccd0666fb9ec28ca85067b7c4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "162ad589bfac9a71d296fd542905d6c19a92f73e",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "9a55f4a2d5210af1b5a0de6a76a6b69affdafe97",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "01741e43fa42771e451978a46deaa3862a585fe7",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "bb145b4edf91b4e94e5d405665dc70559f98034b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "2de43d526b56ee47ae254c1fb16f9d94d49692c4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_4_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_4_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "05dc7e10cedd66e544637877f93e86dd8b409458",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d8f425017934b829361d0f5a4ca10e57aa01699d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fcd27a315fb5abbd265cd73de8728e84729fdef1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "572f01caf4f80e6e69f88188441ad247305a219a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8343c4d9101d60ced1be0757c84e85a19c69d0cf",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c876da35190177aac6b63831fda2dd0b0a53c0c5",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ec7b0d3c6a44ff5039ebaf57616cd3274045e158",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "2a420ac78663e2e61176d1464ed7bf87ec09da14",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "98f0a876cfb1f7382598f77cc0e63e2f453fa67f",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_5_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_5_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b45786ccb4adf3b7f859bb90c4c1aded1938c9fe",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "da9cba238df61899638a5c877c6584768b446194",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "aa7471d33ba9b9e6e25f15498397a256640ead27",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0c20d8bf11a8a14e4b547ce01bb18651edc01ad3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "7f724260704db47cd7a5a6854b8d5a1859ba1ad2",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4954e99927d9b55d6a54d294605d3a5035ab40cb",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "588f4d0cca9eccc74031d26b99b66f14ef607dd0",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "3e01ec2cf618871e17b017191c66212361f8ef2b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "30a17bd04dd90a477e33ec0049bc81dadf85c8a4",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_6_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_6_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "692b71677fef17a1c12d4a689e0a6806b65b92bc",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "2874d7d2056f97cee443ca3555ab4e85c1cdd6bf",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "917f158aa39a09a45c65ee236ee9dc97a808cb87",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "36dbd6d0a47d3dd9a27c22a707f8e4f677bc3877",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6d2675046f9ee54ce4b8f1bdabe8ca722133d6fb",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "addca85d66694122486880a38fc112144b52d5be",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ac6a2d5f791c48b8ede618ac1e99ba6402de8085",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "1c26b676911819d8755ec8e5d2b750513b7e735b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e5654505de644d0c78b2bfb2bd1cd03614536a38",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a2e46d3bf8c4c02724a4c9aec8aa6d10a67f7be3",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/1/vertical_7_9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6872e521ca7af634259643271904820db9da3f0a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/1/vertical_7_9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "0abb2b5b9cc953d7e4a5cb8869d0ca5eff42b785",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "376dcb4979b08ea0986de51339fa405164b2cc57",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_0_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "1b0f324e23f296bc05f666ad585913ee24965d5b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_0_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_0_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "acbf5a44a3136d3bbe3f7e84b21aefb94bbfb08a",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_0_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_0_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "69b6a245d11611fd796c369ff504584005d2d210",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_0_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_0_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c5370e70b3ec929f2fbdd4c6da1669c6f7de0b77",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_0_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b27e3977a9581e6382fbfe0ea37cb86fdede38d0",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_1_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8328be89efb419cfd7fbf6dbdbb4feef9f614ddd",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_1_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_1_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "5a64f6e3fe4b4e2bcf02d65988179ce061eeef13",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_1_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_1_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "230354ff128851621933fc35ab52bcde7960d8af",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_1_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_1_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8b93394e1dadca6d6aa66fa74a7b107d04451b93",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_1_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_1_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c5370e70b3ec929f2fbdd4c6da1669c6f7de0b77",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_1_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_2_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ddaf45279baaa35596f50cd6e72251a05bc4b79c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_2_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_2_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "e38da3edea89ce723655c546119190cd4c99340c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_2_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_2_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c3e291758ed3bce8cafe739c0623c10335a0c419",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_2_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_2_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d214487190dbf73b9bcd5e02a4d592d354fb99da",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_2_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_2_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "94f6f5327637d935dc0a7dbb7b501f6e49073f9b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_2_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_2_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c5370e70b3ec929f2fbdd4c6da1669c6f7de0b77",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_2_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_3_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "48f14b4a56eacc4e07d2038f677b416e19f1a674",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_3_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_3_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "dc2c62917fd24182221f83cbc125f4ba73fc8d94",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_3_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_3_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "57b7e0ef7aa6d11a485bcf53acb8b3612ecd1e5c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_3_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_3_3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "49d3496153f8fb0fb1d566163d036241524c03ee",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_3_3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_3_4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b5781a1a2be14c2a17d119d70a5a08cd3d79137e",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_3_4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/2/vertical_3_5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c5370e70b3ec929f2fbdd4c6da1669c6f7de0b77",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/2/vertical_3_5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/3/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "2361dbc93e8a39d3c5e72e9670d775badf6e6301",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/3/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/3/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "6fa6790ef4b663073eada7786a2fd543a683486d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/3/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/3/vertical_0_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "2590d6ed205009983ac13338009a5a8395f40961",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/3/vertical_0_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/3/vertical_1_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "fcc794aae941cc273e4ae35af8072eb3a0459ff8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/3/vertical_1_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/3/vertical_1_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a1f985da7b6645d8b291c04edda39ff74808d4e1",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/3/vertical_1_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/3/vertical_1_2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "4d84df7cc30df38af6687c3112163d528d5d7219",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/3/vertical_1_2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/4/vertical_0_0.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "facb6d32da3117b2ee25e11588d3ccb4b14af4d5",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/4/vertical_0_0.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/cache/small/tile/4/vertical_0_1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "732f00131167036f3aa2405c06545abaaaa5d491",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/cache/small/tile/4/vertical_0_1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/1.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d0f04261ef42af2768ca2be2c4d06c8f3be2fc75",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/1.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/10.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "8e3797a15d498b4bb4476b616e96842b61666f51",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/10.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/11.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "b06a26a6f888aac0f604ea19e12a6e1e13040d9f",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/11.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/12.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "5d0ce822ddc7cb8e2ad0bc8c5bbd0dc3816d470b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/12.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/13.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "bc6924cb367a990a5fc6078e4e0d9fc25a03c2de",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/13.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/14.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "eb756da87ed1c5168cef0343f7cb4b5924d2979c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/14.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/15.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c825bf5f7093df851a2f46f5c4da36841452af73",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/15.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/16.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "430a56b93cf7b34e78740e49803d1befd671d0e8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/16.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/17.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "f7df65cde85506a965ee11b5bf33050ddc810452",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/17.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/18.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "bc62ec99cfd811b3f583e8e7c67c5c72b2548c9c",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/18.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/19.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "280addffad363339fcbe50d506b4151c280c3ee6",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/19.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/2.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a0425a4e4544f1824d05712524d36d6b9a3a522d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/2.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/20.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "a1871943bd6af00a9239dc7a6f80de9d562d17cf",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/20.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/21.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "db882b97460e3d5d1bba4c128bdf44366b362289",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/21.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/3.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "5bf08d58994560ad4d91365fd2fe5ba9dd2a785b",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/3.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/4.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "c63915e7fb961fef30b1fdf34a9d709817f5b5b8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/4.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/5.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "97aa39c1b8e06fe2d2c72dc9514bd39ddb677ecc",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/5.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/6.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "d9292474ceedb90b0fc18ca414cb8836ebb50a4d",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/6.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/7.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "f66d4e2dc9ad69c38516bcb2c07f73a13fb4e677",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/7.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/8.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "ced9cc5a2f9e6c56bc1eb4147fa4c88346c63343",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/8.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/Image/1/small/9.jpg",
+      "source_mode": "100644",
+      "source_git_blob": "f516b11bc6b440b0ca2f3a4df8ee53ca1adedab8",
+      "consumer_path": "Web-Defect-Detection-System/TestData/Image/1/small/9.jpg",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "TestData/test_model_config.json",
+      "source_mode": "100644",
+      "source_git_blob": "b5b1b4560df5b1251088c3fd2789b16d61f9fd09",
+      "consumer_path": "Web-Defect-Detection-System/TestData/test_model_config.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "c38edc2a9f950601299c33b978f9eb0cbb0d19db",
+      "consumer_path": "Web-Defect-Detection-System/app/server/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "622d9fbd2bc1eb343607fd54ae5b2c8b1ed75cc4",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/admin.py",
+      "source_mode": "100644",
+      "source_git_blob": "6c72fcbd43a00885dc1db8e3e9d7db56b9f24e92",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/admin.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/api/admin.py.source.txt"
+    },
+    {
+      "source_path": "app/server/api/annotations.py",
+      "source_mode": "100644",
+      "source_git_blob": "a3f51b5c95ebabb031898fcfb468c56a88495ba4",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/annotations.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/cache.py",
+      "source_mode": "100644",
+      "source_git_blob": "d1252a82d0d1a226e45d730cac6529e275edef69",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/cache.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/api/cache.py.source.txt"
+    },
+    {
+      "source_path": "app/server/api/defects.py",
+      "source_mode": "100644",
+      "source_git_blob": "96f93d951cb4350614aa7b7ebee2b0dd60da8369",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/defects.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/api/defects.py.source.txt"
+    },
+    {
+      "source_path": "app/server/api/dependencies.py",
+      "source_mode": "100644",
+      "source_git_blob": "caf9d14f64dfda89fc71464bc66927771f9a95e2",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/dependencies.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/health.py",
+      "source_mode": "100644",
+      "source_git_blob": "7cfb1fb2df744f8edd06a5daec620fd13e96723f",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/health.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/images.py",
+      "source_mode": "100644",
+      "source_git_blob": "13e8be1916c13a692428bc1ab395cf83107a6d94",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/images.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/api/images.py.source.txt"
+    },
+    {
+      "source_path": "app/server/api/meta.py",
+      "source_mode": "100644",
+      "source_git_blob": "5909305abdd28b4a48e538b89087c67377e5c8ac",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/meta.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/api/meta.py.source.txt"
+    },
+    {
+      "source_path": "app/server/api/net.py",
+      "source_mode": "100644",
+      "source_git_blob": "67e3f798d992d6b99cd19f113d20654eced2b653",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/net.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/status.py",
+      "source_mode": "100644",
+      "source_git_blob": "49d1e7980401a2a1f113442c53a3b386b3f36b2c",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/status.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/steels.py",
+      "source_mode": "100644",
+      "source_git_blob": "74edb6414a0067453ea5b31969046cf4b4a7f169",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/steels.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/api/utils.py",
+      "source_mode": "100644",
+      "source_git_blob": "7138b5d1d36ef31a22f24b632a9c0c0d40ab68a6",
+      "consumer_path": "Web-Defect-Detection-System/app/server/api/utils.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/api/utils.py.source.txt"
+    },
+    {
+      "source_path": "app/server/cache/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "f35185a65b58563d091fb6f34c08e87a81d32ba2",
+      "consumer_path": "Web-Defect-Detection-System/app/server/cache/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/cache/disk_image_cache.py",
+      "source_mode": "100644",
+      "source_git_blob": "7837837c593af9ca2be9e65c8bf2c137d2846aca",
+      "consumer_path": "Web-Defect-Detection-System/app/server/cache/disk_image_cache.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/cache/disk_image_cache.py.source.txt"
+    },
+    {
+      "source_path": "app/server/cache/optimized_cache.py",
+      "source_mode": "100644",
+      "source_git_blob": "38d8cdea7720418ef95c12103fa69c57f74d45d8",
+      "consumer_path": "Web-Defect-Detection-System/app/server/cache/optimized_cache.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/cache/ttl_lru_cache.py",
+      "source_mode": "100644",
+      "source_git_blob": "0f4e242b08b673af8ed7aa7baade4fb2d2248369",
+      "consumer_path": "Web-Defect-Detection-System/app/server/cache/ttl_lru_cache.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/config/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "consumer_path": "Web-Defect-Detection-System/app/server/config/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/config/optimized_settings.py",
+      "source_mode": "100644",
+      "source_git_blob": "976f668de92c9419f4005b5591ef63cd528635c4",
+      "consumer_path": "Web-Defect-Detection-System/app/server/config/optimized_settings.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/config/settings.py",
+      "source_mode": "100644",
+      "source_git_blob": "6e27781176506e65cd57e49cc8b1c6fd51206588",
+      "consumer_path": "Web-Defect-Detection-System/app/server/config/settings.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/config/settings.py.source.txt"
+    },
+    {
+      "source_path": "app/server/config_center.py",
+      "source_mode": "100644",
+      "source_git_blob": "aea2763748a76a39a8fce9baf7949a309b48a709",
+      "consumer_path": "Web-Defect-Detection-System/app/server/config_center.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/database.py",
+      "source_mode": "100644",
+      "source_git_blob": "f745c2c33b69143d0f14ebe6e943488aebcc63b1",
+      "consumer_path": "Web-Defect-Detection-System/app/server/database.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "cdce08327275f5f5a1085b1525908e0379ef7c7d",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "a01a86e5c3a9117c5bbbc89218845e0e590546d1",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/extra/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "420fc5d40a175bf83725262852adbfb6a943b85e",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/extra/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/extra/defect_annotation.py",
+      "source_mode": "100644",
+      "source_git_blob": "0bfa68eed67cd8ccf1b2ad30c8ac466c5632ed7c",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/extra/defect_annotation.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/management/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "e287c4b054f428aec2f1d918dcb4a9e174f5d5a4",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/management/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/management/rbac.py",
+      "source_mode": "100644",
+      "source_git_blob": "970172e9293808a21f421aeb50f224f043bcb92b",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/management/rbac.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/source/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "2c6f0d254c177e242c0e49ec1903f3a1f54118d5",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/source/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/source/ncdplate.py",
+      "source_mode": "100644",
+      "source_git_blob": "ade696c58b05b91a658ca0e88fd372cffeabf781",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/source/ncdplate.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/db/models/source/ncdplatedefect.py",
+      "source_mode": "100644",
+      "source_git_blob": "f8f8700b1875b4d9f3bba5ad197e1f2ffbf648d3",
+      "consumer_path": "Web-Defect-Detection-System/app/server/db/models/source/ncdplatedefect.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/db/models/source/ncdplatedefect.py.source.txt"
+    },
+    {
+      "source_path": "app/server/demo/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "consumer_path": "Web-Defect-Detection-System/app/server/demo/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/deps.py",
+      "source_mode": "100644",
+      "source_git_blob": "d0549800b1fdc92cdaacf03e5e2684328da0fae6",
+      "consumer_path": "Web-Defect-Detection-System/app/server/deps.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/main.py",
+      "source_mode": "100644",
+      "source_git_blob": "fe9082bf16ab094a35c728ccda298c5d11ef611e",
+      "consumer_path": "Web-Defect-Detection-System/app/server/main.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/net_table.py",
+      "source_mode": "100644",
+      "source_git_blob": "08a46abe7f9f64966a3b0aec0a50d22329c5d098",
+      "consumer_path": "Web-Defect-Detection-System/app/server/net_table.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/rbac/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "e10fc3eb7308132eddfd04e17d5ce5d711ccf8a4",
+      "consumer_path": "Web-Defect-Detection-System/app/server/rbac/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/rbac/manager.py",
+      "source_mode": "100644",
+      "source_git_blob": "c0abd62f75660156ab70448bee8602996b9f212d",
+      "consumer_path": "Web-Defect-Detection-System/app/server/rbac/manager.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/schemas.py",
+      "source_mode": "100644",
+      "source_git_blob": "b3ff6c278669040f024166ebae7729e170bd6171",
+      "consumer_path": "Web-Defect-Detection-System/app/server/schemas.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/schemas.py.source.txt"
+    },
+    {
+      "source_path": "app/server/services/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "consumer_path": "Web-Defect-Detection-System/app/server/services/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/services/defect_service.py",
+      "source_mode": "100644",
+      "source_git_blob": "9b6749e92213ab96fe5e91f11e18c96c28d37427",
+      "consumer_path": "Web-Defect-Detection-System/app/server/services/defect_service.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/services/defect_service.py.source.txt"
+    },
+    {
+      "source_path": "app/server/services/image_service.py",
+      "source_mode": "100644",
+      "source_git_blob": "a7db171b0dabae0401bee87ee7b1bedb3206fb6c",
+      "consumer_path": "Web-Defect-Detection-System/app/server/services/image_service.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/services/image_service.py.source.txt"
+    },
+    {
+      "source_path": "app/server/services/steel_service.py",
+      "source_mode": "100644",
+      "source_git_blob": "bc001043d84a9d15f1b619014d39bb3160aa8948",
+      "consumer_path": "Web-Defect-Detection-System/app/server/services/steel_service.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/services/tile_prefetch.py",
+      "source_mode": "100644",
+      "source_git_blob": "b853d9ff4198094921326ebe78a7c5cbc3134509",
+      "consumer_path": "Web-Defect-Detection-System/app/server/services/tile_prefetch.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/services/tile_prefetch.py.source.txt"
+    },
+    {
+      "source_path": "app/server/status_service.py",
+      "source_mode": "100644",
+      "source_git_blob": "3824c8adc085d5ad66ffe65a144d67a678a32489",
+      "consumer_path": "Web-Defect-Detection-System/app/server/status_service.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/test_model.py",
+      "source_mode": "100644",
+      "source_git_blob": "e0fb6071e47b36fcec55431ba4118cfb7b2e9386",
+      "consumer_path": "Web-Defect-Detection-System/app/server/test_model.py",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/app/server/test_model.py.source.txt"
+    },
+    {
+      "source_path": "app/server/test_model_enhanced.py",
+      "source_mode": "100644",
+      "source_git_blob": "bda73ea5e510bc0560c272d20a3fef89d8910743",
+      "consumer_path": "Web-Defect-Detection-System/app/server/test_model_enhanced.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/test_model_monitoring.py",
+      "source_mode": "100644",
+      "source_git_blob": "c32deca46589611b4d029f8bcbff82231fc65aa1",
+      "consumer_path": "Web-Defect-Detection-System/app/server/test_model_monitoring.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/test_model_recovery.py",
+      "source_mode": "100644",
+      "source_git_blob": "450607839fd5c60ba984d83dad1829929b4fdafd",
+      "consumer_path": "Web-Defect-Detection-System/app/server/test_model_recovery.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/test_model_validator.py",
+      "source_mode": "100644",
+      "source_git_blob": "798261152bde9c97e4f5439d9367b7d44531775e",
+      "consumer_path": "Web-Defect-Detection-System/app/server/test_model_validator.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "dcc99571840522569dda03dabbe62ae574dacd94",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/backup_mysql_to_sqlite.py",
+      "source_mode": "100644",
+      "source_git_blob": "75db294e989bc823ec8437cd89bace3137ed38f8",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/backup_mysql_to_sqlite.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/cache.py",
+      "source_mode": "100644",
+      "source_git_blob": "fbc71d8161a68f93bffd57b1dc1b2aae79021eb6",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/cache.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/config_helper.py",
+      "source_mode": "100644",
+      "source_git_blob": "37db93e5294528c48acbcf968570e7a8e97aecce",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/config_helper.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/error_handler.py",
+      "source_mode": "100644",
+      "source_git_blob": "61295378a184f31aea6f0ce0fbd50d3ae9371dbf",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/error_handler.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/image_ops.py",
+      "source_mode": "100644",
+      "source_git_blob": "f4a7ab46fd32837e4a2d5d16f74c2b89ce9cef53",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/image_ops.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/record_converter.py",
+      "source_mode": "100644",
+      "source_git_blob": "ff0a56cc8bed6293ad599d1b4cb6ff4f525a96f4",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/record_converter.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/server/utils/speed_test.py",
+      "source_mode": "100644",
+      "source_git_blob": "08fb90c2555d46d9b47bda90b4e52f5970dad45a",
+      "consumer_path": "Web-Defect-Detection-System/app/server/utils/speed_test.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/test/api_smoke.py",
+      "source_mode": "100644",
+      "source_git_blob": "3e0b5b41e29bc6915f72d7e9511ed89afdcac064",
+      "consumer_path": "Web-Defect-Detection-System/app/test/api_smoke.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/CMakeLists.txt",
+      "source_mode": "100644",
+      "source_git_blob": "627a816c779c4cb411764a5627d4b1c668c958ef",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/CMakeLists.txt",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/README.md",
+      "source_mode": "100644",
+      "source_git_blob": "98343671328224da1b5bd7c9d4d18319b877d7dd",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/README.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/main.py",
+      "source_mode": "100644",
+      "source_git_blob": "a001d3ec5a80d7ab8f4d3fe32f58d10db0552497",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/main.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/App.qml",
+      "source_mode": "100644",
+      "source_git_blob": "ff0992ab2a7c8432222d7a4bb2df670dac052aeb",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/App.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/DefectListPanel.qml",
+      "source_mode": "100644",
+      "source_git_blob": "dd1ce9eab21c16ff9e52a1cd6fa7f9aa744ac8c8",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/DefectListPanel.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/ImagePreview.qml",
+      "source_mode": "100644",
+      "source_git_blob": "b1a5cb037d7ad69a2c5c5f1dee35a582a7a838c2",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/ImagePreview.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/NavRail.qml",
+      "source_mode": "100644",
+      "source_git_blob": "cb25e17936a545462ab62df149b8361fcf259184",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/NavRail.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/PanelHeader.qml",
+      "source_mode": "100644",
+      "source_git_blob": "be372f713aadda51fc6ba849c8fd7796465c2565",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/PanelHeader.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/PlatesPanel.qml",
+      "source_mode": "100644",
+      "source_git_blob": "b73a359fd965dd03cfe35cacd4b39536fd8f88f5",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/PlatesPanel.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/SideRail.qml",
+      "source_mode": "100644",
+      "source_git_blob": "9fb3f37ba3d82c86f83ece490862760aae11cede",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/SideRail.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/TileViewer.qml",
+      "source_mode": "100644",
+      "source_git_blob": "12a3e2aaa2eca1f484e5f5217c84d0a625c44061",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/TileViewer.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/components/TileViewport.qml",
+      "source_mode": "100644",
+      "source_git_blob": "0e074566a1be164468181c2d3260b065b00fb610",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/components/TileViewport.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/js/api.js",
+      "source_mode": "100644",
+      "source_git_blob": "c78a753c2c3a53994996c1c3420e008b6a9a6c4b",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/js/api.js",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/js/http.js",
+      "source_mode": "100644",
+      "source_git_blob": "66b275767811f865581546df3be40e365e379c93",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/js/http.js",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/js/orientation.js",
+      "source_mode": "100644",
+      "source_git_blob": "1c128912df481ea93513ce9dc2d94cbfa6f8a6f0",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/js/orientation.js",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/main.qml",
+      "source_mode": "100644",
+      "source_git_blob": "5fa4a65e0f3f2e70b7ac49ff958aedc97c20084f",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/main.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/pages/DefectsPage.qml",
+      "source_mode": "100644",
+      "source_git_blob": "aa2e7af233d72867d0ab87b539b03f98abecdd3b",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/pages/DefectsPage.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/pages/ImagesPage.qml",
+      "source_mode": "100644",
+      "source_git_blob": "adc8d39efbf8f67f8e41fb0f1c852075ef830a1a",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/pages/ImagesPage.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/pages/SettingsPage.qml",
+      "source_mode": "100644",
+      "source_git_blob": "e023307f5e403ab851701361b5caa16fc7a22d99",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/pages/SettingsPage.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/qml.qrc",
+      "source_mode": "100644",
+      "source_git_blob": "90862504841da802a9f97e084a99bcf71ce8ff99",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/qml.qrc",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/store/AppStore.qml",
+      "source_mode": "100644",
+      "source_git_blob": "eece25c494eeff2fd6c86061913564e1b5154936",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/store/AppStore.qml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/qml/store/qmldir",
+      "source_mode": "100644",
+      "source_git_blob": "8495b0101e1a3fe134f156a19a973f3253007e10",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/qml/store/qmldir",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/resources/images/placeholder.png",
+      "source_mode": "100644",
+      "source_git_blob": "1673fb8b06196b06e5afda593e3bfaee8dd17a42",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/resources/images/placeholder.png",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/resources/qtquickcontrols2.conf",
+      "source_mode": "100644",
+      "source_git_blob": "0600e0a26e0dbb2df0d0f28851609928afc3631e",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/resources/qtquickcontrols2.conf",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/resources/resources.qrc",
+      "source_mode": "100644",
+      "source_git_blob": "6af7e8183548d9b3252491fe96dc015b9fd65852",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/resources/resources.qrc",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "app/ui/DefectWebUi/src/main.cpp",
+      "source_mode": "100644",
+      "source_git_blob": "4d08c9a345330f53a1e6faee28eddfa0b2224e3f",
+      "consumer_path": "Web-Defect-Detection-System/app/ui/DefectWebUi/src/main.cpp",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "configs/TEST_MODEL",
+      "source_mode": "100644",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "consumer_path": "Web-Defect-Detection-System/configs/TEST_MODEL",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "configs/casbin/model.conf",
+      "source_mode": "100644",
+      "source_git_blob": "f00f01ccc933660962429e16a9fb37386e51de7a",
+      "consumer_path": "Web-Defect-Detection-System/configs/casbin/model.conf",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "configs/template/DefectClass.json",
+      "source_mode": "100644",
+      "source_git_blob": "782ec06d4fc8d1b713807363ab09e4e990d6590f",
+      "consumer_path": "Web-Defect-Detection-System/configs/template/DefectClass.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "configs/template/calibarte.xml",
+      "source_mode": "100644",
+      "source_git_blob": "c77929036b6a66b10931ba23784706a2b39241d2",
+      "consumer_path": "Web-Defect-Detection-System/configs/template/calibarte.xml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "configs/template/map.json",
+      "source_mode": "100644",
+      "source_git_blob": "fdaa544bcaa668cb2d68b010ffe5d82b6433dba8",
+      "consumer_path": "Web-Defect-Detection-System/configs/template/map.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "configs/template/server.json",
+      "source_mode": "100644",
+      "source_git_blob": "e657bbdd9556f35f8cb6d60bf455cf19827663bc",
+      "consumer_path": "Web-Defect-Detection-System/configs/template/server.json",
+      "disposition": "archived_line_delta",
+      "consumer_git_blob": "4278fbedad92ab53374a3e2c99257220b31115ee",
+      "archive_path": "docs/repository-consolidation/Web-Defect-Detection-System/originals/configs/template/server.json.delta.json"
+    },
+    {
+      "source_path": "configs/version.json",
+      "source_mode": "100644",
+      "source_git_blob": "b7938cec5a1cf900630af3307c3597d12b99b852",
+      "consumer_path": "Web-Defect-Detection-System/configs/version.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "demo/server_demo/__init__.py",
+      "source_mode": "100644",
+      "source_git_blob": "8b137891791fe96927ad78e64b0aad7bded08bdc",
+      "consumer_path": "Web-Defect-Detection-System/demo/server_demo/__init__.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "demo/server_demo/api_smoke.py",
+      "source_mode": "100644",
+      "source_git_blob": "242ee7ef966da243bbd7831ca80c65b7e46732f1",
+      "consumer_path": "Web-Defect-Detection-System/demo/server_demo/api_smoke.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "docker-compose.yml",
+      "source_mode": "100644",
+      "source_git_blob": "9012a31b6b70b3d960ad753d6346d9e40a4f7cd8",
+      "consumer_path": "Web-Defect-Detection-System/docker-compose.yml",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "requirements.txt",
+      "source_mode": "100644",
+      "source_git_blob": "36d9f84ff7d63925e481e51165b21dc153aadc8c",
+      "consumer_path": "Web-Defect-Detection-System/requirements.txt",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "resources/downloads/0.1.0/windows/DefectDetection_0.1.0_x64_zh-CN.msi",
+      "source_mode": "100644",
+      "source_git_blob": "41c7c32b65ea3a9ee4e8826539a1608f0e7e7a48",
+      "consumer_path": "Web-Defect-Detection-System/resources/downloads/0.1.0/windows/DefectDetection_0.1.0_x64_zh-CN.msi",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "server.py",
+      "source_mode": "100644",
+      "source_git_blob": "6da85e86cca4bbcbf4d269d343710fc12c6d2688",
+      "consumer_path": "Web-Defect-Detection-System/server.py",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "soft/Win64OpenSSL_Light-3_6_0.exe",
+      "source_mode": "100644",
+      "source_git_blob": "ef7190e81a5d595812207d13c88ebc04a8bc5816",
+      "consumer_path": "Web-Defect-Detection-System/soft/Win64OpenSSL_Light-3_6_0.exe",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/BUG修复.md",
+      "source_mode": "100644",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "consumer_path": "Web-Defect-Detection-System/work/BUG修复.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/WASM端同步.md",
+      "source_mode": "100644",
+      "source_git_blob": "e25e081427485296668a4439a92134fe347b0dc7",
+      "consumer_path": "Web-Defect-Detection-System/work/WASM端同步.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/local_db/DefectDetectionDatabBase.db",
+      "source_mode": "100644",
+      "source_git_blob": "1996219ef2614b6c47d8af06a773332c6a351b0e",
+      "consumer_path": "Web-Defect-Detection-System/work/local_db/DefectDetectionDatabBase.db",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/server_work1.md",
+      "source_mode": "100644",
+      "source_git_blob": "9ab5ef1224c1d4d5398e52473ef35e827bb31009",
+      "consumer_path": "Web-Defect-Detection-System/work/server_work1.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/surface_image_info 逻辑修改",
+      "source_mode": "100644",
+      "source_git_blob": "055e17081785d190d1fe4695828c108b3d69a877",
+      "consumer_path": "Web-Defect-Detection-System/work/surface_image_info 逻辑修改",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/ui_work1.md",
+      "source_mode": "100644",
+      "source_git_blob": "8241456d31f072e23b1dc12210bb463602480d5f",
+      "consumer_path": "Web-Defect-Detection-System/work/ui_work1.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/中转服务.md",
+      "source_mode": "100644",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "consumer_path": "Web-Defect-Detection-System/work/中转服务.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/后台管理系统数据设计.md",
+      "source_mode": "100644",
+      "source_git_blob": "7fd4f1bef51fb576f7c776c2c9651bda8241ab97",
+      "consumer_path": "Web-Defect-Detection-System/work/后台管理系统数据设计.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/图像加载修复",
+      "source_mode": "100644",
+      "source_git_blob": "a24fc914cc4be7fa59ca3a3c960db79e7022867d",
+      "consumer_path": "Web-Defect-Detection-System/work/图像加载修复",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/图像界面缺陷绘制,md",
+      "source_mode": "100644",
+      "source_git_blob": "595076e5e92609c785a006eeed9928388dea0b63",
+      "consumer_path": "Web-Defect-Detection-System/work/图像界面缺陷绘制,md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/性能模式.md",
+      "source_mode": "100644",
+      "source_git_blob": "d9e1755dd265cc349ae3b585bfde1303c1aa2395",
+      "consumer_path": "Web-Defect-Detection-System/work/性能模式.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/按钮功能.md",
+      "source_mode": "100644",
+      "source_git_blob": "70c4c270222788205ed85198fe13dd44a8c4467a",
+      "consumer_path": "Web-Defect-Detection-System/work/按钮功能.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/方向功能.md",
+      "source_mode": "100644",
+      "source_git_blob": "23ff970ce030bd8585132e36a59922f1571cff95",
+      "consumer_path": "Web-Defect-Detection-System/work/方向功能.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/模拟数据",
+      "source_mode": "100644",
+      "source_git_blob": "7ba09c9974334fe566d0016960317bda5a8ec1d9",
+      "consumer_path": "Web-Defect-Detection-System/work/模拟数据",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/测试数据测试模式.md",
+      "source_mode": "100644",
+      "source_git_blob": "71af329a23e4a29d37c38e174126cbc0713b5b0a",
+      "consumer_path": "Web-Defect-Detection-System/work/测试数据测试模式.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/瓦片cache.md",
+      "source_mode": "100644",
+      "source_git_blob": "d9d145060ef05d5274644acf7cb3681de1fc1439",
+      "consumer_path": "Web-Defect-Detection-System/work/瓦片cache.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/瓦片加载的图像读取逻辑.md",
+      "source_mode": "100644",
+      "source_git_blob": "647cfe575572ef64b4e348eebeb8daee6bfe1123",
+      "consumer_path": "Web-Defect-Detection-System/work/瓦片加载的图像读取逻辑.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/瓦片缓存逻辑.md",
+      "source_mode": "100644",
+      "source_git_blob": "7aa4a9cfb5df1a3a5439afad0cdf0dd192c6376d",
+      "consumer_path": "Web-Defect-Detection-System/work/瓦片缓存逻辑.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/简化工程.md",
+      "source_mode": "100644",
+      "source_git_blob": "d23fd0fb1f065fcb48412e1eacc6f9cc60781462",
+      "consumer_path": "Web-Defect-Detection-System/work/简化工程.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/缺陷分布图的图像显示",
+      "source_mode": "100644",
+      "source_git_blob": "479c04fb84240aa358411e2fe02b6c666fa7919e",
+      "consumer_path": "Web-Defect-Detection-System/work/缺陷分布图的图像显示",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/缺陷图像显示功能修复.md",
+      "source_mode": "100644",
+      "source_git_blob": "a0f4fab91727450f566cd65f8b1b455d9765a200",
+      "consumer_path": "Web-Defect-Detection-System/work/缺陷图像显示功能修复.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/缺陷字典api适配",
+      "source_mode": "100644",
+      "source_git_blob": "ec327b00836448c2ca6bbdcb27defc29036b8ff0",
+      "consumer_path": "Web-Defect-Detection-System/work/缺陷字典api适配",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/缺陷绘制的api.md",
+      "source_mode": "100644",
+      "source_git_blob": "139597f9cb07c5d48bed18984ec4747f4b4f3438",
+      "consumer_path": "Web-Defect-Detection-System/work/缺陷绘制的api.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "work/长带显示的逻辑",
+      "source_mode": "100644",
+      "source_git_blob": "8ae6a116aff0503a8f9ed1797d4ee704765b3e0a",
+      "consumer_path": "Web-Defect-Detection-System/work/长带显示的逻辑",
+      "disposition": "already_in_consumer"
+    }
+  ]
+}
