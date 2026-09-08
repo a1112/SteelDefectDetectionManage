@@ -1,0 +1,29 @@
+{
+  "base_git_blob": "4278fbedad92ab53374a3e2c99257220b31115ee",
+  "edits": [
+    {
+      "start": 21,
+      "end": 22,
+      "lines": []
+    },
+    {
+      "start": 35,
+      "end": 36,
+      "lines": [
+        "    \"disk_cache_max_records\": 20000,\n"
+      ]
+    },
+    {
+      "start": 39,
+      "end": 40,
+      "lines": []
+    },
+    {
+      "start": 41,
+      "end": 44,
+      "lines": [
+        "    \"disk_precache_workers\": 2\n"
+      ]
+    }
+  ]
+}
