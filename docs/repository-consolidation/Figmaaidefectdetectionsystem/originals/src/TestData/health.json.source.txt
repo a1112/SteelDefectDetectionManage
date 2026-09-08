@@ -1,0 +1,9 @@
+{
+    "status":  "healthy",
+    "timestamp":  "2025-12-24T13:17:42.750169",
+    "version":  "0.1.0",
+    "database":  {
+                     "connected":  true,
+                     "latency_ms":  null
+                 }
+}
