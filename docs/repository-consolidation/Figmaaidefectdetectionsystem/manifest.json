@@ -1,0 +1,1320 @@
+{
+  "source_repository": "a1112/Figmaaidefectdetectionsystem",
+  "source_commit": "9ffd07f48c5f5a1f0f0eee7490bbbb6326d9eb2b",
+  "source_tree": "a2a85dbbbe9abc8741f9118a6660cabfd007074d",
+  "consumer_repository": "a1112/SteelDefectDetectionManage",
+  "consumer_base_commit": "212858caad3a857ff7d2ef97a5f4dc6fbee05a22",
+  "consumer_prefix": "Figmaaidefectdetectionsystem/",
+  "scope": "Pinned default-branch file tree only; not full history or functional equivalence.",
+  "files": [
+    {
+      "source_path": ".gitignore",
+      "source_mode": "100644",
+      "source_git_blob": "046beb37d29a9fdaefd76867effb825bf2b49e2b",
+      "consumer_path": "Figmaaidefectdetectionsystem/.gitignore",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "README.md",
+      "source_mode": "100644",
+      "source_git_blob": "c4493c56f1f24bda828f2e1f4220eb624cd5aed4",
+      "consumer_path": "Figmaaidefectdetectionsystem/README.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "docs/DESIGN_SYSTEM.md",
+      "source_mode": "100644",
+      "source_git_blob": "d592861446adaf79a4265f8b9a1e556e54a38fad",
+      "consumer_path": "Figmaaidefectdetectionsystem/docs/DESIGN_SYSTEM.md",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/docs/DESIGN_SYSTEM.md.source.txt"
+    },
+    {
+      "source_path": "index.html",
+      "source_mode": "100644",
+      "source_git_blob": "603a16f30a673de0705190b737fd4582db8c735d",
+      "consumer_path": "Figmaaidefectdetectionsystem/index.html",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "package-lock.json",
+      "source_mode": "100644",
+      "source_git_blob": "543164c62568da57e86169d5b8dd41df09d75af2",
+      "consumer_path": "Figmaaidefectdetectionsystem/package-lock.json",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/package-lock.json.source.txt"
+    },
+    {
+      "source_path": "package.json",
+      "source_mode": "100644",
+      "source_git_blob": "0b745703dba12ab8d6484894dcba44823a6ffd48",
+      "consumer_path": "Figmaaidefectdetectionsystem/package.json",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "postcss.config.cjs",
+      "source_mode": "100644",
+      "source_git_blob": "0b8f2b0b778324494eb3564e237e1fe71d2e2419",
+      "consumer_path": "Figmaaidefectdetectionsystem/postcss.config.cjs",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/AGENTS.md",
+      "source_mode": "100644",
+      "source_git_blob": "1535db91b3c327389c44df36b2c30d9954c31a1f",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/AGENTS.md",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/AGENTS.md.source.txt"
+    },
+    {
+      "source_path": "src/App.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "f81d25e16089042e2a17c343179ead1aa60aa778",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/App.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/Attributions.md",
+      "source_mode": "100644",
+      "source_git_blob": "9b7cd4e13487db2e20f4f3844255f0b967db8448",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/Attributions.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/TestData/README.md",
+      "source_mode": "100644",
+      "source_git_blob": "815a3c06546db3a0e5f935f0fda0f5534f0bb0a4",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/TestData/README.md",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/TestData/README.md.source.txt"
+    },
+    {
+      "source_path": "src/TestData/defects_seq12.json",
+      "source_mode": "100644",
+      "source_git_blob": "759d9a2a07044a74d8fdeadacfac22869cc87e6a",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/TestData/defects_seq12.json",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/TestData/defects_seq12.json.source.txt"
+    },
+    {
+      "source_path": "src/TestData/health.json",
+      "source_mode": "100644",
+      "source_git_blob": "f6b574e0e5c4b95e7bf624e12f55a4eb9d803ca7",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/TestData/health.json",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/TestData/health.json.source.txt"
+    },
+    {
+      "source_path": "src/TestData/meta.json",
+      "source_mode": "100644",
+      "source_git_blob": "93b217f5575d7334f6f20dbd4d88d9c7a20f1900",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/TestData/meta.json",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/TestData/meta.json.source.txt"
+    },
+    {
+      "source_path": "src/TestData/steel_meta_seq12.json",
+      "source_mode": "100644",
+      "source_git_blob": "818bbc64152c7bdb0b97d02c1bfdcb0370270c0a",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/TestData/steel_meta_seq12.json",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/TestData/steel_meta_seq12.json.source.txt"
+    },
+    {
+      "source_path": "src/TestData/steels.json",
+      "source_mode": "100644",
+      "source_git_blob": "eb426060bf7915894754c4a7db8e3d9814692d91",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/TestData/steels.json",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/TestData/steels.json.source.txt"
+    },
+    {
+      "source_path": "src/api/admin.ts",
+      "source_mode": "100644",
+      "source_git_blob": "1876cb0bc9873e07805d8068d5dc2972b0715076",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/api/admin.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/api/admin.ts.source.txt"
+    },
+    {
+      "source_path": "src/api/cache.ts",
+      "source_mode": "100644",
+      "source_git_blob": "2b2e89350181726749dfd4f35d58f9ed75f22ac6",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/api/cache.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/api/cache.ts.source.txt"
+    },
+    {
+      "source_path": "src/api/client.ts",
+      "source_mode": "100644",
+      "source_git_blob": "4335eccc2dc9179302960721a7c02df9cabf24ef",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/api/client.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/api/client.ts.source.txt"
+    },
+    {
+      "source_path": "src/api/mock.ts",
+      "source_mode": "100644",
+      "source_git_blob": "d468d8976e0c7b55728c33b6e122d955b14fcbe4",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/api/mock.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/api/status.ts",
+      "source_mode": "100644",
+      "source_git_blob": "0cdda7b24815417806b2e182a5953b4283732920",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/api/status.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/api/status.ts.source.txt"
+    },
+    {
+      "source_path": "src/api/testModel.ts",
+      "source_mode": "100644",
+      "source_git_blob": "ac692231bab18cdddb0d03d960fa1efef69eee6a",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/api/testModel.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/api/types.ts",
+      "source_mode": "100644",
+      "source_git_blob": "e247c7c993677b7bb9f6b4735f3116cf7b6310e2",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/api/types.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/api/types.ts.source.txt"
+    },
+    {
+      "source_path": "src/components/BackendErrorPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a48980a4cbaf5ef24be2fdb8a1f81f055b1f32c3",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/BackendErrorPanel.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/BackendErrorPanel.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/DefectDistributionChart.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e60bc1f4893d90893f424e62411e3e93e31c2330",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/DefectDistributionChart.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/DefectDistributionChart.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/DefectHoverTooltip.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "5dcb8bb4957ada250060ee2ecb66cb94f656ea8b",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/DefectHoverTooltip.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/DefectHoverTooltip.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/DefectImageView.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "495b149261a4f155fdd730bcf68b4d18bb5ddfca",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/DefectImageView.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/DefectImageView.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/DefectList.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "771eda52e57161b22cdba16a8076f9c6328512cc",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/DefectList.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/DefectList.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/DefectNavigationBar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "89f7509c39dc99d938a8a2ef6900335c66a311d1",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/DefectNavigationBar.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/DefectNavigationBar.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/DefectReport.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "af8bd77bd477d08e9c32ed5c95e70fc1756a56f6",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/DefectReport.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/DefectReport.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/DetectionResult.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "d0cf97507f275813717e604bbb5c8fed079cc867",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/DetectionResult.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/DetectionResult.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/ErrorBoundary.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a36c5d28016c447f4904835f2e8ecc4467cc8f7a",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ErrorBoundary.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/ErrorBoundary.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/FilterDialog.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "c55b0ca029773a4ccaa164ef4b43a13bf20f4788",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/FilterDialog.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/FilterDialog.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/InfoPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "28849506c760a5577b57db65b11a306a14e900ed",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/InfoPanel.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/LargeImageViewer/LargeImageViewer.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "6328e6c6caf7ad5394d5b9b85f622282cd597594",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/LargeImageViewer/LargeImageViewer.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/LargeImageViewer/LargeImageViewer.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/LargeImageViewer/utils.ts",
+      "source_mode": "100644",
+      "source_git_blob": "89015f8bde991caa2194a087a6d4ccdb5035bf79",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/LargeImageViewer/utils.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/LargeImageViewer/utils.ts.source.txt"
+    },
+    {
+      "source_path": "src/components/MapViewport.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "3b997c7be0d45d7f2e7825ab32250faaf10c861c",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/MapViewport.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/MapViewport.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/ModeSwitch.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "36e4e18d68f0a6160a9db9b422b154ba269dc633",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ModeSwitch.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/ModeSwitch.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/PlateHoverTooltip.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "40db123b9896579724d1cef8cb016c04794fc1ba",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/PlateHoverTooltip.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/PlateHoverTooltip.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/SearchDialog.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "2b6f6bf04fa9ef15e3b58deb15afc95c5a489f4f",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/SearchDialog.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/SearchDialog.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/StatisticsPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e5ad294c7c9d3192cef985cd966d0d73dd536629",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/StatisticsPanel.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/StatisticsPanel.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/StyleSelector.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e331c35ecd286861a80655478540e33d8cc7d3e2",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/StyleSelector.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/StyleSelector.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/StyleSystemProvider.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e6f0a508acebbc00112fbe9d7897c8123033ff19",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/StyleSystemProvider.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/StyleSystemProvider.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/SystemDiagnosticDialog.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "654dd5a806fc4891806ae2fdc24d15088704f2b0",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/SystemDiagnosticDialog.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/SystemDiagnosticDialog.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/ThemeContext.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "1a6effc2c0bbdc80c72dea10546dc6a4e5b87b91",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ThemeContext.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/ThemeContext.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/TilePreheatTest.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "7575f7466472003b3ef13c6466be0e0d9c9ab2b1",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/TilePreheatTest.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/auth/LoginModal.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "7ce9c4c99b0c7a7fa72743f8f81dc0dcd6c617f8",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/auth/LoginModal.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/auth/LoginModal.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/backend/LineConfigTable.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e6b2d45a5bce7cd8543e1d1450d04040e40d2361",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/backend/LineConfigTable.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/backend/MockDataEditor.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "83ef4f647db642366fa0019e3423bc6116535af8",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/backend/MockDataEditor.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/backend/PermissionsPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "c78fbc3c37cf0fe4452dd1bfe402488a6f938caf",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/backend/PermissionsPanel.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/backend/ProxySettings.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "dab3a2475bb450e70547b7fc36aa147fccb81788",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/backend/ProxySettings.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/backend/ServiceSettings.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "6a5b6c94bcb091531f5fe4a2e8e21979cb94c263",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/backend/ServiceSettings.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/backend/ServiceSettings.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/backend/SystemInfoPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a9429a689b6807f181be7f9839296990a692836a",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/backend/SystemInfoPanel.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/backend/UISettings.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a33c9aba3118a04589959b81adf966623393fbe9",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/backend/UISettings.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/figma/ImageWithFallback.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e10ecc5846ccedb7cbf9f45cda9449de62610be2",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/figma/ImageWithFallback.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/layout/MobileNavBar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "f17fb8c0c851d108915c96fba3ed48f24f4dba4b",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/layout/MobileNavBar.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/layout/MobileNavBar.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/layout/PlatesPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "47d3b235797a0739b6747b5da4ce7f70b542a5e7",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/layout/PlatesPanel.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/layout/PlatesPanel.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/layout/Sidebar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "c97198913dd63a9a04d92d136e5b40a8593b6ecd",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/layout/Sidebar.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/layout/Sidebar.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/layout/StatusBar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "15d7b553d06963870aee16c1df60a2f7a796a0e6",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/layout/StatusBar.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/layout/TitleBar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "b2394d5acc582f31e317195498770b3f4ee65bb6",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/layout/TitleBar.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/layout/TitleBar.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/modals/DataSourceModal.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "0875bad59aeb6dbd769c8bf3675b6b7fcb1d0301",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/modals/DataSourceModal.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/modals/ModernSettingsModal.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "4f1aac310413a5c66c29ef7f5df1bfa10eabb695",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/modals/ModernSettingsModal.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/modals/ModernSettingsModal.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/modals/SettingsModal.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "6c8bd80080e4cf83335de90c2dcd7ce8ed87d00b",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/modals/SettingsModal.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/modals/SettingsModal.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/pages/DefectsPage.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "0060b444d47f3c0d73d84d072bbd22fea67a4c1f",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/pages/DefectsPage.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/pages/DefectsPage.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/pages/MockDataEditorPage.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e8613ea1685ba9e306a950d8ae72c6a9224c4da4",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/pages/MockDataEditorPage.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/pages/MockDataEditorPage.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/pages/ReportsPage.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "ae822cf4510079334869d16e7f489e8e6df7e66d",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/pages/ReportsPage.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/pages/ReportsPage.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/pages/SettingsPage.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a4dfe9b3e7047588c2cf392b08a0db2a3c1c581f",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/pages/SettingsPage.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/pages/SettingsPage.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/system/SystemMetricsBlocks.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "037fbe9314a18f063a51d961ba1ea2d12516f3b5",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/system/SystemMetricsBlocks.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/accordion.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "aa2c37b252a6f4fa36c608f91e09f10740bdbfaa",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/accordion.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/alert-dialog.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "68f3605cf204b73a0fc98b493900a9569e98c684",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/alert-dialog.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/alert.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "856b94db245b98afb9b458567b8f050804179f76",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/alert.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/aspect-ratio.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "2a2f462e2485fed8eed98afc7ea1377d6c5014d8",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/aspect-ratio.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/avatar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "589b166583f59799d32a83b2e9eec64c542839df",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/avatar.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/badge.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "3f8eff87fb40c75325cf0b27aa175d3bc1e8a27f",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/badge.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/breadcrumb.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "d2adf987870332563506c7aa93346f0c44d958c9",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/breadcrumb.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/button.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a132791e5322721d937811453692c874c9e6f9d1",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/button.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/calendar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "b30236faaeb97276eda9777d5da8bfcc7a3e1cea",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/calendar.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/card.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "5f9d58a566782b3bd04c13e9e4aa31eca7d6e9f7",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/card.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/carousel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "2752b36c7a87383674ab853aa489083c21a8d5d3",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/carousel.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/chart.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "d558e197cddf5a44baceec57a935e9cc1ba8980f",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/chart.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/checkbox.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a175500d236aca97562e2aad10838f3513f8ec76",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/checkbox.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/code-highlight.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "9226c5407bdcb240b6899b18f7687cdeebbbba01",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/code-highlight.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/collapsible.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "baddbac04ba8175c9f800c4b0a82721609da2ed7",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/collapsible.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/command.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "8352a781be38fa69b05f051e529d8a27a8887602",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/command.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/context-menu.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "d0eaf2269f9233b12745e6573f8c815426ad3a6e",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/context-menu.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/dialog.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "9c6b759efffae7d32e2912ad6709d6fbdb1082dd",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/dialog.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/drawer.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "0afaf9f2a5af263969204b07719d9436ec3806f5",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/drawer.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/dropdown-menu.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "ed783e906363b0936153aa52ac281d6c8dd04420",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/dropdown-menu.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/form.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a4e6cdd217e89a1fd8399ce34675faad504c70d1",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/form.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/hover-card.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "7c2efcbdd7089b67a29820ffcd97365e1dc226d6",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/hover-card.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/input-otp.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "3cdd90944b40cb890e7a3ade877e8bb99798da47",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/input-otp.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/input.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "19b0c619d2d682e229a682724c89577e697c3105",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/input.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/label.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a8bb8a37914d6f0b830725629a8c810c759716bf",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/label.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/menubar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "ef5fcb2deed8f31c794fceefcf294a8210ee3630",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/menubar.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/navigation-menu.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a4a30ed93f1e077062ea3b8e8c2e0562a1337ba4",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/navigation-menu.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/pagination.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "bb813296a1f247a02741d869ce51997b6513e2fa",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/pagination.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/popover.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "908620a9fd3436b5a729287bbe55f5bfb4607735",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/popover.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/progress.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "f1a4928c7030b1487e3170a771c602e17ffbc31c",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/progress.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/radio-group.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "962096944944b33373e983beb813b98c0248976c",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/radio-group.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/resizable.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "163ee35c6bcb6f678a9cce1a5eedc16b05e71222",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/resizable.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/scroll-area.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "97f2f40ea264688f14db6cb6b943296a1b0bebdb",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/scroll-area.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/select.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "bd1333fbfa9dcdca854c53f881b23aab06c0063e",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/select.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/separator.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "5589b9172cf9d96b1d95203f6922d1174b50778e",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/separator.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/sheet.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "acf38331593af1ef88196b651dd11114c4a90141",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/sheet.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/sidebar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "aae55b28cbc8956493450598c10c9c708f914baf",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/sidebar.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/skeleton.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e5a04d690c165526869feace9be346ea398187e7",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/skeleton.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/slider.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "3432fd02e18e48ace4dd2d0186b418e36e04c014",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/slider.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/sonner.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "40842fbdcb1d4a834e1ba94923c6700d0eb5b01e",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/sonner.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/components/ui/sonner.tsx.source.txt"
+    },
+    {
+      "source_path": "src/components/ui/switch.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "000e10ccbb0d00a4bdd518db4c0b6e5030db49f0",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/switch.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/table.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "59e4dcc54deb8ebac1a675677eed827f628cd85d",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/table.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/tabs.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "aeb0ff0d76c834839169b54ba236fb061b81e203",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/tabs.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/textarea.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "8f1810e1fb21e4be88d8ca0488939d27dd72d78d",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/textarea.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/toggle-group.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "88e9fbc9f5e1a823f2d66873b7c73b04dc6ac7a8",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/toggle-group.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/toggle.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "e74387907768abad8ecefcec55224c9395599338",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/toggle.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/tooltip.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "79d9ab4ae1858315aa4007983c13e2cac8194f83",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/tooltip.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/use-mobile.ts",
+      "source_mode": "100644",
+      "source_git_blob": "a93d58393804b4dcda698e6a6e475f65a6889356",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/use-mobile.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/components/ui/utils.ts",
+      "source_mode": "100644",
+      "source_git_blob": "a5ef193506d07d0459fec4f187af08283094d7c8",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/components/ui/utils.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/config/env.ts",
+      "source_mode": "100644",
+      "source_git_blob": "91d0ab44fb3647dfbea5816b2a1ac48cf51afacc",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/config/env.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/config/env.ts.source.txt"
+    },
+    {
+      "source_path": "src/config/views.ts",
+      "source_mode": "100644",
+      "source_git_blob": "5aa5200b419cd534bfd1ec3adb8625d77d7ac7bd",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/config/views.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/guidelines/Guidelines.md",
+      "source_mode": "100644",
+      "source_git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/guidelines/Guidelines.md",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/hooks/useDefects.ts",
+      "source_mode": "100644",
+      "source_git_blob": "9c21cbf415404db6ad7e824c51fc300a7daabb95",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useDefects.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/hooks/useDefects.ts.source.txt"
+    },
+    {
+      "source_path": "src/hooks/useDeviceDetection.ts",
+      "source_mode": "100644",
+      "source_git_blob": "e64698ffea2d5fbdb83824bdfe221bb475c1e842",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useDeviceDetection.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/hooks/useDeviceDetection.ts.source.txt"
+    },
+    {
+      "source_path": "src/hooks/useGlobalUiSettings.ts",
+      "source_mode": "100644",
+      "source_git_blob": "cdb334921cf71adb0397882bd7ef144a4f77bee9",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useGlobalUiSettings.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/hooks/useGlobalUiSettings.ts.source.txt"
+    },
+    {
+      "source_path": "src/hooks/useNewItems.ts",
+      "source_mode": "100644",
+      "source_git_blob": "a5ed4ba227c5837e3e34776a52dd9883170c9317",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useNewItems.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/hooks/useRealtimeUpdates.ts",
+      "source_mode": "100644",
+      "source_git_blob": "79b40c5d8a99a9a80dd4e1f3e18c0393e1deebf1",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useRealtimeUpdates.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/hooks/useSteelPlates.ts",
+      "source_mode": "100644",
+      "source_git_blob": "6c9797d7f79d11a0c772e3ba04adc254c80584ce",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useSteelPlates.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/hooks/useStyleSystem.ts",
+      "source_mode": "100644",
+      "source_git_blob": "ca32b52fe485080daf570a002649f64ba0d38d6d",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useStyleSystem.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/hooks/useStyleSystem.ts.source.txt"
+    },
+    {
+      "source_path": "src/hooks/useSystemMetrics.ts",
+      "source_mode": "100644",
+      "source_git_blob": "d49bfc0566a8cb4ee8cf7ec04b3757764da73e9a",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useSystemMetrics.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/hooks/useTheme.ts",
+      "source_mode": "100644",
+      "source_git_blob": "91e75bf9f71b3cc15be01b57eb42de31c8f9c6cd",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/hooks/useTheme.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/hooks/useTheme.ts.source.txt"
+    },
+    {
+      "source_path": "src/index.css",
+      "source_mode": "100644",
+      "source_git_blob": "0e0ae35cc208c11d2004a2b0830f266d9b58d07e",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/index.css",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/index.css.source.txt"
+    },
+    {
+      "source_path": "src/main.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "1ae0bafceb49e8c52d758103e6265aa4d1f23cb5",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/main.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/BackendManagement.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "da2ce34105c09f4c4034066808173f58a8507f14",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/BackendManagement.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/CacheDebug.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "6ea6b0fd20d67f3ecf313d1ae75e4b9bb5b95bfb",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/CacheDebug.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/pages/CacheDebug.tsx.source.txt"
+    },
+    {
+      "source_path": "src/pages/Dashboard.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "08a3dd19007d03bf1fd2eaf37adca70b2a6bd85a",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/Dashboard.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/pages/Dashboard.tsx.source.txt"
+    },
+    {
+      "source_path": "src/pages/DefectToolbar.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a94618aea42e751fb824ad688d69bd14329c3f78",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/DefectToolbar.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/pages/DefectToolbar.tsx.source.txt"
+    },
+    {
+      "source_path": "src/pages/Download.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "0f9a0c88229dfb75c430dabff269853cccd51c23",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/Download.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/ImagesTab.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "417848e83dd622331cb0fa2ef9410238e93eb0bc",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/ImagesTab.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/pages/ImagesTab.tsx.source.txt"
+    },
+    {
+      "source_path": "src/pages/PlateListContent.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a157f1b3ac8f76e619c9993e5c5d81082efa07bc",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/PlateListContent.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/pages/PlateListContent.tsx.source.txt"
+    },
+    {
+      "source_path": "src/pages/PlateOverlayPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "b3b762e313dde92cfc73bd266f81a8a9df3dd580",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/PlateOverlayPanel.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/PlatesTab.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "4cbd9ee062c9212fefc7b1d8c34cf9ef35114d7b",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/PlatesTab.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/Reports.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a32efc72716e7c340254f604a9386693434de238",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/Reports.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/StatusCenter.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "f735f88e65d0c00c9eb7b3f1a2b8c3ce87a38f13",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/StatusCenter.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/TestModel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a62e151409642f8faf2d3f1972feea72bc926e65",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/TestModel.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/TraditionalMode.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "94a40c231b3d9d8ac35f364966bf414d577fbbbd",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/TraditionalMode.tsx",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/pages/traditional/TraditionalMode.tsx.source.txt"
+    },
+    {
+      "source_path": "src/pages/traditional/components/ControlPanel.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "a26ce7133c32b1c8164e8df9533866d76fc4a3d8",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/components/ControlPanel.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/components/DistributionChart.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "88629bc85eea5aa62cb2f56b6cb7ae065dfbdbbd",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/components/DistributionChart.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/components/ZoomControls.tsx",
+      "source_mode": "100644",
+      "source_git_blob": "184d1b49b1502a3eb239ba2920d61f6118afd20b",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/components/ZoomControls.tsx",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/components/index.ts",
+      "source_mode": "100644",
+      "source_git_blob": "f6e3b10083729689ec3bd20d151bfdb00760f8e0",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/components/index.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/hooks/index.ts",
+      "source_mode": "100644",
+      "source_git_blob": "9a462c6b1735e7d42f132643806f10d5230f616b",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/hooks/index.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/hooks/useAnnotation.ts",
+      "source_mode": "100644",
+      "source_git_blob": "bd3a64d909a2fcf1574a692c653b77ba337ab91e",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/hooks/useAnnotation.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/hooks/useImageNavigation.ts",
+      "source_mode": "100644",
+      "source_git_blob": "cce14ca675c4ac44d99ae897a05e7254a9b3a9ac",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/hooks/useImageNavigation.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/hooks/useSystemStatus.ts",
+      "source_mode": "100644",
+      "source_git_blob": "fbb7ed32a52ae7c6617a60a69c37eb2b08f54391",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/hooks/useSystemStatus.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/pages/traditional/hooks/useTraditionalData.ts",
+      "source_mode": "100644",
+      "source_git_blob": "502ef3b630b170da43f288644eed1d08e1c5ef2b",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/pages/traditional/hooks/useTraditionalData.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/pages/traditional/hooks/useTraditionalData.ts.source.txt"
+    },
+    {
+      "source_path": "src/styles/globals.css",
+      "source_mode": "100644",
+      "source_git_blob": "21f4c632b67590690f72b1c881b321293a6fb838",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/styles/globals.css",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/styles/globals.css.source.txt"
+    },
+    {
+      "source_path": "src/styles/themes/README.md",
+      "source_mode": "100644",
+      "source_git_blob": "a310b8c4242ceed06f6789fba0a9a33bd8253d91",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/styles/themes/README.md",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/styles/themes/README.md.source.txt"
+    },
+    {
+      "source_path": "src/styles/themes/colorUtils.ts",
+      "source_mode": "100644",
+      "source_git_blob": "685407d44f35dc245f4aad1aea6510037b05243d",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/styles/themes/colorUtils.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/styles/themes/colorUtils.ts.source.txt"
+    },
+    {
+      "source_path": "src/styles/themes/index.ts",
+      "source_mode": "100644",
+      "source_git_blob": "100cff9cc1bdee6487c78ce8c7e294ce735327cc",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/styles/themes/index.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/styles/themes/index.ts.source.txt"
+    },
+    {
+      "source_path": "src/styles/themes/modern/index.ts",
+      "source_mode": "100644",
+      "source_git_blob": "5826cda4f3e7666f9e9de4834384168e04caea7e",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/styles/themes/modern/index.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/styles/themes/modern/index.ts.source.txt"
+    },
+    {
+      "source_path": "src/styles/themes/traditional/index.ts",
+      "source_mode": "100644",
+      "source_git_blob": "c623ad9879fb01e81f7f5d36e7001b29bf50047d",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/styles/themes/traditional/index.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/styles/themes/traditional/index.ts.source.txt"
+    },
+    {
+      "source_path": "src/styles/themes/types.ts",
+      "source_mode": "100644",
+      "source_git_blob": "921ef35a3ce7e694b57b058998290e60c3fb5fe0",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/styles/themes/types.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/styles/themes/types.ts.source.txt"
+    },
+    {
+      "source_path": "src/tokens/index.ts",
+      "source_mode": "100644",
+      "source_git_blob": "1cf83dc38689200b373e33381c6016b858d22440",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/tokens/index.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/tokens/index.ts.source.txt"
+    },
+    {
+      "source_path": "src/tokens/variants.ts",
+      "source_mode": "100644",
+      "source_git_blob": "12f1fa1ea90789f0f5b3fd02a028d4ce510d7935",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/tokens/variants.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/tokens/variants.ts.source.txt"
+    },
+    {
+      "source_path": "src/types/app.types.ts",
+      "source_mode": "100644",
+      "source_git_blob": "d7cc582c8b4b31b98862e6db148b57bcb02e1e95",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/types/app.types.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/types/app.types.ts.source.txt"
+    },
+    {
+      "source_path": "src/types/electron.d.ts",
+      "source_mode": "100644",
+      "source_git_blob": "312e82e56d9ee555fa9e77492763ac6419558414",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/types/electron.d.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/utils/defectSelection.ts",
+      "source_mode": "100644",
+      "source_git_blob": "f30de4c15603f5f046ef32f3b97de746a008ae26",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/defectSelection.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/utils/defects.ts",
+      "source_mode": "100644",
+      "source_git_blob": "01f3c091704b825960c0844cecd33a3abf78bff9",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/defects.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/utils/defects.ts.source.txt"
+    },
+    {
+      "source_path": "src/utils/imageOrientation.ts",
+      "source_mode": "100644",
+      "source_git_blob": "072fe20daf9b7c875c2c1a2d875600e1c9e6dc82",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/imageOrientation.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/utils/imageOrientation.ts.source.txt"
+    },
+    {
+      "source_path": "src/utils/lruImageCache.ts",
+      "source_mode": "100644",
+      "source_git_blob": "f92ab73b57ca590a5bf840c942a27f133dc982d5",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/lruImageCache.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/utils/runtime.ts",
+      "source_mode": "100644",
+      "source_git_blob": "654bfa6cf6492a7fb461a007b9386baae792f479",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/runtime.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/utils/steelPlates.ts",
+      "source_mode": "100644",
+      "source_git_blob": "1f1203dd29f3eb352bd7a7265854c7d330343dab",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/steelPlates.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/utils/steelPlates.ts.source.txt"
+    },
+    {
+      "source_path": "src/utils/tauriWindow.ts",
+      "source_mode": "100644",
+      "source_git_blob": "d882fa9d403f7b15340fe93a82b60f2f204a05fa",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/tauriWindow.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "src/utils/tileFallback.ts",
+      "source_mode": "100644",
+      "source_git_blob": "cd0a2278ed81f857d93e2d64a9bbc38e13b9780f",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/tileFallback.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/utils/tileFallback.ts.source.txt"
+    },
+    {
+      "source_path": "src/utils/tilePreheatManager.ts",
+      "source_mode": "100644",
+      "source_git_blob": "b763067cf491a3cb40843b1b1ef91f2151535b66",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/utils/tilePreheatManager.ts",
+      "disposition": "archived_original",
+      "archive_path": "docs/repository-consolidation/Figmaaidefectdetectionsystem/originals/src/utils/tilePreheatManager.ts.source.txt"
+    },
+    {
+      "source_path": "src/vite.config.ts",
+      "source_mode": "100644",
+      "source_git_blob": "d622e35be64c3d8236bccedd4bfa82feef72eff0",
+      "consumer_path": "Figmaaidefectdetectionsystem/src/vite.config.ts",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "tailwind.config.cjs",
+      "source_mode": "100644",
+      "source_git_blob": "a3b3a409992ed556cab44afca9a049a2eda847b3",
+      "consumer_path": "Figmaaidefectdetectionsystem/tailwind.config.cjs",
+      "disposition": "already_in_consumer"
+    },
+    {
+      "source_path": "vite.config.ts",
+      "source_mode": "100644",
+      "source_git_blob": "092b005dcd6dcb28c049a4e07efe437a58030a79",
+      "consumer_path": "Figmaaidefectdetectionsystem/vite.config.ts",
+      "disposition": "already_in_consumer"
+    }
+  ]
+}
