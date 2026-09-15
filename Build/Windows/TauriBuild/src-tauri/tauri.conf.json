@@ -5,8 +5,8 @@
   "identifier": "com.bkvision.defect",
   "build": {
     "beforeBuildCommand": "",
-    "beforeDevCommand": "npm --prefix ../../../Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 5173 --strictPort",
-    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm --prefix ../../../Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 3122 --strictPort",
+    "devUrl": "http://localhost:3122",
     "frontendDist": "../../../Figmaaidefectdetectionsystem/build"
   },
   "app": {

@@ -53,8 +53,10 @@
       target: 'esnext',
       outDir: 'build',
     },
-    server: {
-      port: 3000,
+    preview: { port: 17049, strictPort: true },
+  server: {
+    strictPort: true,
+      port: 3122,
       open: true,
       host: '0.0.0.0',
       allowedHosts: ['n9yhdrvz.zjz-service.cn', '9qwygl8e.zjz-service.cn','www.bkvision.online','bkvision.online'],

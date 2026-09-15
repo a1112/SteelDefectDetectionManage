@@ -40,7 +40,7 @@ mac_conf = Path("Build/macOS/TauriBuild/src-tauri/tauri.conf.json")
 data = json.loads(mac_conf.read_text(encoding="utf-8"))
 data["build"]["distDir"] = "../../../../Figmaaidefectdetectionsystem/build"
 data["build"]["beforeDevCommand"] = (
-    "npm --prefix ../../../../Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 5173"
+    "npm --prefix ../../../../Figmaaidefectdetectionsystem run dev -- --host 127.0.0.1 --port 3122"
 )
 bundle = data.get("tauri", {}).get("bundle", {})
 targets_env = os.getenv("TAURI_MAC_TARGETS", "")
