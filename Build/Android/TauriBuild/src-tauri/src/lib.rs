@@ -6,6 +6,8 @@ use tauri::{LogicalSize, Manager, Size};
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
   tauri::Builder::default()
+        .plugin(project_resource_monitor::init())
+        .invoke_handler(tauri::generate_handler![project_resource_monitor::project_resource_snapshot])
     .setup(|app| {
       #[cfg(not(mobile))]
       {
@@ -28,3 +30,5 @@ pub fn run() {
     .run(tauri::generate_context!())
     .expect("error while running tauri application");
 }
+
+mod project_resource_monitor;
