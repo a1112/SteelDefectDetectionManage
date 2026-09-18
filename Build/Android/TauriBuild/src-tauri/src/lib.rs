@@ -5,7 +5,7 @@ use tauri::{LogicalSize, Manager, Size};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-  tauri::Builder::default()
+  tauri::Builder::default().plugin(project_window_chrome::init())
         .plugin(project_resource_monitor::init())
         .invoke_handler(tauri::generate_handler![project_resource_monitor::project_resource_snapshot])
     .setup(|app| {
@@ -32,3 +32,5 @@ pub fn run() {
 }
 
 mod project_resource_monitor;
+
+mod project_window_chrome;
