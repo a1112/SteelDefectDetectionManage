@@ -436,7 +436,7 @@ export function Dashboard() {
           controller.abort();
         }, 5000);
 
-        const response = await fetch("/api/health", {
+        const response = await fetch(`${env.getApiBaseUrl()}/health`, {
           signal: controller.signal,
           cache: "no-store",
         });

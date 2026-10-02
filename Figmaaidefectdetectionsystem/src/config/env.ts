@@ -9,7 +9,7 @@ export type AppMode = "development" | "production" | "cors";
 export type ImageScale = 0.25 | 0.5 | 0.75 | 1;
 const LINE_COOKIE = "line_name";
 const DEFAULT_CORS_BASE_URL = "http://9qwygl8e.zjz-service.cn:80";
-const DEFAULT_LOCAL_BASE_URL = "http://127.0.0.1:80";
+const DEFAULT_LOCAL_BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:80";
 const PRODUCTION_BASE_URL_KEY = "production_base_url";
 const IMAGE_SCALE_KEY = "image_scale";
 const DEFAULT_IMAGE_SCALE: ImageScale = 1;
@@ -19,7 +19,7 @@ const getInitialMode = (): AppMode => {
   const stored = localStorage.getItem("app_mode") as AppMode;
   return ["development", "production", "cors"].includes(stored)
     ? stored
-    : "development";
+    : "production";
 };
 
 // 从 localStorage 读取 image scale（标准 ），默认为 default
@@ -230,7 +230,7 @@ class EnvironmentConfig {
     if (this.isDesktopShell()) {
       return this.getLocalBaseUrl();
     }
-    return "";
+    return this.getLocalBaseUrl();
   }
 
   /**
@@ -258,11 +258,11 @@ class EnvironmentConfig {
     }
 
     // Windows + nginx 测试环境下：
-    const basePath = "/api/test";
+    const basePath = "/api";
     if (this.isDesktopShell()) {
       return `${this.getLocalBaseUrl()}${basePath}`;
     }
-    return basePath;
+    return `${this.getLocalBaseUrl()}${basePath}`;
   }
 }
 
