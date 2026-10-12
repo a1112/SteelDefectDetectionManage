@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "units": {
+    "frontend": {
+      "canonical": {
+        "path": "Figmaaidefectdetectionsystem/package.json",
+        "adapter": "json",
+        "pointer": "/version",
+        "format": "semver"
+      },
+      "mirrors": []
+    },
+    "backend-api": {
+      "canonical": {
+        "path": "Web-Defect-Detection-System/configs/version.json",
+        "adapter": "json",
+        "pointer": "/version",
+        "format": "semver"
+      },
+      "mirrors": [],
+      "notes": "Existing backend release marker0.2.1 remains separate from frontend and packaging0.1.0."
+    },
+    "android-tauri": {
+      "canonical": {
+        "path": "Build/Android/TauriBuild/package.json",
+        "adapter": "json",
+        "pointer": "/version",
+        "format": "semver"
+      },
+      "mirrors": [
+        {
+          "path": "Build/Android/TauriBuild/package-lock.json",
+          "adapter": "json",
+          "pointer": "/version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/Android/TauriBuild/package-lock.json",
+          "adapter": "json",
+          "pointer": "/packages//version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/Android/TauriBuild/src-tauri/Cargo.toml",
+          "adapter": "toml",
+          "table": [
+            "package"
+          ],
+          "key": "version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/Android/TauriBuild/src-tauri/tauri.conf.json",
+          "adapter": "json",
+          "pointer": "/version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/Android/TauriBuild/src-tauri/Cargo.lock",
+          "adapter": "cargo-lock",
+          "package": "defect-tauri",
+          "format": "semver"
+        }
+      ],
+      "notes": "Independent platform packaging manifest; no cross-platform lockstep is inferred."
+    },
+    "windows-tauri": {
+      "canonical": {
+        "path": "Build/Windows/TauriBuild/package.json",
+        "adapter": "json",
+        "pointer": "/version",
+        "format": "semver"
+      },
+      "mirrors": [
+        {
+          "path": "Build/Windows/TauriBuild/src-tauri/Cargo.toml",
+          "adapter": "toml",
+          "table": [
+            "package"
+          ],
+          "key": "version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/Windows/TauriBuild/src-tauri/tauri.conf.json",
+          "adapter": "json",
+          "pointer": "/version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/Windows/TauriBuild/src-tauri/Cargo.lock",
+          "adapter": "cargo-lock",
+          "package": "defect-tauri",
+          "format": "semver"
+        }
+      ],
+      "notes": "Independent platform packaging manifest; no cross-platform lockstep is inferred."
+    },
+    "macos-tauri": {
+      "canonical": {
+        "path": "Build/macOS/TauriBuild/package.json",
+        "adapter": "json",
+        "pointer": "/version",
+        "format": "semver"
+      },
+      "mirrors": [
+        {
+          "path": "Build/macOS/TauriBuild/src-tauri/Cargo.toml",
+          "adapter": "toml",
+          "table": [
+            "package"
+          ],
+          "key": "version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/macOS/TauriBuild/src-tauri/tauri.conf.json",
+          "adapter": "json",
+          "pointer": "/version",
+          "format": "semver"
+        },
+        {
+          "path": "Build/macOS/TauriBuild/src-tauri/Cargo.lock",
+          "adapter": "cargo-lock",
+          "package": "defect-tauri",
+          "format": "semver"
+        }
+      ],
+      "notes": "Independent platform packaging manifest; no cross-platform lockstep is inferred."
+    },
+    "windows-electron": {
+      "canonical": {
+        "path": "Build/Windows/ElectronBuild/package.json",
+        "adapter": "json",
+        "pointer": "/version",
+        "format": "semver"
+      },
+      "mirrors": []
+    },
+    "macos-electron": {
+      "canonical": {
+        "path": "Build/macOS/ElectronBuild/package.json",
+        "adapter": "json",
+        "pointer": "/version",
+        "format": "semver"
+      },
+      "mirrors": []
+    }
+  },
+  "unmanaged": [
+    {
+      "name": "deployment-workspace",
+      "reason": "Root package.json is an unversioned task runner. Qt/WASM project and deployed nginx/vendor assets keep their own provenance; deployment scripts are not run by version tooling.",
+      "paths": [
+        "package.json",
+        "Web-Defect-Detection-System/app/ui/DefectWebUi",
+        "plugins"
+      ]
+    }
+  ],
+  "notes": [
+    "Existing version authorities and independent release units are preserved. This adoption does not assert that a manifest version has been released."
+  ]
+}
