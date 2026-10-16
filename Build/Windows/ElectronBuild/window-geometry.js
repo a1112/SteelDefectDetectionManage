@@ -13,8 +13,8 @@ function resolveBounds(displays, primary, saved) {
   const display = restored ? displays.find(d => contains(d.workArea, saved)) || displays.reduce((best, d) => overlap(d.workArea) > overlap(best.workArea) ? d : best, primary) : primary;
   const area = display.workArea;
   const capW = Math.max(1, area.width - 64), capH = Math.max(1, area.height - 96);
-  const width = restored ? (saved.width <= area.width ? saved.width : Math.min(saved.width, capW)) : Math.max(Math.min(840, capW), Math.min(1120, area.width * .82, capW));
-  const height = restored ? (saved.height <= area.height ? saved.height : Math.min(saved.height, capH)) : Math.max(Math.min(560, capH), Math.min(720, area.height * .84, capH));
+  const width = restored ? (saved.width <= area.width ? saved.width : Math.min(saved.width, capW)) : Math.max(1, Math.min(1120, area.width * .82, capW));
+  const height = restored ? (saved.height <= area.height ? saved.height : Math.min(saved.height, capH)) : Math.max(1, Math.min(720, area.height * .84, capH));
   return {
     x: Math.round(restored ? Math.max(area.x, Math.min(saved.x, area.x + area.width - width)) : area.x + (area.width - width) / 2),
     y: Math.round(restored ? Math.max(area.y, Math.min(saved.y, area.y + area.height - height)) : area.y + (area.height - height) / 2),

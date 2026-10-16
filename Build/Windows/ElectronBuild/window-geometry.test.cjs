@@ -8,6 +8,17 @@ const vm = require('node:vm');
 const policy = require('./window-geometry');
 const primary = { workArea: { x:0, y:32, width:1280, height:768 }, scaleFactor:2 };
 const second = { workArea: { x:-1600, y:20, width:1600, height:900 }, scaleFactor:1 };
+test('MacAir and compact work areas bound first defaults and adaptive minimums at either DPI', () => {
+  for(const scaleFactor of [1,2]) for(const [width,height] of [[1280,720],[960,600],[1920,1080]]) {
+    const display={workArea:{x:0,y:32,width,height},scaleFactor};
+    const first=policy.resolveBounds([display],display);
+    assert(first.width<=width*.82+1 && first.height<=height*.84+1);
+    assert(first.minWidth<=first.width && first.minHeight<=first.height);
+    const saved={x:50,y:80,width:640,height:400};
+    const restored=policy.resolveBounds([display],display,saved);
+    for(const key of ['x','y','width','height'])assert.equal(restored[key],saved[key]);
+  }
+});
 test('compact first launch uses logical work area without scaling it twice', () => {
   const bounds=policy.resolveBounds([primary,second],primary);
   assert.equal(bounds.show,false); assert(bounds.width<=1120);assert(bounds.height<=720);
