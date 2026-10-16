@@ -5,6 +5,14 @@ use tauri::Manager;
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+            #[cfg(mobile)]
+            {
+                use tauri::Manager;
+                if let Some(window) = app.get_webview_window("main") {
+                    window.show()?;
+                }
+            }
+
             #[cfg(not(mobile))]
             if let Some(window) = app.get_webview_window("main") {
                 startup_geometry::install(&window, (1120.0, 720.0), (840.0, 560.0), false)?;
