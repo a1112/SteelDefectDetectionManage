@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, screen } = require("electron");
 const path = require("path");
+const { startupOptions, trackWindow } = require("./window-geometry");
 
 const getWindow = (event) => BrowserWindow.fromWebContents(event.sender);
 
@@ -30,13 +31,8 @@ ipcMain.handle("window:is-maximized", (event) => {
 });
 
 const createWindow = () => {
-  const { width: screenWidth, height: screenHeight } =
-    screen.getPrimaryDisplay().workAreaSize;
-  const windowWidth = Math.round(screenWidth * 0.7);
-  const windowHeight = Math.round(screenHeight * 0.7);
   const win = new BrowserWindow({
-    width: windowWidth,
-    height: windowHeight,
+    ...startupOptions(app, screen),
     frame: false,
     titleBarStyle: "hidden",
     webPreferences: {
@@ -44,9 +40,11 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+  trackWindow(win, app);
   win.setMenuBarVisibility(false);
   win.webContents.on("did-fail-load", (_event, errorCode, errorDescription) => {
     console.error("did-fail-load", errorCode, errorDescription);
+    win.show();
   });
   win.webContents.on("console-message", (_event, level, message, line, sourceId) => {
     console.log("renderer", { level, message, line, sourceId });

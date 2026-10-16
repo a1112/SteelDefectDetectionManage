@@ -13,18 +13,25 @@
     "windows": [
       {
         "title": "DefectDetection",
-        "width": 1280,
-        "height": 800,
+        "width": 1120,
+        "height": 720,
         "decorations": false,
         "center": true,
         "resizable": true,
-        "fullscreen": false
+        "fullscreen": false,
+        "minWidth": 0,
+        "minHeight": 0,
+        "maximized": false,
+        "visible": false
       }
     ]
   },
   "bundle": {
     "active": true,
-    "targets": ["app", "dmg"],
+    "targets": [
+      "app",
+      "dmg"
+    ],
     "icon": [
       "../../../resource/icon/icon.ico",
       "../../../resource/icon/icon.png",
