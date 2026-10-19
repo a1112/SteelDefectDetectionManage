@@ -23,8 +23,9 @@ import {
 } from "../utils/imageOrientation";
 import { drawTileImage, tryDrawFallbackTile } from "../utils/tileFallback";
 import { cancelPendingTileImageLoads, queueTileImageLoad } from "../utils/tileImageLoader";
+import { getOrCreateLRUCache } from "../utils/lruImageCache";
 
-const tileImageCache = new Map<string, HTMLImageElement>();
+const tileImageCache = getOrCreateLRUCache("DefectImageView", 500);
 const tileImageLoading = new Set<string>();
 const TILE_LOAD_SCOPE = "DefectImageView";
 const PAN_MARGIN = 200;

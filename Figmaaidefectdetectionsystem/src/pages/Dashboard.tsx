@@ -69,6 +69,7 @@ import { DefectHoverTooltip } from "../components/DefectHoverTooltip";
 import { PlateHoverTooltip } from "../components/PlateHoverTooltip";
 import { useGlobalUiSettings } from "../hooks/useGlobalUiSettings";
 import { queueTileImageLoad } from "../utils/tileImageLoader";
+import { getOrCreateLRUCache } from "../utils/lruImageCache";
 
 type DefectClassOption = {
   id: number;
@@ -76,7 +77,7 @@ type DefectClassOption = {
   color?: string;
 };
 
-const neighborTileImageCache = new Map<string, HTMLImageElement>();
+const neighborTileImageCache = getOrCreateLRUCache("Dashboard-Neighbor", 500);
 const neighborTileImageLoading = new Set<string>();
 
 export function Dashboard() {
