@@ -68,3 +68,10 @@ dependencies {
 }
 
 apply(from = "tauri.build.gradle.kts")
+
+// Fail closed if a direct Gradle build bypassed mobile icon preparation.
+val verifyMobileLauncherIcons by tasks.registering(Exec::class) {
+    workingDir(rootProject.projectDir.resolve("../../.."))
+    commandLine("node", "scripts/mobile-icons.mjs", "android", "--check")
+}
+tasks.named("preBuild").configure { dependsOn(verifyMobileLauncherIcons) }

@@ -48,7 +48,7 @@ export default function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <Router>
+        <Router basename={import.meta.env.BASE_URL.replace(/\/$/, "")}>
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route

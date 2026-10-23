@@ -805,7 +805,7 @@ export async function healthCheck(): Promise<HealthResponse> {
 
   // 生产模式：调用真实 API
   try {
-    let url = "/api/health";
+    let url = `${env.getApiBaseUrl()}/health`;
     // 跨域模式下，需要使用完整的远程 URL
     if (env.getMode() === "cors") {
       // 假设 health 接口位于服务器根路径 /api/health

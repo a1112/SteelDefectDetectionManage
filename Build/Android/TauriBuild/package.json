@@ -3,14 +3,19 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "tauri": "tauri",
+    "tauri": "node scripts/tauri-with-mobile-icons.mjs",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
-    "tauri:android": "tauri android",
-    "tauri:android:build": "tauri android build",
-    "tauri:info": "tauri info"
+    "tauri:android": "node scripts/tauri-with-mobile-icons.mjs android",
+    "tauri:android:build": "node scripts/tauri-with-mobile-icons.mjs android build",
+    "tauri:info": "tauri info",
+    "icons:android": "node scripts/mobile-icons.mjs android",
+    "icons:android:check": "node scripts/mobile-icons.mjs android --check",
+    "test:mobile-icons": "node --test scripts/mobile-icons.test.mjs",
+    "tauri:android:init": "node scripts/tauri-with-mobile-icons.mjs android init",
+    "tauri:android:dev": "node scripts/tauri-with-mobile-icons.mjs android dev"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0"
+    "@tauri-apps/cli": "2.10.1"
   }
 }

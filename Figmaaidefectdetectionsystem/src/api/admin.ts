@@ -304,6 +304,11 @@ const getAdminBaseUrl = (): string => {
 };
 
 const toWebSocketUrl = (base: string): string => {
+  if (base.startsWith("/") && !base.startsWith("//")) {
+    const url = new URL(base, window.location.origin);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    return url.toString().replace(/\/+$/, "");
+  }
   if (base.startsWith("wss://") || base.startsWith("ws://")) {
     return base;
   }
